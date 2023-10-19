@@ -36,4 +36,9 @@ public class MenuManager : MonoBehaviour {
         _selectedHeroObject.GetComponentInChildren<TextMeshProUGUI>().text = hero.UnitName;
         _selectedHeroObject.SetActive(true);
     }
+
+    public void ShowHeroActions(BaseHero hero) {
+        Debug.Log($"Show actions for {hero}");
+        //turn menu object visible + put specific actions available to selected hero
+    }
 }

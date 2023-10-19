@@ -29,7 +29,12 @@ public abstract class Tile : MonoBehaviour {
         if(GameManager.Instance.GameState != GameState.HeroesTurn) return;
 
         if(OccupiedUnit != null){
-            if(OccupiedUnit.Faction == Faction.Hero) UnitManager.Instance.SetSelectedHero((BaseHero)OccupiedUnit);
+            if(OccupiedUnit.Faction == Faction.Hero) {
+                UnitManager.Instance.SetSelectedHero((BaseHero)OccupiedUnit);
+                if(UnitManager.Instance.SelectedHero.TakenActions == false) {
+                    MenuManager.Instance.ShowHeroActions((BaseHero)OccupiedUnit);
+                }
+            }
             else if(UnitManager.Instance.SelectedHero != null) {
                 var enemy = (BaseEnemy) OccupiedUnit;
                 //battle functionality here
