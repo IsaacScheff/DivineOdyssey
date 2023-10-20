@@ -9,6 +9,7 @@ public class UnitManager : MonoBehaviour {
     private List<ScriptableUnit> _units;
 
     public BaseHero SelectedHero;
+    public bool HeroMoving;
     void Awake() {
         Instance = this;
 
@@ -50,5 +51,10 @@ public class UnitManager : MonoBehaviour {
     public void SetSelectedHero(BaseHero hero) {
         SelectedHero = hero;
         MenuManager.Instance.ShowSelectedHero(hero);
+    }
+
+    public void MoveHero(BaseHero hero) {
+        Debug.Log($"Move function for {hero}");
+        HeroMoving = true;
     }
 }

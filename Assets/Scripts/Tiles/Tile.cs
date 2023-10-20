@@ -42,9 +42,10 @@ public abstract class Tile : MonoBehaviour {
                 UnitManager.Instance.SetSelectedHero(null);
             }
         }
-        else if(UnitManager.Instance.SelectedHero != null) {
+        else if(UnitManager.Instance.SelectedHero != null && UnitManager.Instance.HeroMoving == true) {
             SetUnit(UnitManager.Instance.SelectedHero);
             UnitManager.Instance.SetSelectedHero(null);
+            UnitManager.Instance.HeroMoving = false;
         }
     }
 

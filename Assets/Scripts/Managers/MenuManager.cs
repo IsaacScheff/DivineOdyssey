@@ -7,7 +7,7 @@ using TMPro;
 public class MenuManager : MonoBehaviour {
     public static MenuManager Instance;
 
-    [SerializeField] private GameObject _selectedHeroObject, _tileObject, _tileUnitObject, _actionMenu;
+    [SerializeField] private GameObject _selectedHeroObject, _tileObject, _tileUnitObject, _actionMenu, _moveButton;
 
     void Awake() {
         Instance = this;
@@ -39,8 +39,11 @@ public class MenuManager : MonoBehaviour {
     }
 
     public void ShowHeroActions(BaseHero hero) {
-        Debug.Log($"Show actions for {hero}");
         //turn menu object visible + put specific actions available to selected hero
         _actionMenu.SetActive(true);
+        Button MoveButton = _moveButton.GetComponent<Button>();
+        MoveButton.onClick.AddListener(() => UnitManager.Instance.MoveHero(hero));
+        //btn.onClick.AddListener(() => TaskOnClickWithArguments("Hello", 42));
     }
+
 }
