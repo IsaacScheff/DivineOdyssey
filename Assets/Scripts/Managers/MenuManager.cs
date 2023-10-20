@@ -7,7 +7,7 @@ using TMPro;
 public class MenuManager : MonoBehaviour {
     public static MenuManager Instance;
 
-    [SerializeField] private GameObject _selectedHeroObject, _tileObject, _tileUnitObject;
+    [SerializeField] private GameObject _selectedHeroObject, _tileObject, _tileUnitObject, _actionMenu;
 
     void Awake() {
         Instance = this;
@@ -31,6 +31,7 @@ public class MenuManager : MonoBehaviour {
     public void ShowSelectedHero(BaseHero hero) {
         if(hero == null){ 
             _selectedHeroObject.SetActive(false);
+            _actionMenu.SetActive(false);
             return;
         }
         _selectedHeroObject.GetComponentInChildren<TextMeshProUGUI>().text = hero.UnitName;
@@ -40,5 +41,6 @@ public class MenuManager : MonoBehaviour {
     public void ShowHeroActions(BaseHero hero) {
         Debug.Log($"Show actions for {hero}");
         //turn menu object visible + put specific actions available to selected hero
+        _actionMenu.SetActive(true);
     }
 }
