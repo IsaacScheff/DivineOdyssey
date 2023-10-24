@@ -19,7 +19,8 @@ public class GameManager : MonoBehaviour {
         GameState = newState;
         switch(newState) {
             case GameState.GenerateGrid:
-                GridManager.Instance.GenerateGrid();
+                GridManager.Instance.Tiles = GridManager.Instance.GenerateGrid();
+                foreach (var tile in GridManager.Instance.Tiles.Values) tile.CacheNeighbors();
                 break;
             case GameState.SpawnHeroes:
                 UnitManager.Instance.SpawnHeroes();

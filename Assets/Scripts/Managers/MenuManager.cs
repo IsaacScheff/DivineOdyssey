@@ -43,7 +43,6 @@ public class MenuManager : MonoBehaviour {
         _actionMenu.SetActive(true);
         Button MoveButton = _moveButton.GetComponent<Button>();
         MoveButton.onClick.AddListener(() => UnitManager.Instance.MoveHero(hero));
-        //btn.onClick.AddListener(() => TaskOnClickWithArguments("Hello", 42));
     }
 
 }

@@ -13,28 +13,35 @@ public class GridManager : MonoBehaviour {
 
     [SerializeField] private Transform _cam;
 
+    public Tile StartTile, EndTile;
+    public Dictionary<Vector2, Tile> Tiles; 
+
     private Dictionary<Vector2, Tile> _tiles;
     void Awake() {
         Instance = this;
     }
 
-    public void GenerateGrid() {
+    public Dictionary<Vector2, Tile> GenerateGrid() {
         _tiles = new Dictionary<Vector2, Tile>();
         for (int x = 0; x < _width; x++) {
             for (int y = 0; y < _height; y++) {
-                var randomTile = Random.Range(0, 6) == 3 ? _mountainTile : _grassTile;
+                //var randomTile = Random.Range(0, 6) == 3 ? _mountainTile : _grassTile;
+                var randomTile = _grassTile;
                 var spawnedTile = Instantiate(randomTile, new Vector3(x, y), Quaternion.identity);
                 spawnedTile.name = $"Tile {x} {y}";
 
                 spawnedTile.Init(x, y);
-
-                _tiles[new Vector2(x, y)] = spawnedTile;
+                //var pos = new Vector2((x - y) * 0.5f, (x + y) * 0.25f) * 2; //this is for iso, using rec for now
+                var pos = new Vector2(x, y);
+                spawnedTile.SetCoords(new SquareCoords(){ Pos = pos });
+                    _tiles[pos] = spawnedTile;
             }
         }
 
         _cam.transform.position = new Vector3((float)_width/2 -0.5f, (float)_height/2 -0.5f, -10);
 
         GameManager.Instance.ChangeState(GameState.SpawnHeroes);
+        return _tiles;
     }
 
     public Tile GetHeroSpawnTile() {

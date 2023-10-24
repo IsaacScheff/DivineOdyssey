@@ -234,6 +234,8 @@ MonoBehaviour:
   _grassTile: {fileID: -727621135646453457, guid: 34e6e3eb823164042baa6dba6486a23a, type: 3}
   _mountainTile: {fileID: -5148599274133079777, guid: acd788e4589af4e4c8e6ebd96f91fcd9, type: 3}
   _cam: {fileID: 519420032}
+  StartTile: {fileID: 0}
+  EndTile: {fileID: 0}
 --- !u!4 &76095057
 Transform:
   m_ObjectHideFlags: 0
@@ -873,8 +875,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 57.513977, y: 16.526978}
-  m_SizeDelta: {x: 115.0286, y: 33.0547}
+  m_AnchoredPosition: {x: 745.95, y: 375}
+  m_SizeDelta: {x: 108.1, y: 33.0547}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1012587927
 MonoBehaviour:
@@ -1489,6 +1491,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   SelectedHero: {fileID: 0}
+  HeroMoving: 0
 --- !u!4 &1900194138
 Transform:
   m_ObjectHideFlags: 0
