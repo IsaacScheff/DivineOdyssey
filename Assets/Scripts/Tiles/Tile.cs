@@ -45,9 +45,7 @@ public abstract class Tile : MonoBehaviour {
     public string TileName;
     [SerializeField] protected SpriteRenderer _renderer;
     [SerializeField] private GameObject _highlight;
-
-[SerializeField] private GameObject _potentialMove;
-    //public GameObject PotentialMove;
+    [SerializeField] private GameObject _potentialMove;
     [SerializeField] private bool _isWalkable; 
 
     public BaseUnit OccupiedUnit;
@@ -97,8 +95,6 @@ public abstract class Tile : MonoBehaviour {
             //GridManager.Instance.EndTile = this;
             //var path = Pathfinding.FindPath(GridManager.Instance.StartTile, GridManager.Instance.EndTile);
             //Debug.Log(path);
-
-            UnitManager.Instance.ShowMoves(this, 5);
         }
     }
 
