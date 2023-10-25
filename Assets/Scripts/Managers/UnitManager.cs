@@ -25,6 +25,8 @@ public class UnitManager : MonoBehaviour {
             var randomSpawnTile = GridManager.Instance.GetHeroSpawnTile();
 
             randomSpawnTile.SetUnit(spawnedHero);
+            spawnedHero.OccupiedTile = randomSpawnTile;
+            //Debug.Log(spawnedHero.OccupiedTile);
         }
 
         GameManager.Instance.ChangeState(GameState.SpawnEnemies);
@@ -56,5 +58,14 @@ public class UnitManager : MonoBehaviour {
     public void MoveHero(BaseHero hero) {
         Debug.Log($"Move function for {hero}");
         HeroMoving = true;
+    }
+
+    public void ShowMoves(Tile startTile, int moves) {
+        foreach(Tile tile in GridManager.Instance.Tiles.Values){
+            var path = Pathfinding.FindPath(startTile, tile);
+            if(path != null && path.Count <= moves) {
+                tile.MoveHighlightOn();
+            }
+        }
     }
 }

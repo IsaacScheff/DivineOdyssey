@@ -5,6 +5,10 @@ using UnityEngine;
 
 public static class Pathfinding {
     public static List<Tile> FindPath(Tile startNode, Tile targetNode) {
+        if(startNode == null || targetNode == null) {
+            throw new ArgumentNullException("StartNode or TargetNode is null.");
+        }
+
         var toSearch = new List<Tile>() { startNode };
         var processed = new List<Tile>();
     
@@ -28,7 +32,7 @@ public static class Pathfinding {
                     //Debug.Log("");
                 }
                 
-                Debug.Log("Path count: " + path.Count);
+                //Debug.Log("Path count: " + path.Count);
                 return path;
             }
 

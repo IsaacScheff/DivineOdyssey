@@ -42,7 +42,8 @@ public class MenuManager : MonoBehaviour {
         //turn menu object visible + put specific actions available to selected hero
         _actionMenu.SetActive(true);
         Button MoveButton = _moveButton.GetComponent<Button>();
-        MoveButton.onClick.AddListener(() => UnitManager.Instance.MoveHero(hero));
+        //MoveButton.onClick.AddListener(() => UnitManager.Instance.MoveHero(hero));
+        MoveButton.onClick.AddListener(() => UnitManager.Instance.ShowMoves(hero.OccupiedTile, 5)); 
     }
 
 }

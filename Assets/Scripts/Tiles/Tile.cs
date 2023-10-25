@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -22,7 +23,15 @@ public abstract class Tile : MonoBehaviour {
     public float H { get; private set; } 
     public float F => G + H; 
     public ICoords Coords;
-    public float GetDistance(Tile other) => Coords.GetDistance(other.Coords); // Helper to reduce noise in pathfinding
+    public float GetDistance(Tile other) { // Helper to reduce noise in pathfinding
+        if (Coords == null) {
+            throw new ArgumentNullException("Coords of the current tile is null.");
+        }
+        if (other == null || other.Coords == null) {
+            throw new ArgumentNullException("Either the other tile is null or its Coords property is null.");
+        }
+        return Coords.GetDistance(other.Coords);
+    }
 
     public void SetConnection(Tile tile) => Connection = tile;
     public void SetG(float g) => G = g;
@@ -36,6 +45,9 @@ public abstract class Tile : MonoBehaviour {
     public string TileName;
     [SerializeField] protected SpriteRenderer _renderer;
     [SerializeField] private GameObject _highlight;
+
+[SerializeField] private GameObject _potentialMove;
+    //public GameObject PotentialMove;
     [SerializeField] private bool _isWalkable; 
 
     public BaseUnit OccupiedUnit;
@@ -81,9 +93,12 @@ public abstract class Tile : MonoBehaviour {
             //SetUnit(UnitManager.Instance.SelectedHero);
             //UnitManager.Instance.SetSelectedHero(null);
             //UnitManager.Instance.HeroMoving = false;
-            GridManager.Instance.EndTile = this;
-            var path = Pathfinding.FindPath(GridManager.Instance.StartTile, GridManager.Instance.EndTile);
-            Debug.Log(path);
+
+            //GridManager.Instance.EndTile = this;
+            //var path = Pathfinding.FindPath(GridManager.Instance.StartTile, GridManager.Instance.EndTile);
+            //Debug.Log(path);
+
+            UnitManager.Instance.ShowMoves(this, 5);
         }
     }
 
@@ -92,6 +107,16 @@ public abstract class Tile : MonoBehaviour {
         unit.transform.position = transform.position;
         OccupiedUnit = unit;
         unit.OccupiedTile = this;
+    }
+
+    public void MoveHighlightOn() {
+        _potentialMove.SetActive(true);
+    }
+
+    public void MoveHighlightOff() {
+        Debug.Log(_potentialMove);
+        _potentialMove.SetActive(false);
+        Debug.Log(_potentialMove);
     }
 }
 
