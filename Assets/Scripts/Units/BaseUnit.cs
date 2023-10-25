@@ -41,7 +41,9 @@ public class BaseUnit : MonoBehaviour {
     public int CurrentAccuracy { get => _currentAccuracy; }
     public int CurrentEvasion { get => _currentEvasion; }
 
-    // Methods to modify the current stats
+    //Methods to modify the current stats. 
+    //Could make a generic ModifyStat method, change stats to an enum and reduce code, BUT
+    //the individual methods when called by other classes will be more readable, self-documenting, and less error-prone
     public void ModifyMovement(int amount) {
         _currentMovement = Mathf.Clamp(_currentMovement + amount, 0, 50);
     }

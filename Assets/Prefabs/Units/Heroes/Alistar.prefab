@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 9038865669001183075}
   - component: {fileID: 8250076349455941481}
-  - component: {fileID: 6532084899422600779}
+  - component: {fileID: -2313783212387727918}
   m_Layer: 0
   m_Name: Alistar
   m_TagString: Untagged
@@ -85,7 +85,7 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &6532084899422600779
+--- !u!114 &-2313783212387727918
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -94,9 +94,19 @@ MonoBehaviour:
   m_GameObject: {fileID: 3763738718185433606}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e460028ad5c104477b9761e9cb0dd9a3, type: 3}
+  m_Script: {fileID: 11500000, guid: 14bc600f22f5d427288dd60c8836c278, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   UnitName: Alistar
   OccupiedTile: {fileID: 0}
   Faction: 0
+  TakenActions: 0
+  _currentMovement: 0
+  _currentHealth: 0
+  _currentPsyche: 0
+  _currentStrength: 0
+  _currentEgo: 0
+  _currentGrit: 0
+  _currentResilience: 0
+  _currentAccuracy: 0
+  _currentEvasion: 0
