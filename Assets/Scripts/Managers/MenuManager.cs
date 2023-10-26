@@ -7,7 +7,7 @@ using TMPro;
 public class MenuManager : MonoBehaviour {
     public static MenuManager Instance;
 
-    [SerializeField] private GameObject _selectedHeroObject, _tileObject, _tileUnitObject, _actionMenu, _moveButton;
+    [SerializeField] private GameObject _selectedHeroObject, _tileObject, _tileUnitObject, _tileUnitStats, _actionMenu, _moveButton;
 
     void Awake() {
         Instance = this;
@@ -17,6 +17,7 @@ public class MenuManager : MonoBehaviour {
         if(tile == null){ 
             _tileObject.SetActive(false);
             _tileUnitObject.SetActive(false);
+            _tileUnitStats.SetActive(false);
             return;
         }
         _tileObject.GetComponentInChildren<TextMeshProUGUI>().text = tile.TileName;
@@ -25,6 +26,20 @@ public class MenuManager : MonoBehaviour {
         if(tile.OccupiedUnit) {
             _tileUnitObject.GetComponentInChildren<TextMeshProUGUI>().text = tile.OccupiedUnit.UnitName;
             _tileUnitObject.SetActive(true);
+
+            BaseUnit u = tile.OccupiedUnit;
+            _tileUnitStats.GetComponentInChildren<TextMeshProUGUI>().text = 
+                $"Movement: {u.CurrentMovement} \n" +
+                $"Health: {u.CurrentHealth} \n" +
+                $"Psyche: {u.CurrentPsyche} \n" +
+                $"Strength: {u.CurrentStrength} \n" +
+                $"Ego: {u.CurrentEgo} \n" +
+                $"Grit: {u.CurrentGrit} \n" +
+                $"Resilience: {u.CurrentResilience} \n" +
+                $"Accuracy: {u.CurrentAccuracy} \n" +
+                $"Evasion: {u.CurrentEvasion} \n" +
+                $"AP: {u.CurrentAP}";
+            _tileUnitStats.SetActive(true);
         }
     }
 
