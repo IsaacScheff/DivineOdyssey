@@ -18,6 +18,7 @@ public class BaseUnit : MonoBehaviour {
     private int _baseResilience;
     private int _baseAccuracy;
     private int _baseEvasion;
+    private int _baseAP;
 
     // Current Stats
     [SerializeField] private int _currentMovement;
@@ -29,6 +30,7 @@ public class BaseUnit : MonoBehaviour {
     [SerializeField] private int _currentResilience;
     [SerializeField] private int _currentAccuracy;
     [SerializeField] private int _currentEvasion;
+    [SerializeField] private int _currentAP;
 
     // Public access properties for current stats
     public int CurrentMovement { get => _currentMovement; }
@@ -40,6 +42,7 @@ public class BaseUnit : MonoBehaviour {
     public int CurrentResilience { get => _currentResilience; }
     public int CurrentAccuracy { get => _currentAccuracy; }
     public int CurrentEvasion { get => _currentEvasion; }
+    public int CurrentAP { get => _currentAP; }
 
     //Methods to modify the current stats. 
     //Could make a generic ModifyStat method, change stats to an enum and reduce code, BUT
@@ -78,6 +81,10 @@ public class BaseUnit : MonoBehaviour {
 
     public void ModifyEvasion(int amount) {
         _currentEvasion = Mathf.Clamp(_currentEvasion + amount, 0, 50);
+    }
+
+    public void ModifyAP(int amount) {
+        _currentAP = Mathf.Clamp(_currentAP + amount, 0, _baseAP * 2);
     }
 }
 
