@@ -46,6 +46,8 @@ public abstract class Tile : MonoBehaviour {
     [SerializeField] protected SpriteRenderer _renderer;
     [SerializeField] private GameObject _highlight;
     [SerializeField] private GameObject _potentialMove;
+    public bool IsPotentialMoveNotNull => _potentialMove != null;
+
     [SerializeField] private bool _isWalkable; 
 
     public BaseUnit OccupiedUnit;
@@ -68,10 +70,6 @@ public abstract class Tile : MonoBehaviour {
     void OnMouseDown() {
         if(GameManager.Instance.GameState != GameState.HeroesTurn) return;
 
-        // foreach(var neighbor in this.Neighbors) {
-        // Debug.Log("Neighbor: " + neighbor);
-        // }
-
         if(OccupiedUnit != null){
             if(OccupiedUnit.Faction == Faction.Hero) {
                 UnitManager.Instance.SetSelectedHero((BaseHero)OccupiedUnit);
@@ -88,13 +86,12 @@ public abstract class Tile : MonoBehaviour {
             }
         }
         else if(UnitManager.Instance.SelectedHero != null && UnitManager.Instance.HeroMoving == true) {
-            //SetUnit(UnitManager.Instance.SelectedHero);
-            //UnitManager.Instance.SetSelectedHero(null);
-            //UnitManager.Instance.HeroMoving = false;
-
-            //GridManager.Instance.EndTile = this;
-            //var path = Pathfinding.FindPath(GridManager.Instance.StartTile, GridManager.Instance.EndTile);
-            //Debug.Log(path);
+            if(this._potentialMove != null && this._potentialMove.activeSelf) {
+                SetUnit(UnitManager.Instance.SelectedHero);
+                UnitManager.Instance.SetSelectedHero(null);
+            }
+            UnitManager.Instance.HeroMoving = false;
+            GridManager.Instance.ClearPotentialMoves();
         }
     }
 
@@ -110,9 +107,7 @@ public abstract class Tile : MonoBehaviour {
     }
 
     public void MoveHighlightOff() {
-        Debug.Log(_potentialMove);
         _potentialMove.SetActive(false);
-        Debug.Log(_potentialMove);
     }
 }
 

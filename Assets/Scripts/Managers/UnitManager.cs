@@ -55,11 +55,6 @@ public class UnitManager : MonoBehaviour {
         MenuManager.Instance.ShowSelectedHero(hero);
     }
 
-    public void MoveHero(BaseHero hero) {
-        Debug.Log($"Move function for {hero}");
-        HeroMoving = true;
-    }
-
     public void ShowMoves(Tile startTile, int moves) {
         foreach(Tile tile in GridManager.Instance.Tiles.Values){
             var path = Pathfinding.FindPath(startTile, tile);
@@ -67,5 +62,6 @@ public class UnitManager : MonoBehaviour {
                 tile.MoveHighlightOn();
             }
         }
+        HeroMoving = true;
     }
 }

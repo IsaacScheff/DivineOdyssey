@@ -58,4 +58,10 @@ public class GridManager : MonoBehaviour {
         else 
             return null;
     }
+
+    public void ClearPotentialMoves() {
+        foreach (Tile tile in _tiles.Values) {
+            if(tile.IsPotentialMoveNotNull) tile. MoveHighlightOff();
+        }
+    }
 }

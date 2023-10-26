@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: Alistar
   m_EditorClassIdentifier: 
   Faction: 0
-  UnitPrefab: {fileID: 6532084899422600779, guid: 033b06555d6374738ab9181dc079a406, type: 3}
+  UnitPrefab: {fileID: -2313783212387727918, guid: 033b06555d6374738ab9181dc079a406, type: 3}
