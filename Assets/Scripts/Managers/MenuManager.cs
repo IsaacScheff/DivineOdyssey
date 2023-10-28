@@ -29,16 +29,16 @@ public class MenuManager : MonoBehaviour {
 
             BaseUnit u = tile.OccupiedUnit;
             _tileUnitStats.GetComponentInChildren<TextMeshProUGUI>().text = 
-                $"Movement: {u.CurrentMovement} \n" +
+                $"AP: {u.CurrentAP} \n" +
+                $"Movement: {u.CurrentMovement} \n\n" +
                 $"Health: {u.CurrentHealth} \n" +
-                $"Psyche: {u.CurrentPsyche} \n" +
+                $"Psyche: {u.CurrentPsyche} \n\n\n" +
                 $"Strength: {u.CurrentStrength} \n" +
                 $"Ego: {u.CurrentEgo} \n" +
                 $"Grit: {u.CurrentGrit} \n" +
                 $"Resilience: {u.CurrentResilience} \n" +
                 $"Accuracy: {u.CurrentAccuracy} \n" +
-                $"Evasion: {u.CurrentEvasion} \n" +
-                $"AP: {u.CurrentAP}";
+                $"Evasion: {u.CurrentEvasion}";
             _tileUnitStats.SetActive(true);
         }
     }

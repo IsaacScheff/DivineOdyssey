@@ -101,13 +101,14 @@ MonoBehaviour:
   OccupiedTile: {fileID: 0}
   Faction: 1
   TakenActions: 0
-  _currentMovement: 0
-  _currentHealth: 0
-  _currentPsyche: 0
-  _currentStrength: 0
-  _currentEgo: 0
-  _currentGrit: 0
-  _currentResilience: 0
-  _currentAccuracy: 0
-  _currentEvasion: 0
-  _currentAP: 0
+  availableAttacks: []
+  _currentMovement: 5
+  _currentHealth: 50
+  _currentPsyche: 30
+  _currentStrength: 13
+  _currentEgo: 8
+  _currentGrit: 7
+  _currentResilience: 10
+  _currentAccuracy: 12
+  _currentEvasion: 9
+  _currentAP: 3
