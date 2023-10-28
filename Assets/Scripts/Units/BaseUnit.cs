@@ -7,7 +7,7 @@ public class BaseUnit : MonoBehaviour {
     public Tile OccupiedTile;
     public Faction Faction;
     public bool TakenActions = false;
-    public List<string> availableAttacks;
+    public List<string> AvailableAttacks;
 
     // public void PerformAttack(string attackName) {
     //     var attack = AttackManager.GetAttack(attackName);

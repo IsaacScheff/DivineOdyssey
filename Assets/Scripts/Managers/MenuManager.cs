@@ -6,8 +6,14 @@ using TMPro;
 
 public class MenuManager : MonoBehaviour {
     public static MenuManager Instance;
+    [SerializeField] private GameObject _selectedHeroObject;
+    [SerializeField] private GameObject _tileObject;
+    [SerializeField] private GameObject _tileUnitObject;
+    [SerializeField] private GameObject _tileUnitStats;
+    [SerializeField] private GameObject _actionMenu;
+    [SerializeField] private GameObject _moveButton;
+    [SerializeField] private GameObject _attackButton;
 
-    [SerializeField] private GameObject _selectedHeroObject, _tileObject, _tileUnitObject, _tileUnitStats, _actionMenu, _moveButton;
 
     void Awake() {
         Instance = this;
@@ -58,6 +64,9 @@ public class MenuManager : MonoBehaviour {
         _actionMenu.SetActive(true);
         Button MoveButton = _moveButton.GetComponent<Button>();
         MoveButton.onClick.AddListener(() => UnitManager.Instance.ShowMoves(hero.OccupiedTile, 5)); 
+
+        Button AttackButton = _attackButton.GetComponent<Button>();
+        AttackButton.onClick.AddListener(() => UnitManager.Instance.ShowAttacks(hero)); 
     }
 
 }

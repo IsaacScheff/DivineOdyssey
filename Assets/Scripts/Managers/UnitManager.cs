@@ -64,4 +64,10 @@ public class UnitManager : MonoBehaviour {
         }
         HeroMoving = true;
     }
+
+    public void ShowAttacks(BaseHero hero) {
+        foreach(string attack in hero.AvailableAttacks) {
+            Debug.Log($"{attack}");
+        }
+    }
 }

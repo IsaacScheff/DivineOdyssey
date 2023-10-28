@@ -101,9 +101,9 @@ MonoBehaviour:
   OccupiedTile: {fileID: 0}
   Faction: 0
   TakenActions: 0
-  availableAttacks:
-  - AttackExample
+  AvailableAttacks:
   - Spear
+  - AttackExample
   _currentMovement: 5
   _currentHealth: 30
   _currentPsyche: 40
