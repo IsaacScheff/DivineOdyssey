@@ -110,3 +110,4 @@ MonoBehaviour:
   _currentResilience: 0
   _currentAccuracy: 0
   _currentEvasion: 0
+  _currentAP: 0
