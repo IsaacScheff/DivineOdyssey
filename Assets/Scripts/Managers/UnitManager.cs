@@ -1,7 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEditor;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class UnitManager : MonoBehaviour {
     public static UnitManager Instance;
@@ -63,11 +65,5 @@ public class UnitManager : MonoBehaviour {
             }
         }
         HeroMoving = true;
-    }
-
-    public void ShowAttacks(BaseHero hero) {
-        foreach(string attack in hero.AvailableAttacks) {
-            Debug.Log($"{attack}");
-        }
     }
 }

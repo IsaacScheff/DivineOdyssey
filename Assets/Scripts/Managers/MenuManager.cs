@@ -13,6 +13,7 @@ public class MenuManager : MonoBehaviour {
     [SerializeField] private GameObject _actionMenu;
     [SerializeField] private GameObject _moveButton;
     [SerializeField] private GameObject _attackButton;
+    [SerializeField] private GameObject _attackButtonPrefab;
 
 
     void Awake() {
@@ -66,7 +67,47 @@ public class MenuManager : MonoBehaviour {
         MoveButton.onClick.AddListener(() => UnitManager.Instance.ShowMoves(hero.OccupiedTile, 5)); 
 
         Button AttackButton = _attackButton.GetComponent<Button>();
-        AttackButton.onClick.AddListener(() => UnitManager.Instance.ShowAttacks(hero)); 
+        AttackButton.onClick.AddListener(() => ShowHeroAttacks(hero)); 
+    }
+
+    public void ShowHeroAttacks(BaseHero hero) {
+        HideHeroActions();
+        int buttonHeight = 30;
+        int index = 0;
+        foreach (string attack in hero.AvailableAttacks) {
+            GameObject buttonObj = Object.Instantiate(_attackButtonPrefab, _actionMenu.transform);
+            
+            Button button = buttonObj.GetComponent<Button>();
+
+            GameObject textObj = new GameObject($"{attack}Button");
+            textObj.transform.SetParent(buttonObj.transform, false);
+
+            TextMeshProUGUI buttonText = textObj.AddComponent<TextMeshProUGUI>();
+            buttonText.text = attack;
+            buttonText.alignment = TextAlignmentOptions.Center;
+            
+            buttonText.fontSize = 14;
+            buttonText.color = Color.black;
+
+            RectTransform textRectTransform = textObj.GetComponent<RectTransform>();
+            textRectTransform.anchorMin = new Vector2(0, 0);
+            textRectTransform.anchorMax = new Vector2(1, 1);
+            textRectTransform.sizeDelta = new Vector2(0, 0);
+
+            button.onClick.AddListener(() => {
+                Debug.Log(attack + " button was clicked!");
+            });
+
+            // Adjust the button's position based on its index.
+            RectTransform buttonRectTransform = buttonObj.GetComponent<RectTransform>();
+            buttonRectTransform.anchoredPosition = new Vector2(0, -index * buttonHeight);
+            index++;
+        }
+    }
+
+    public void HideHeroActions() {
+        _moveButton.SetActive(false);
+        _attackButton.SetActive(false);
     }
 
 }

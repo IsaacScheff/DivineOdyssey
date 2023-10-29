@@ -1936,6 +1936,8 @@ MonoBehaviour:
   _tileUnitStats: {fileID: 958875368}
   _actionMenu: {fileID: 1715129825}
   _moveButton: {fileID: 489800753}
+  _attackButton: {fileID: 1445881224}
+  _attackButtonPrefab: {fileID: 5737560571813546851, guid: 1f265e5d37cf3487586070c20047800b, type: 3}
 --- !u!1 &1715129825
 GameObject:
   m_ObjectHideFlags: 0
