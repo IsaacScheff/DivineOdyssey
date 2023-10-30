@@ -15,4 +15,12 @@ public class AttackManager : MonoBehaviour {
         return null;
     }
 
+    public void FindTarget(Tile attacker, int attackRange) {
+        //uses the tile the attacker is on and the range of the attack to determine target
+    }
+
+    public void RollDamage(int attackDamage, int attack, int defense, float critChance) {
+        //rolls for crit then return s damage from attack
+    }
+
 }

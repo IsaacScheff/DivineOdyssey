@@ -100,7 +100,7 @@ public class MenuManager : MonoBehaviour {
 
             // Adjust the button's position based on its index.
             RectTransform buttonRectTransform = buttonObj.GetComponent<RectTransform>();
-            buttonRectTransform.anchoredPosition = new Vector2(0, -index * buttonHeight);
+            buttonRectTransform.anchoredPosition = new Vector2(0, (-index * buttonHeight * 1.3f) + 140);
             index++;
         }
     }
