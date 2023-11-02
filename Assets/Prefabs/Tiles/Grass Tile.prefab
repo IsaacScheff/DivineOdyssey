@@ -59,6 +59,26 @@ PrefabInstance:
       propertyPath: m_Name
       value: Grass Tile
       objectReference: {fileID: 0}
+    - target: {fileID: 5896661890951013276, guid: cf971fd29324441b9a774dc096c79212, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8420183300761717727, guid: cf971fd29324441b9a774dc096c79212, type: 3}
+      propertyPath: m_Color.a
+      value: 0.34117648
+      objectReference: {fileID: 0}
+    - target: {fileID: 8420183300761717727, guid: cf971fd29324441b9a774dc096c79212, type: 3}
+      propertyPath: m_Color.b
+      value: 0.8509804
+      objectReference: {fileID: 0}
+    - target: {fileID: 8420183300761717727, guid: cf971fd29324441b9a774dc096c79212, type: 3}
+      propertyPath: m_Color.g
+      value: 0.124544755
+      objectReference: {fileID: 0}
+    - target: {fileID: 8420183300761717727, guid: cf971fd29324441b9a774dc096c79212, type: 3}
+      propertyPath: m_Color.r
+      value: 0.043137256
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: cf971fd29324441b9a774dc096c79212, type: 3}
 --- !u!1 &884039240025520593 stripped
@@ -87,6 +107,7 @@ MonoBehaviour:
   _renderer: {fileID: 5492206439072880988}
   _highlight: {fileID: 884039240025520593}
   _potentialMove: {fileID: 4579332901636906213}
+  _potentialAttack: {fileID: 8345318862735053202}
   _isWalkable: 1
   OccupiedUnit: {fileID: 0}
   _baseColor: {r: 0.24306656, g: 0.7830189, b: 0.1735938, a: 1}
@@ -99,5 +120,10 @@ GameObject:
 --- !u!212 &5492206439072880988 stripped
 SpriteRenderer:
   m_CorrespondingSourceObject: {fileID: 7943678342623538002, guid: cf971fd29324441b9a774dc096c79212, type: 3}
+  m_PrefabInstance: {fileID: 2451543646685065742}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &8345318862735053202 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5896661890951013276, guid: cf971fd29324441b9a774dc096c79212, type: 3}
   m_PrefabInstance: {fileID: 2451543646685065742}
   m_PrefabAsset: {fileID: 0}

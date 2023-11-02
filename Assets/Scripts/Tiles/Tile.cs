@@ -46,6 +46,7 @@ public abstract class Tile : MonoBehaviour {
     [SerializeField] protected SpriteRenderer _renderer;
     [SerializeField] private GameObject _highlight;
     [SerializeField] private GameObject _potentialMove;
+    [SerializeField] private GameObject _potentialAttack;
     public bool IsPotentialMoveNotNull => _potentialMove != null;
 
     [SerializeField] private bool _isWalkable; 
@@ -108,6 +109,13 @@ public abstract class Tile : MonoBehaviour {
 
     public void MoveHighlightOff() {
         _potentialMove.SetActive(false);
+    }
+
+    public void AttackHighlightOn() {
+        _potentialAttack.SetActive(true);
+    }
+    public void AttackHighlightOff() {
+        _potentialAttack.SetActive(false);
     }
 }
 

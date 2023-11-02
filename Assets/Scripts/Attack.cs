@@ -8,6 +8,11 @@ public abstract class Attack {
 
     // This can be called to execute the attack's logic.
     public abstract void Execute(BaseUnit attacker);
+    public void HighlightAttacks(List<Tile> list) {
+        foreach (Tile tile in list) {
+            tile.AttackHighlightOn();
+        }
+    }
 }
 
 public class AttackExample : Attack {
@@ -18,16 +23,16 @@ public class AttackExample : Attack {
         // ...
         // Execute AttackExample logic on target
         UnityEngine.Debug.Log($"{attacker} used AttackExample");
-        List<Tile> tileList = GridManager.Instance.FindTargetableSquares(attacker.OccupiedTile, 1);
-        UnityEngine.Debug.Log($"Example arget: {tileList[0]}");
     }
 }
 
 public class Spear : Attack {
     public override string Name => "Spear";
-
+    private int range = 1;
     public override void Execute(BaseUnit attacker) {
         UnityEngine.Debug.Log($"{attacker} used spear");
+        List<Tile> tileList = GridManager.Instance.FindTargetableSquares(attacker.OccupiedTile, range);
+        HighlightAttacks(tileList);
     }
 }
 
