@@ -74,7 +74,7 @@ public class MenuManager : MonoBehaviour {
         HideHeroActions();
         int buttonHeight = 30;
         int index = 0;
-        foreach (string attack in hero.AvailableAttacks) {
+        foreach (Attack attack in hero.AvailableAttacks) {
             GameObject buttonObj = Object.Instantiate(_attackButtonPrefab, _actionMenu.transform);
             
             Button button = buttonObj.GetComponent<Button>();
@@ -83,7 +83,7 @@ public class MenuManager : MonoBehaviour {
             textObj.transform.SetParent(buttonObj.transform, false);
 
             TextMeshProUGUI buttonText = textObj.AddComponent<TextMeshProUGUI>();
-            buttonText.text = attack;
+            buttonText.text = attack.Name;
             buttonText.alignment = TextAlignmentOptions.Center;
             
             buttonText.fontSize = 14;
@@ -94,10 +94,10 @@ public class MenuManager : MonoBehaviour {
             textRectTransform.anchorMax = new Vector2(1, 1);
             textRectTransform.sizeDelta = new Vector2(0, 0);
 
-            button.onClick.AddListener(() => {
-                Debug.Log(attack + " button was clicked!");
-            });
-
+            // button.onClick.AddListener(() => {
+            //     //Debug.Log(attack + " button was clicked!");
+            // });
+            button.onClick.AddListener(() => attack.Execute(hero));
             // Adjust the button's position based on its index.
             RectTransform buttonRectTransform = buttonObj.GetComponent<RectTransform>();
             buttonRectTransform.anchoredPosition = new Vector2(0, (-index * buttonHeight * 1.3f) + 140);

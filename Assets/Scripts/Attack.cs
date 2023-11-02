@@ -1,7 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using UnityEngine;
-
 
 public abstract class Attack {
     public abstract string Name { get; }
@@ -18,6 +18,8 @@ public class AttackExample : Attack {
         // ...
         // Execute AttackExample logic on target
         UnityEngine.Debug.Log($"{attacker} used AttackExample");
+        List<Tile> tileList = GridManager.Instance.FindTargetableSquares(attacker.OccupiedTile, 1);
+        UnityEngine.Debug.Log($"Example arget: {tileList[0]}");
     }
 }
 

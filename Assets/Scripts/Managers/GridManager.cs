@@ -64,4 +64,25 @@ public class GridManager : MonoBehaviour {
             if(tile.IsPotentialMoveNotNull) tile. MoveHighlightOff();
         }
     }
+
+    public List<Tile> FindTargetableSquares(Tile attacker, int attackRange) {
+        List<Tile> squaresInRange = new List<Tile>();
+
+        // Loop through all tiles in the grid
+        foreach (var keyValuePair in _tiles) {
+            Tile potentialTile = keyValuePair.Value;
+
+            // Calculate the Manhattan distance between the attacker and the potential tile
+            int distance = Mathf.Abs((int)attacker.Coords.Pos.x - (int)potentialTile.Coords.Pos.x) +
+                        Mathf.Abs((int)attacker.Coords.Pos.y - (int)potentialTile.Coords.Pos.y);
+
+            // If the potential tile is within range, and isn't the attacker tile itself
+            // and is walkable, then add it to our list.
+            if (distance <= attackRange && potentialTile != attacker && potentialTile.Walkable) {
+                squaresInRange.Add(potentialTile);
+            }
+        }
+
+        return squaresInRange;
+    }
 }
