@@ -28,7 +28,7 @@ public class AttackExample : Attack {
 
 public class Spear : Attack {
     public override string Name => "Spear";
-    private int range = 1;
+    private int range = 2;
     public override void Execute(BaseUnit attacker) {
         UnityEngine.Debug.Log($"{attacker} used spear");
         List<Tile> tileList = GridManager.Instance.FindTargetableSquares(attacker.OccupiedTile, range);

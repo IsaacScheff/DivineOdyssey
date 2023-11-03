@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class AttackManager : MonoBehaviour {
+
+    private static System.Random rng = new System.Random();
     private static Dictionary<string, Attack> attacks = new Dictionary<string, Attack> {
         //{ "AttackExample", new AttackExample() },
         // ... other attacks
@@ -15,15 +17,11 @@ public class AttackManager : MonoBehaviour {
         return null;
     }
 
-    // public List<Tile> FindTarget(Tile attacker, int attackRange) {
-    //     List<Tile> squaresInRange = new List<Tile>();
-        
-    //     return squaresInRange;
-    // }
-    //currently puttign this function in GridManager
+    public bool RollAttack(int hitChance) => hitChance > rng.Next(1, 101);
 
-    public void RollDamage(int attackDamage, int attack, int defense, float critChance) {
-        //rolls for crit then return s damage from attack
+    public int RollDamage(int attackDamage, int attack, int defense, int critChance, int critMultiplier) {
+        int critDamage = critChance > rng.Next(1, 101) ? critMultiplier : 1;
+        return (attackDamage + attack - defense) * critDamage;
     }
 
 }
