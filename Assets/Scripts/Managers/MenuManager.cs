@@ -94,10 +94,7 @@ public class MenuManager : MonoBehaviour {
             textRectTransform.anchorMax = new Vector2(1, 1);
             textRectTransform.sizeDelta = new Vector2(0, 0);
 
-            // button.onClick.AddListener(() => {
-            //     //Debug.Log(attack + " button was clicked!");
-            // });
-            button.onClick.AddListener(() => attack.Execute(hero));
+            button.onClick.AddListener(() => attack.Target(hero));
             // Adjust the button's position based on its index.
             RectTransform buttonRectTransform = buttonObj.GetComponent<RectTransform>();
             buttonRectTransform.anchoredPosition = new Vector2(0, (-index * buttonHeight * 1.3f) + 140);

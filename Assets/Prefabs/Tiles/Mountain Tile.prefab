@@ -98,8 +98,10 @@ MonoBehaviour:
   TileName: Mountain
   _renderer: {fileID: 5613949532051838883}
   _highlight: {fileID: 978478435558815534}
-  highlight: {fileID: 0}
+  _potentialMove: {fileID: 0}
+  _potentialAttack: {fileID: 0}
   _isWalkable: 0
+  _isCover: 1
   OccupiedUnit: {fileID: 0}
 --- !u!212 &5613949532051838883 stripped
 SpriteRenderer:

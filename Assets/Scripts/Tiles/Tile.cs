@@ -48,11 +48,14 @@ public abstract class Tile : MonoBehaviour {
     [SerializeField] private GameObject _potentialMove;
     [SerializeField] private GameObject _potentialAttack;
     public bool IsPotentialMoveNotNull => _potentialMove != null;
+    public bool IsPotentialAttackNotNull => _potentialAttack != null;
 
     [SerializeField] private bool _isWalkable; 
+    [SerializeField] private bool _isCover;
 
     public BaseUnit OccupiedUnit;
     public bool Walkable => _isWalkable && OccupiedUnit == null;
+    public bool Cover => _isCover;
 
     public virtual void Init(int x, int y) {
         
@@ -71,6 +74,19 @@ public abstract class Tile : MonoBehaviour {
     void OnMouseDown() {
         if(GameManager.Instance.GameState != GameState.HeroesTurn) return;
 
+        if(AttackManager.Instance.CurrentAttack != null) {
+            AttackManager.Instance.Target = this;
+            AttackManager.Instance.CurrentAttack.Execute();
+            GridManager.Instance.ClearPotentialAttacks();
+            return;
+        }
+
+        if(this._potentialAttack.activeSelf) {
+            AttackManager.Instance.Target = this;
+            GridManager.Instance.ClearPotentialAttacks();
+            return;
+        } 
+
         if(OccupiedUnit != null){
             if(OccupiedUnit.Faction == Faction.Hero) {
                 UnitManager.Instance.SetSelectedHero((BaseHero)OccupiedUnit);
@@ -80,10 +96,10 @@ public abstract class Tile : MonoBehaviour {
                 }
             }
             else if(UnitManager.Instance.SelectedHero != null) {
-                var enemy = (BaseEnemy) OccupiedUnit;
+                //var enemy = (BaseEnemy) OccupiedUnit;
                 //battle functionality here
-                Destroy(enemy.gameObject);
-                UnitManager.Instance.SetSelectedHero(null);
+                //Destroy(enemy.gameObject);
+                //UnitManager.Instance.SetSelectedHero(null);
             }
         }
         else if(UnitManager.Instance.SelectedHero != null && UnitManager.Instance.HeroMoving == true) {

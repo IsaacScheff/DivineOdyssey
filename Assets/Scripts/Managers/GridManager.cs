@@ -61,7 +61,13 @@ public class GridManager : MonoBehaviour {
 
     public void ClearPotentialMoves() {
         foreach (Tile tile in _tiles.Values) {
-            if(tile.IsPotentialMoveNotNull) tile. MoveHighlightOff();
+            if(tile.IsPotentialMoveNotNull) tile.MoveHighlightOff();
+        }
+    }
+
+    public void ClearPotentialAttacks() {
+        foreach (Tile tile in _tiles.Values) {
+            if(tile.IsPotentialAttackNotNull) tile.AttackHighlightOff();
         }
     }
 
@@ -77,8 +83,8 @@ public class GridManager : MonoBehaviour {
                         Mathf.Abs((int)attacker.Coords.Pos.y - (int)potentialTile.Coords.Pos.y);
 
             // If the potential tile is within range, and isn't the attacker tile itself
-            // and is walkable, then add it to our list.
-            if (distance <= attackRange && potentialTile != attacker && potentialTile.Walkable) {
+            //and is not cover
+            if (distance <= attackRange && potentialTile != attacker && !potentialTile.Cover) {
                 squaresInRange.Add(potentialTile);
             }
         }
