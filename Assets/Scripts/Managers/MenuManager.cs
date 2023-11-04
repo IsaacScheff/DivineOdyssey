@@ -68,7 +68,8 @@ public class MenuManager : MonoBehaviour {
         //turn menu object visible + put specific actions available to selected hero
         _actionMenu.SetActive(true);
         Button MoveButton = _moveButton.GetComponent<Button>();
-        MoveButton.onClick.AddListener(() => UnitManager.Instance.ShowMoves(hero.OccupiedTile, 5)); 
+        //MoveButton.onClick.AddListener(() => UnitManager.Instance.ShowMoves(hero.OccupiedTile, 5)); 
+        MoveButton.onClick.AddListener(() => MoveClicked(hero));
 
         Button AttackButton = _attackButton.GetComponent<Button>();
         AttackButton.onClick.AddListener(() => ShowHeroAttacks(hero)); 
@@ -122,6 +123,11 @@ public class MenuManager : MonoBehaviour {
     public void HideHeroActions() {
         _moveButton.SetActive(false);
         _attackButton.SetActive(false);
+    }
+
+    public void MoveClicked(BaseHero hero) {
+        UnitManager.Instance.ShowMoves(hero.OccupiedTile, hero.CurrentMovement);
+        _cancelButton.SetActive(true);
     }
 
     public void CancelClicked() {
