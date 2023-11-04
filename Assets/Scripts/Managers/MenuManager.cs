@@ -14,6 +14,10 @@ public class MenuManager : MonoBehaviour {
     [SerializeField] private GameObject _moveButton;
     [SerializeField] private GameObject _attackButton;
     [SerializeField] private GameObject _attackButtonPrefab;
+    [SerializeField] private GameObject _cancelButton;
+    //private List<GameObject> _attackButtonList;
+    private List<GameObject> _attackButtonList = new List<GameObject>();
+
 
 
     void Awake() {
@@ -68,6 +72,9 @@ public class MenuManager : MonoBehaviour {
 
         Button AttackButton = _attackButton.GetComponent<Button>();
         AttackButton.onClick.AddListener(() => ShowHeroAttacks(hero)); 
+
+        Button CancelButton = _cancelButton.GetComponent<Button>();
+        CancelButton.onClick.AddListener(() => CancelClicked());
     }
 
     public void ShowHeroAttacks(BaseHero hero) {
@@ -97,14 +104,34 @@ public class MenuManager : MonoBehaviour {
             button.onClick.AddListener(() => attack.Target(hero));
             // Adjust the button's position based on its index.
             RectTransform buttonRectTransform = buttonObj.GetComponent<RectTransform>();
-            buttonRectTransform.anchoredPosition = new Vector2(0, (-index * buttonHeight * 1.3f) + 140);
+            buttonRectTransform.anchoredPosition = new Vector2(0, (-index * buttonHeight * 1.3f) + 120);
             index++;
+
+            _attackButtonList.Add(buttonObj);
         }
+        _cancelButton.SetActive(true);
+    }
+
+    public void RemoveHeroAttackButtons() {
+        foreach (GameObject buttonObj in  _attackButtonList) {
+            GameObject.Destroy(buttonObj);
+        }
+        _attackButtonList.Clear();
     }
 
     public void HideHeroActions() {
         _moveButton.SetActive(false);
         _attackButton.SetActive(false);
+    }
+
+    public void CancelClicked() {
+        AttackManager.Instance.ClearAttack();
+        GridManager.Instance.ClearPotentialAttacks();
+        GridManager.Instance.ClearPotentialMoves();
+        RemoveHeroAttackButtons();
+        _cancelButton.SetActive(false);
+        _attackButton.SetActive(true);
+        _moveButton.SetActive(true);
     }
 
 }
