@@ -51,6 +51,7 @@ public class Spear : Attack {
             return;
         }
         if(AttackManager.Instance.RollAttack(_hitChance)) {
+            AttackManager.Instance.Target.OccupiedUnit.ModifyHealth(-1 * AttackManager.Instance.RollDamage(_damage, attacker.CurrentStrength, defender.CurrentGrit, _critChance, _critMulti));
             UnityEngine.Debug.Log($"Spear hits for {AttackManager.Instance.RollDamage(_damage, attacker.CurrentStrength, defender.CurrentGrit, _critChance, _critMulti)} damage");
             AttackManager.Instance.CurrentAttack = null;
         } else {
