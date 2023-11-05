@@ -90,7 +90,6 @@ public class BaseUnit : MonoBehaviour {
     }
 
     public void ModifyAP(int amount) {
-        Debug.Log(amount);
         _currentAP = Mathf.Clamp(_currentAP + amount, 0, _baseAP * 2);
     }
 }
