@@ -16,6 +16,7 @@ public class MenuManager : MonoBehaviour {
     [SerializeField] private GameObject _attackButton;
     [SerializeField] private GameObject _attackButtonPrefab;
     [SerializeField] private GameObject _cancelButton;
+    [SerializeField] private GameObject _actionMenuAP;
     private List<GameObject> _attackButtonList = new List<GameObject>();
 
 
@@ -71,6 +72,7 @@ public class MenuManager : MonoBehaviour {
 
     public void ShowHeroActions(BaseHero hero) {
         //turn menu object visible + put specific actions available to selected hero
+        RefreshAP(hero);
         _actionMenu.SetActive(true);
         Button MoveButton = _moveButton.GetComponent<Button>();
         MoveButton.onClick.AddListener(() => MoveClicked(hero));
@@ -156,6 +158,11 @@ public class MenuManager : MonoBehaviour {
         preview += $"Crit Damage: \n{critDamage}";
         _attackPreview.GetComponentInChildren<TextMeshProUGUI>().text = preview;
         _attackPreview.SetActive(true);
+    }
+
+    public void RefreshAP(BaseHero hero) {
+        TextMeshProUGUI remainingAP = _actionMenuAP.GetComponent<TextMeshProUGUI>();
+        remainingAP.text = $"AP: {hero.CurrentAP}";
     }
 
 }

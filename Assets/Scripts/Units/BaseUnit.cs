@@ -24,7 +24,7 @@ public class BaseUnit : MonoBehaviour {
     private int _baseResilience;
     private int _baseAccuracy;
     private int _baseEvasion;
-    private int _baseAP;
+    private int _baseAP = 3;
 
     // Current Stats
     [SerializeField] private int _currentMovement;
@@ -90,6 +90,7 @@ public class BaseUnit : MonoBehaviour {
     }
 
     public void ModifyAP(int amount) {
+        Debug.Log(amount);
         _currentAP = Mathf.Clamp(_currentAP + amount, 0, _baseAP * 2);
     }
 }
