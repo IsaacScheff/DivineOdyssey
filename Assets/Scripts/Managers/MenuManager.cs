@@ -10,12 +10,12 @@ public class MenuManager : MonoBehaviour {
     [SerializeField] private GameObject _tileObject;
     [SerializeField] private GameObject _tileUnitObject;
     [SerializeField] private GameObject _tileUnitStats;
+    [SerializeField] private GameObject _attackPreview;
     [SerializeField] private GameObject _actionMenu;
     [SerializeField] private GameObject _moveButton;
     [SerializeField] private GameObject _attackButton;
     [SerializeField] private GameObject _attackButtonPrefab;
     [SerializeField] private GameObject _cancelButton;
-    //private List<GameObject> _attackButtonList;
     private List<GameObject> _attackButtonList = new List<GameObject>();
 
 
@@ -29,28 +29,33 @@ public class MenuManager : MonoBehaviour {
             _tileObject.SetActive(false);
             _tileUnitObject.SetActive(false);
             _tileUnitStats.SetActive(false);
+            _attackPreview.SetActive(false);
             return;
         }
         _tileObject.GetComponentInChildren<TextMeshProUGUI>().text = tile.TileName;
         _tileObject.SetActive(true);
 
         if(tile.OccupiedUnit) {
-            _tileUnitObject.GetComponentInChildren<TextMeshProUGUI>().text = tile.OccupiedUnit.UnitName;
-            _tileUnitObject.SetActive(true);
+            if(AttackManager.Instance.CurrentAttack == null) {
+                _tileUnitObject.GetComponentInChildren<TextMeshProUGUI>().text = tile.OccupiedUnit.UnitName;
+                _tileUnitObject.SetActive(true);
 
-            BaseUnit u = tile.OccupiedUnit;
-            _tileUnitStats.GetComponentInChildren<TextMeshProUGUI>().text = 
-                $"AP: {u.CurrentAP} \n" +
-                $"Movement: {u.CurrentMovement} \n\n" +
-                $"Health: {u.CurrentHealth} \n" +
-                $"Psyche: {u.CurrentPsyche} \n\n\n" +
-                $"Strength: {u.CurrentStrength} \n" +
-                $"Ego: {u.CurrentEgo} \n" +
-                $"Grit: {u.CurrentGrit} \n" +
-                $"Resilience: {u.CurrentResilience} \n" +
-                $"Accuracy: {u.CurrentAccuracy} \n" +
-                $"Evasion: {u.CurrentEvasion}";
-            _tileUnitStats.SetActive(true);
+                BaseUnit u = tile.OccupiedUnit;
+                _tileUnitStats.GetComponentInChildren<TextMeshProUGUI>().text = 
+                    $"AP: {u.CurrentAP} \n" +
+                    $"Movement: {u.CurrentMovement} \n\n" +
+                    $"Health: {u.CurrentHealth} \n" +
+                    $"Psyche: {u.CurrentPsyche} \n\n\n" +
+                    $"Strength: {u.CurrentStrength} \n" +
+                    $"Ego: {u.CurrentEgo} \n" +
+                    $"Grit: {u.CurrentGrit} \n" +
+                    $"Resilience: {u.CurrentResilience} \n" +
+                    $"Accuracy: {u.CurrentAccuracy} \n" +
+                    $"Evasion: {u.CurrentEvasion}";
+                _tileUnitStats.SetActive(true);
+            } else {
+                ShowAttackPreview(AttackManager.Instance.CurrentAttack, tile.OccupiedUnit);
+            }
         }
     }
 
@@ -68,7 +73,6 @@ public class MenuManager : MonoBehaviour {
         //turn menu object visible + put specific actions available to selected hero
         _actionMenu.SetActive(true);
         Button MoveButton = _moveButton.GetComponent<Button>();
-        //MoveButton.onClick.AddListener(() => UnitManager.Instance.ShowMoves(hero.OccupiedTile, 5)); 
         MoveButton.onClick.AddListener(() => MoveClicked(hero));
 
         Button AttackButton = _attackButton.GetComponent<Button>();
@@ -138,6 +142,20 @@ public class MenuManager : MonoBehaviour {
         _cancelButton.SetActive(false);
         _attackButton.SetActive(true);
         _moveButton.SetActive(true);
+    }
+
+    public void ShowAttackPreview(Attack attack, BaseUnit target) {
+        string preview = $"{attack.Name}\n\n";
+        //for now just looking at physical attack stats, will have to add property to attack to determine 
+        //which offense and defense stats are used
+        int noCrit = AttackManager.Instance.RollDamage(attack.damage, AttackManager.Instance.Attacker.CurrentStrength, target.CurrentGrit, 0, 1);
+        int critDamage = AttackManager.Instance.RollDamage(attack.damage, AttackManager.Instance.Attacker.CurrentStrength, target.CurrentGrit, 100, 2);
+        preview += $"{attack.hitChance}% to hit\n\n";
+        preview += $"Normal Damage: \n{noCrit}\n\n";
+        preview += $"Crit Chance: \n{attack.critChance}%\n\n";
+        preview += $"Crit Damage: \n{critDamage}";
+        _attackPreview.GetComponentInChildren<TextMeshProUGUI>().text = preview;
+        _attackPreview.SetActive(true);
     }
 
 }

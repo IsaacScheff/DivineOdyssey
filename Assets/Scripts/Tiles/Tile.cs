@@ -105,7 +105,7 @@ public abstract class Tile : MonoBehaviour {
         else if(UnitManager.Instance.SelectedHero != null && UnitManager.Instance.HeroMoving == true) {
             if(this._potentialMove != null && this._potentialMove.activeSelf) {
                 SetUnit(UnitManager.Instance.SelectedHero);
-                UnitManager.Instance.SetSelectedHero(null);
+                MenuManager.Instance.CancelClicked();
             }
             UnitManager.Instance.HeroMoving = false;
             GridManager.Instance.ClearPotentialMoves();
