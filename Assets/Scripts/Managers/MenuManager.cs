@@ -147,7 +147,7 @@ public class MenuManager : MonoBehaviour {
     }
 
     public void ShowAttackPreview(Attack attack, BaseUnit target) {
-        string preview = $"{attack.Name}\n\n";
+        string preview = $"{attack.Name}\nAP Cost: {attack.costAP}\n\n";
         //for now just looking at physical attack stats, will have to add property to attack to determine 
         //which offense and defense stats are used
         int noCrit = AttackManager.Instance.RollDamage(attack.damage, AttackManager.Instance.Attacker.CurrentStrength, target.CurrentGrit, 0, 1);
