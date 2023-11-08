@@ -9,11 +9,6 @@ public class BaseUnit : MonoBehaviour {
     public bool TakenActions = false;
     public List<Attack> AvailableAttacks;
 
-    // public void PerformAttack(string attackName) {
-    //     var attack = AttackManager.GetAttack(attackName);
-    //     attack?.Execute(this);
-    // }
-
     // Base stats
     private int _baseMovement;
     private int _baseHealth;
