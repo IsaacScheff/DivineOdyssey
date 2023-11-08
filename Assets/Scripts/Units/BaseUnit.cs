@@ -1,4 +1,4 @@
-using System.Collections;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -9,83 +9,196 @@ public class BaseUnit : MonoBehaviour {
     public bool TakenActions = false;
     public List<Attack> AvailableAttacks;
 
-    // Base stats
-    private int _baseMovement;
-    private int _baseHealth;
-    private int _basePsyche;
-    private int _baseStrength;
-    private int _baseEgo;
-    private int _baseGrit;
-    private int _baseResilience;
-    private int _baseAccuracy;
-    private int _baseEvasion;
-    private int _baseAP = 3;
+    // Constants for stat caps
+    private const int MaxStatValue = 50;
+    private const int MinStatValue = 0;
+
+    // Seed stats: unmodified stats at level 1, for playtesting for now will just be assigning base stats in editor 
+    // private int _seedMovement;
+    // private int _seedHealth;
+    // private int _seedPsyche;
+    // private int _seedStrength;
+    // private int _seedEgo;
+    // private int _seedGrit;
+    // private int _seedResilience;
+    // private int _seedAccuracy;
+    // private int _seedEvasion;
+    // private int _seedAP;
+
+    // Base stats: the improved stats at a given level
+    [SerializeField] private int _baseMovement;
+    [SerializeField] private int _baseHealth;
+    [SerializeField] private int _basePsyche;
+    [SerializeField] private int _baseStrength;
+    [SerializeField] private int _baseEgo;
+    [SerializeField] private int _baseGrit;
+    [SerializeField] private int _baseResilience;
+    [SerializeField] private int _baseAccuracy;
+    [SerializeField] private int _baseEvasion;
+    [SerializeField] private int _baseAP;
+
+    // Events for stat changes
+    public event Action OnHealthChanged;
+    public event Action OnStatsChanged;
+
+    // Public access properties for base stats
+    public int BaseMovement => _baseMovement;
+    public int BaseHealth => _baseHealth;
+    public int BasePsyche => _basePsyche;
+    public int BaseStrength => _baseStrength;
+    public int BaseEgo => _baseEgo;
+    public int BaseGrit => _baseGrit;
+    public int BaseResilience => _baseResilience;
+    public int BaseAccuracy => _baseAccuracy;
+    public int BaseEvasion => _baseEvasion;
+    public int BaseAP => _baseAP;
 
     // Current Stats
-    [SerializeField] private int _currentMovement;
-    [SerializeField] private int _currentHealth;
-    [SerializeField] private int _currentPsyche;
-    [SerializeField] private int _currentStrength;
-    [SerializeField] private int _currentEgo;
-    [SerializeField] private int _currentGrit;
-    [SerializeField] private int _currentResilience;
-    [SerializeField] private int _currentAccuracy;
-    [SerializeField] private int _currentEvasion;
-    [SerializeField] private int _currentAP;
+    private int _currentMovement;
+    private int _currentHealth;
+    private int _currentPsyche;
+    private int _currentStrength;
+    private int _currentEgo;
+    private int _currentGrit;
+    private int _currentResilience;
+    private int _currentAccuracy;
+    private int _currentEvasion;
+    private int _currentAP;
 
-    // Public access properties for current stats
-    public int CurrentMovement { get => _currentMovement; }
-    public int CurrentHealth { get => _currentHealth; }
-    public int CurrentPsyche { get => _currentPsyche; }
-    public int CurrentStrength { get => _currentStrength; }
-    public int CurrentEgo { get => _currentEgo; }
-    public int CurrentGrit { get => _currentGrit; }
-    public int CurrentResilience { get => _currentResilience; }
-    public int CurrentAccuracy { get => _currentAccuracy; }
-    public int CurrentEvasion { get => _currentEvasion; }
-    public int CurrentAP { get => _currentAP; }
-
-    //Methods to modify the current stats. 
-    //Could make a generic ModifyStat method, change stats to an enum and reduce code, BUT
-    //the individual methods when called by other classes will be more readable, self-documenting, and less error-prone
+    // Public access properties for current stats with encapsulation and events
+    public int CurrentMovement {
+        get => _currentMovement;
+        private set {
+            _currentMovement = Mathf.Clamp(value, MinStatValue, MaxStatValue);
+            OnStatsChanged?.Invoke();
+        }
+    }
+    public int CurrentHealth {
+        get => _currentHealth;
+        private set {
+            _currentHealth = Mathf.Clamp(value, MinStatValue, MaxStatValue);
+            OnHealthChanged?.Invoke();
+        }
+    }
+    public int CurrentPsyche {
+        get => _currentPsyche;
+        private set {
+            _currentPsyche = Mathf.Clamp(value, MinStatValue, MaxStatValue);
+            OnStatsChanged?.Invoke();
+        }
+    }
+    public int CurrentStrength {
+        get => _currentStrength;
+        private set {
+            _currentStrength = Mathf.Clamp(value, MinStatValue, MaxStatValue);
+            OnHealthChanged?.Invoke();
+        }
+    }
+    public int CurrentEgo {
+        get => _currentEgo;
+        private set {
+            _currentEgo = Mathf.Clamp(value, MinStatValue, MaxStatValue);
+            OnStatsChanged?.Invoke();
+        }
+    }  
+    public int CurrentGrit {
+        get => _currentGrit;
+        private set {
+            _currentGrit = Mathf.Clamp(value, MinStatValue, MaxStatValue);
+            OnHealthChanged?.Invoke();
+        }
+    }
+    public int CurrentResilience {
+        get => _currentResilience;
+        private set {
+            _currentResilience = Mathf.Clamp(value, MinStatValue, MaxStatValue);
+            OnStatsChanged?.Invoke();
+        }
+    }
+    public int CurrentAccuracy {
+        get => _currentAccuracy;
+        private set {
+            _currentAccuracy = Mathf.Clamp(value, MinStatValue, MaxStatValue);
+            OnHealthChanged?.Invoke();
+        }
+    }
+     public int CurrentEvasion {
+        get => _currentEvasion;
+        private set {
+            _currentEvasion = Mathf.Clamp(value, MinStatValue, MaxStatValue);
+            OnHealthChanged?.Invoke();
+        }
+    }
+    public int CurrentAP {
+        get => _currentAP;
+        private set {
+            _currentAP = Mathf.Clamp(value, MinStatValue, _baseAP * 2);
+            OnStatsChanged?.Invoke();
+        }
+    }
+    // Reset current stats to base values
+    public void ResetCurrentStats() {
+        CurrentMovement = _baseMovement;
+        CurrentHealth = _baseHealth;
+        CurrentPsyche = _basePsyche;
+        CurrentStrength = _baseStrength;
+        CurrentEgo = _baseEgo;
+        CurrentGrit = _baseGrit;
+        CurrentResilience = _baseResilience;
+        CurrentAccuracy = _baseAccuracy;
+        CurrentEvasion = _baseEvasion;
+        CurrentAP = _baseAP;
+    }
+    /* 
+        Stat modifier methods with validation
+        Could make a generic ModifyStat method, change stats to an enum and reduce code, BUT
+        the individual methods when called by other classes will be more readable, self-documenting, 
+        and less error-prone
+    */
     public void ModifyMovement(int amount) {
-        _currentMovement = Mathf.Clamp(_currentMovement + amount, 0, 50);
+        CurrentMovement = Mathf.Clamp(CurrentMovement + amount, MinStatValue, MaxStatValue);
     }
-
     public void ModifyHealth(int amount) {
-        _currentHealth = Mathf.Clamp(_currentHealth + amount, 0, 50);
+        CurrentHealth = Mathf.Clamp(CurrentHealth + amount, MinStatValue, MaxStatValue);
     }
-
     public void ModifyPsyche(int amount) {
-        _currentPsyche = Mathf.Clamp(_currentPsyche + amount, 0, 50);
+        CurrentPsyche = Mathf.Clamp(CurrentPsyche + amount, MinStatValue, MaxStatValue);
     }
-
     public void ModifyStrength(int amount) {
-        _currentStrength = Mathf.Clamp(_currentStrength + amount, 0, 50);
+        CurrentStrength = Mathf.Clamp(CurrentStrength + amount, MinStatValue, MaxStatValue);
     }
-
     public void ModifyEgo(int amount) {
-        _currentEgo = Mathf.Clamp(_currentEgo + amount, 0, 50);
+        CurrentEgo = Mathf.Clamp(CurrentEgo + amount, MinStatValue, MaxStatValue);
     }
-
     public void ModifyGrit(int amount) {
-        _currentGrit = Mathf.Clamp(_currentGrit + amount, 0, 50);
+        CurrentGrit = Mathf.Clamp(CurrentGrit + amount, MinStatValue, MaxStatValue);
     }
-
     public void ModifyResilience(int amount) {
-        _currentResilience = Mathf.Clamp(_currentResilience + amount, 0, 50);
+        CurrentResilience = Mathf.Clamp(CurrentResilience + amount, MinStatValue, MaxStatValue);
     }
-
     public void ModifyAccuracy(int amount) {
-        _currentAccuracy = Mathf.Clamp(_currentAccuracy + amount, 0, 50);
+        CurrentAccuracy = Mathf.Clamp(CurrentAccuracy + amount, MinStatValue, MaxStatValue);
     }
-
     public void ModifyEvasion(int amount) {
-        _currentEvasion = Mathf.Clamp(_currentEvasion + amount, 0, 50);
+        CurrentEvasion = Mathf.Clamp(CurrentEvasion + amount, MinStatValue, MaxStatValue);
     }
-
     public void ModifyAP(int amount) {
-        _currentAP = Mathf.Clamp(_currentAP + amount, 0, _baseAP * 2);
+        CurrentAP = Mathf.Clamp(CurrentAP + amount, 0, _baseAP * 2);
+    }
+    // Helper method to set up the unit
+    private void InitializeBaseStats(int movement, int health, int psyche, int strength, int ego, int grit, int resilience, int accuracy, int evasion, int ap) {
+        _baseMovement = movement;
+        _baseHealth = health;
+        _basePsyche = psyche;
+        _baseStrength = strength;
+        _baseEgo = ego;
+        _baseGrit = grit;
+        _baseResilience = resilience;
+        _baseAccuracy = accuracy;
+        _baseEvasion = evasion;
+        _baseAP = ap;
+
+        ResetCurrentStats();
     }
 }
 

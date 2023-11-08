@@ -3,5 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class BaseEnemy : BaseUnit {
- 
+    void Awake() {
+        ResetCurrentStats();
+    }
 }
