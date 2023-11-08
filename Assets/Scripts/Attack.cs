@@ -82,7 +82,7 @@ public class Spear : Attack {
     public override void Target(BaseUnit attacker, GridManager gridManager) {
         UnityEngine.Debug.Log($"{attacker} used spear");
         List<Tile> tileList = gridManager.FindTargetableSquares(attacker.OccupiedTile, Range);
-        HighlightAttacks(tileList);
+        HighlightAttacks(tileList); //this will be moved during the GridManager re-work
         AttackManager.Instance.CurrentAttack = this;
         AttackManager.Instance.Attacker = attacker;
     }
@@ -98,7 +98,13 @@ public class Spear : Attack {
         if(isHit) {
             damageDealt = attackManager.RollDamage(Damage, attacker.CurrentStrength, defender.CurrentGrit, CritChance, CritMultiplier);
             attackManager.Target.OccupiedUnit.ModifyHealth(-1 * damageDealt);
-        } 
+            UnityEngine.Debug.Log($"Spear hit for {damageDealt} damage");
+        } else {
+            //this else will be removed when listener added to Menu/UI Manager
+            UnityEngine.Debug.Log("Spear missed");
+        }
+
+        UseAP(attackManager.Attacker); //this will be moved during the UnitManager re-work
         // Raise the event with the results of the attack
         OnAttackExecuted(new AttackEventArgs {
             Attacker = attacker,
@@ -107,8 +113,6 @@ public class Spear : Attack {
             IsHit = isHit,
             Attack = this 
         });
-
-        UseAP(attackManager.Attacker); //this will be moved during the UnitManager re-work
     }
 }
 

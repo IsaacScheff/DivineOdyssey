@@ -13,10 +13,23 @@ public class AttackManager : MonoBehaviour {
         get { return _target; }
         set { _target = value; }
     }
-
     public Attack CurrentAttack {
         get { return _currentAttack; }
-        set { _currentAttack = value; }
+        set {
+            // Unsubscribe from the old attack's event if there was one
+            if (_currentAttack != null) {
+                _currentAttack.AttackExecuted -= OnAttackExecuted;
+            }
+            _currentAttack = value;
+            // Subscribe to the new attack's event
+            if (_currentAttack != null) {
+                _currentAttack.AttackExecuted += OnAttackExecuted;
+            }
+        }
+    }
+
+    private void OnAttackExecuted(object sender, AttackEventArgs e) {
+        ClearAttack();
     }
 
     public BaseUnit Attacker {
@@ -25,6 +38,12 @@ public class AttackManager : MonoBehaviour {
     }
     void Awake() {
         Instance = this;
+    }
+
+    void OnDestroy() { // When AttackManager is destroyed, unsubscribe from the event to prevent memory leaks
+        if (_currentAttack != null) {
+            _currentAttack.AttackExecuted -= OnAttackExecuted;
+        }
     }
     private static Dictionary<string, Attack> attacks = new Dictionary<string, Attack> {
         //{ "AttackExample", new AttackExample() },
