@@ -3,32 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using UnityEngine;
 
-// public abstract class Attack {
-//     public abstract string Name { get; }
-//     public int range;
-//     public int hitChance;
-//     public int critChance;
-//     public int damage;
-//     public int critMulti;
-
-//     public int costAP;
-
-//     public abstract void Target(BaseUnit attacker);
-//     public abstract void Execute();
-//     public void HighlightAttacks(List<Tile> list) {
-//         foreach (Tile tile in list) {
-//             tile.AttackHighlightOn();
-//         }
-//     }
-
-//     public void UseAP(BaseUnit attacker) {
-//         attacker.ModifyAP(-1 * costAP);
-//         if(attacker.Faction == Faction.Hero) {
-//             MenuManager.Instance.RefreshAP((BaseHero)attacker);
-//         }
-//     }
-// }
-
 public abstract class Attack {
     public abstract string Name { get; }
     protected abstract int Range { get; }
@@ -45,22 +19,33 @@ public abstract class Attack {
     public int PublicDamage => Damage;
     public int PublicCritMultiplier => CritMultiplier;
     public int PublicCostAP => CostAP;
-
+    public event EventHandler<AttackEventArgs> AttackExecuted;
     public abstract void Target(BaseUnit attacker, GridManager gridManager);
+    protected virtual void OnAttackExecuted(AttackEventArgs e) {
+        AttackExecuted?.Invoke(this, e);
+    }
     public abstract void Execute(BaseUnit attacker, BaseUnit defender, AttackManager attackManager);
 
-    public void HighlightAttacks(List<Tile> list) {
+    public void HighlightAttacks(List<Tile> list) { //this will be moved during the GridManager re-work
         foreach (Tile tile in list) {
             tile.AttackHighlightOn();
         }
     }
 
-    public void UseAP(BaseUnit attacker) {
+    public void UseAP(BaseUnit attacker) { //this will be moved during the UnitManager re-work
         attacker.ModifyAP(-1 * CostAP);
         if(attacker.Faction == Faction.Hero) {
             MenuManager.Instance.RefreshAP((BaseHero)attacker);
         }
     }
+}
+
+public class AttackEventArgs : EventArgs {
+    public BaseUnit Attacker { get; set; }
+    public BaseUnit Defender { get; set; }
+    public int DamageDealt { get; set; }
+    public bool IsHit { get; set; }
+    public Attack Attack { get; set; } 
 }
 
 // public class AoeAttack : Attack {
@@ -80,59 +65,6 @@ public abstract class Attack {
 //         // Finalize the attack.
 //         attackManager.ClearAttack();
 //         UseAP(attacker);
-//     }
-// }
-
-// public class AttackExample : Attack {
-//     public override string Name => "AttackExample";
-
-//     public override void Target(BaseUnit attacker) {
-//         // Determine target based on attacker's position or other mechanics
-//         // ...
-//         // Execute AttackExample logic on target
-//         UnityEngine.Debug.Log($"{attacker} used AttackExample");
-//     }
-//     public override void Execute(){
-//         UnityEngine.Debug.Log($"AttackExample Executed");
-//     }
-// }
-
-// public class Spear : Attack {
-//      public Spear() {
-//         // Assign the inherited variables in the constructor of the derived class
-//         range = 1;
-//         hitChance = 80;
-//         critChance = 7;
-//         damage = 10;
-//         critMulti = 2;
-//         costAP = 1;
-//     }
-//     public override string Name => "Spear";
-//     public override void Target(BaseUnit attacker) {
-//         UnityEngine.Debug.Log($"{attacker} used spear");
-//         List<Tile> tileList = GridManager.Instance.FindTargetableSquares(attacker.OccupiedTile, range);
-//         HighlightAttacks(tileList);
-//         AttackManager.Instance.CurrentAttack = this;
-//         AttackManager.Instance.Attacker = attacker;
-//     }
-
-//     public override void Execute() {
-//         BaseUnit attacker = AttackManager.Instance.Attacker;
-//         BaseUnit defender = AttackManager.Instance.Target.OccupiedUnit;
-//         if(defender == null) {
-//             AttackManager.Instance.ClearAttack();
-//             return;
-//         }
-//         if(AttackManager.Instance.RollAttack(hitChance)) {
-//             int damageDealt = AttackManager.Instance.RollDamage(damage, attacker.CurrentStrength, defender.CurrentGrit, critChance, critMulti);
-//             AttackManager.Instance.Target.OccupiedUnit.ModifyHealth(-1 * damageDealt);
-//             UnityEngine.Debug.Log($"Spear hits for {damageDealt} damage");
-//             AttackManager.Instance.CurrentAttack = null;
-//         } else {
-//             UnityEngine.Debug.Log("Spear misses");
-//             AttackManager.Instance.CurrentAttack = null;
-//         }
-//         UseAP(AttackManager.Instance.Attacker);
 //     }
 // }
 
@@ -156,22 +88,27 @@ public class Spear : Attack {
     }
 
     public override void Execute(BaseUnit attacker, BaseUnit defender, AttackManager attackManager) {
-        //BaseUnit attacker = AttackManager.Instance.Attacker;
-        //BaseUnit defender = AttackManager.Instance.Target.OccupiedUnit;
         if(defender == null) {
-            AttackManager.Instance.ClearAttack();
+            attackManager.ClearAttack();
             return;
         }
-        if(AttackManager.Instance.RollAttack(HitChance)) {
-            int damageDealt = AttackManager.Instance.RollDamage(Damage, attacker.CurrentStrength, defender.CurrentGrit, CritChance, CritMultiplier);
-            AttackManager.Instance.Target.OccupiedUnit.ModifyHealth(-1 * damageDealt);
-            UnityEngine.Debug.Log($"Spear hits for {damageDealt} damage");
-            AttackManager.Instance.CurrentAttack = null;
-        } else {
-            UnityEngine.Debug.Log("Spear misses");
-            AttackManager.Instance.CurrentAttack = null;
-        }
-        UseAP(AttackManager.Instance.Attacker);
+        bool isHit = attackManager.RollAttack(HitChance);
+        int damageDealt = 0;
+
+        if(isHit) {
+            damageDealt = attackManager.RollDamage(Damage, attacker.CurrentStrength, defender.CurrentGrit, CritChance, CritMultiplier);
+            attackManager.Target.OccupiedUnit.ModifyHealth(-1 * damageDealt);
+        } 
+        // Raise the event with the results of the attack
+        OnAttackExecuted(new AttackEventArgs {
+            Attacker = attacker,
+            Defender = defender,
+            DamageDealt = damageDealt,
+            IsHit = isHit,
+            Attack = this 
+        });
+
+        UseAP(attackManager.Attacker); //this will be moved during the UnitManager re-work
     }
 }
 
