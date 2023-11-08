@@ -10,7 +10,7 @@ public class Alistar : BaseHero {
         }
 
         // Add the AttackExample and Spear attacks to the unit's list.
-        AvailableAttacks.Add(new AttackExample());
+        //AvailableAttacks.Add(new AttackExample());
         AvailableAttacks.Add(new Spear());
     }
 }

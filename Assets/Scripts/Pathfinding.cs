@@ -28,7 +28,7 @@ public static class Pathfinding {
                     path.Add(currentPathTile);
                     currentPathTile = currentPathTile.Connection;
                     count--;
-                    if (count < 0) throw new Exception();
+                    if (count < 0) throw new Exception("Path count too big");
                     //Debug.Log("");
                 }
                 

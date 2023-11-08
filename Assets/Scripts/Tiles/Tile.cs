@@ -76,7 +76,11 @@ public abstract class Tile : MonoBehaviour {
 
         if(AttackManager.Instance.CurrentAttack != null) {
             AttackManager.Instance.Target = this;
-            AttackManager.Instance.CurrentAttack.Execute();
+            AttackManager.Instance.CurrentAttack.Execute(
+                AttackManager.Instance.Attacker,
+                this.OccupiedUnit,
+                AttackManager.Instance
+            );
             GridManager.Instance.ClearPotentialAttacks();
             return;
         }
