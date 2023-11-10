@@ -21,8 +21,6 @@ public class MenuManager : MonoBehaviour {
     private Queue<GameObject> _attackButtonPool = new Queue<GameObject>();
     private int _poolSize = 6; 
 
-
-
     void Awake() {
         Instance = this;
         InitializeAttackButtonPool();
@@ -86,7 +84,6 @@ public class MenuManager : MonoBehaviour {
     }
 
     public void ShowSelectedHero(BaseHero hero) {
-        // Existing logic to show the hero in the UI
         if(hero == null) {
             _selectedHeroObject.SetActive(false);
             _actionMenu.SetActive(false);
@@ -94,7 +91,6 @@ public class MenuManager : MonoBehaviour {
         }
         _selectedHeroObject.GetComponentInChildren<TextMeshProUGUI>().text = hero.UnitName;
         _selectedHeroObject.SetActive(true);
-        // ... rest of the method ...
     }
 
     public void ShowHeroActions(BaseHero hero) {
@@ -117,7 +113,7 @@ public class MenuManager : MonoBehaviour {
         int buttonHeight = 30;
         int index = 0;
         foreach (Attack attack in hero.AvailableAttacks) {
-            GameObject buttonObj = GetAttackButtonFromPool(); // Fetch from pool
+            GameObject buttonObj = GetAttackButtonFromPool(); 
             
             Button button = buttonObj.GetComponent<Button>();
 
@@ -149,7 +145,7 @@ public class MenuManager : MonoBehaviour {
 
     public void RemoveHeroAttackButtons() {
         foreach (GameObject buttonObj in _attackButtonList) {
-            ReturnAttackButtonToPool(buttonObj); // Return to pool
+            ReturnAttackButtonToPool(buttonObj);
         }
         _attackButtonList.Clear();
     }

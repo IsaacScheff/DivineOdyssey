@@ -25,13 +25,6 @@ public abstract class Attack {
         AttackExecuted?.Invoke(this, e);
     }
     public abstract void Execute(BaseUnit attacker, BaseUnit defender, AttackManager attackManager);
-
-    public void HighlightAttacks(List<Tile> list) { //this will be moved during the GridManager re-work
-        foreach (Tile tile in list) {
-            tile.AttackHighlightOn();
-        }
-    }
-
     public void UseAP(BaseUnit attacker) { //this will be moved during the UnitManager re-work
         attacker.ModifyAP(-1 * CostAP);
         if(attacker.Faction == Faction.Hero) {
@@ -82,7 +75,7 @@ public class Spear : Attack {
     public override void Target(BaseUnit attacker, GridManager gridManager) {
         UnityEngine.Debug.Log($"{attacker} used spear");
         List<Tile> tileList = gridManager.FindTargetableSquares(attacker.OccupiedTile, Range);
-        HighlightAttacks(tileList); //this will be moved during the GridManager re-work
+        GridManager.Instance.HighlightAttackOptions(attacker.OccupiedTile, Range);
         AttackManager.Instance.CurrentAttack = this;
         AttackManager.Instance.Attacker = attacker;
     }

@@ -64,6 +64,11 @@ public class GridManager : MonoBehaviour {
             if(tile.IsPotentialMoveNotNull) tile.MoveHighlightOff();
         }
     }
+    public void HighlightAttackOptions(Tile attackerTile, int attackRange) {
+        foreach (Tile tile in FindTargetableSquares(attackerTile, attackRange)) {
+            tile.AttackHighlightOn();
+        }
+    }
 
     public void ClearPotentialAttacks() {
         foreach (Tile tile in _tiles.Values) {
