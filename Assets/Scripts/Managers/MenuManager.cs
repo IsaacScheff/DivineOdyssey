@@ -18,9 +18,22 @@ public class MenuManager : MonoBehaviour {
     [SerializeField] private GameObject _cancelButton;
     [SerializeField] private GameObject _actionMenuAP;
     private List<GameObject> _attackButtonList = new List<GameObject>();
+    private Queue<GameObject> _attackButtonPool = new Queue<GameObject>();
+    private int _poolSize = 6; 
+
+
 
     void Awake() {
         Instance = this;
+        InitializeAttackButtonPool();
+    }
+
+    private void InitializeAttackButtonPool() {
+        for (int i = 0; i < _poolSize; i++) {
+            GameObject button = Instantiate(_attackButtonPrefab);
+            button.SetActive(false);
+            _attackButtonPool.Enqueue(button);
+        }
     }
 
     void Start() {
@@ -100,10 +113,11 @@ public class MenuManager : MonoBehaviour {
 
     public void ShowHeroAttacks(BaseHero hero) {
         HideHeroActions();
+        RemoveHeroAttackButtons();
         int buttonHeight = 30;
         int index = 0;
         foreach (Attack attack in hero.AvailableAttacks) {
-            GameObject buttonObj = Object.Instantiate(_attackButtonPrefab, _actionMenu.transform);
+            GameObject buttonObj = GetAttackButtonFromPool(); // Fetch from pool
             
             Button button = buttonObj.GetComponent<Button>();
 
@@ -134,10 +148,25 @@ public class MenuManager : MonoBehaviour {
     }
 
     public void RemoveHeroAttackButtons() {
-        foreach (GameObject buttonObj in  _attackButtonList) {
-            GameObject.Destroy(buttonObj);
+        foreach (GameObject buttonObj in _attackButtonList) {
+            ReturnAttackButtonToPool(buttonObj); // Return to pool
         }
         _attackButtonList.Clear();
+    }
+    public GameObject GetAttackButtonFromPool() {
+        if (_attackButtonPool.Count > 0) {
+            GameObject button = _attackButtonPool.Dequeue();
+            button.transform.SetParent(_actionMenu.transform, false);
+            button.SetActive(true);
+            return button;
+        } else {
+            return Instantiate(_attackButtonPrefab);
+        }
+    }
+
+    public void ReturnAttackButtonToPool(GameObject button) {
+        button.SetActive(false);
+        _attackButtonPool.Enqueue(button);
     }
 
     public void HideHeroActions() {
