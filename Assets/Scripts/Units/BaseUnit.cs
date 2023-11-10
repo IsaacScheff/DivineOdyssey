@@ -39,7 +39,29 @@ public class BaseUnit : MonoBehaviour {
 
     // Events for stat changes
     public event Action OnHealthChanged;
+    public event Action OnAPChanged;
     public event Action OnStatsChanged;
+    public void SubscribeToHealthChange(Action listener) {
+        OnAPChanged += listener;
+    }
+
+    public void UnsubscribeFromHealthChange(Action listener) {
+        OnAPChanged -= listener;
+    }
+    public void SubscribeToAPChange(Action listener) {
+        OnAPChanged += listener;
+    }
+
+    public void UnsubscribeFromAPChange(Action listener) {
+        OnAPChanged -= listener;
+    }
+    public void SubscribeToStatsChange(Action listener) {
+        OnAPChanged += listener;
+    }
+
+    public void UnsubscribeFromStatsChange(Action listener) {
+        OnAPChanged -= listener;
+    }
 
     // Public access properties for base stats
     public int BaseMovement => _baseMovement;
@@ -84,14 +106,14 @@ public class BaseUnit : MonoBehaviour {
         get => _currentPsyche;
         private set {
             _currentPsyche = Mathf.Clamp(value, MinStatValue, MaxStatValue);
-            OnStatsChanged?.Invoke();
+            OnHealthChanged?.Invoke();
         }
     }
     public int CurrentStrength {
         get => _currentStrength;
         private set {
             _currentStrength = Mathf.Clamp(value, MinStatValue, MaxStatValue);
-            OnHealthChanged?.Invoke();
+            OnStatsChanged?.Invoke();
         }
     }
     public int CurrentEgo {
@@ -105,7 +127,7 @@ public class BaseUnit : MonoBehaviour {
         get => _currentGrit;
         private set {
             _currentGrit = Mathf.Clamp(value, MinStatValue, MaxStatValue);
-            OnHealthChanged?.Invoke();
+            OnStatsChanged?.Invoke();
         }
     }
     public int CurrentResilience {
@@ -119,21 +141,21 @@ public class BaseUnit : MonoBehaviour {
         get => _currentAccuracy;
         private set {
             _currentAccuracy = Mathf.Clamp(value, MinStatValue, MaxStatValue);
-            OnHealthChanged?.Invoke();
+            OnStatsChanged?.Invoke();
         }
     }
      public int CurrentEvasion {
         get => _currentEvasion;
         private set {
             _currentEvasion = Mathf.Clamp(value, MinStatValue, MaxStatValue);
-            OnHealthChanged?.Invoke();
+            OnStatsChanged?.Invoke();
         }
     }
     public int CurrentAP {
         get => _currentAP;
         private set {
             _currentAP = Mathf.Clamp(value, MinStatValue, _baseAP * 2);
-            OnStatsChanged?.Invoke();
+            OnAPChanged?.Invoke();
         }
     }
     // Reset current stats to base values
@@ -156,34 +178,35 @@ public class BaseUnit : MonoBehaviour {
         and less error-prone
     */
     public void ModifyMovement(int amount) {
-        CurrentMovement = Mathf.Clamp(CurrentMovement + amount, MinStatValue, MaxStatValue);
+        CurrentMovement += amount;
     }
     public void ModifyHealth(int amount) {
-        CurrentHealth = Mathf.Clamp(CurrentHealth + amount, MinStatValue, MaxStatValue);
+        CurrentHealth += amount;
     }
     public void ModifyPsyche(int amount) {
-        CurrentPsyche = Mathf.Clamp(CurrentPsyche + amount, MinStatValue, MaxStatValue);
+        CurrentPsyche += amount;
     }
     public void ModifyStrength(int amount) {
-        CurrentStrength = Mathf.Clamp(CurrentStrength + amount, MinStatValue, MaxStatValue);
+        CurrentStrength += amount;
     }
     public void ModifyEgo(int amount) {
-        CurrentEgo = Mathf.Clamp(CurrentEgo + amount, MinStatValue, MaxStatValue);
+        CurrentEgo += amount;
     }
     public void ModifyGrit(int amount) {
-        CurrentGrit = Mathf.Clamp(CurrentGrit + amount, MinStatValue, MaxStatValue);
+        CurrentGrit += amount;
     }
     public void ModifyResilience(int amount) {
-        CurrentResilience = Mathf.Clamp(CurrentResilience + amount, MinStatValue, MaxStatValue);
+        CurrentResilience += amount;
     }
     public void ModifyAccuracy(int amount) {
-        CurrentAccuracy = Mathf.Clamp(CurrentAccuracy + amount, MinStatValue, MaxStatValue);
+        CurrentAccuracy += amount;
     }
     public void ModifyEvasion(int amount) {
-        CurrentEvasion = Mathf.Clamp(CurrentEvasion + amount, MinStatValue, MaxStatValue);
+        CurrentEvasion += amount;
     }
     public void ModifyAP(int amount) {
-        CurrentAP = Mathf.Clamp(CurrentAP + amount, 0, _baseAP * 2);
+        //CurrentAP = Mathf.Clamp(CurrentAP + amount, 0, _baseAP * 2);
+        CurrentAP += amount;
     }
     // Helper method to set up the unit
     private void InitializeBaseStats(int movement, int health, int psyche, int strength, int ego, int grit, int resilience, int accuracy, int evasion, int ap) {

@@ -20,6 +20,7 @@ public class MenuManager : MonoBehaviour {
     private List<GameObject> _attackButtonList = new List<GameObject>();
     private Queue<GameObject> _attackButtonPool = new Queue<GameObject>();
     private int _poolSize = 6; 
+    private BaseHero _previousSelectedHero;
 
     void Awake() {
         Instance = this;
@@ -45,6 +46,9 @@ public class MenuManager : MonoBehaviour {
         // Unsubscribe to prevent memory leaks
         if (UnitManager.Instance != null) {
             UnitManager.Instance.OnHeroSelected -= ShowSelectedHero;
+        }
+        if (_previousSelectedHero != null) {
+            _previousSelectedHero.UnsubscribeFromAPChange(RefreshAP);
         }
     }
 
@@ -84,6 +88,9 @@ public class MenuManager : MonoBehaviour {
     }
 
     public void ShowSelectedHero(BaseHero hero) {
+        if (_previousSelectedHero != null) {
+            _previousSelectedHero.UnsubscribeFromAPChange(RefreshAP);
+        }
         if(hero == null) {
             _selectedHeroObject.SetActive(false);
             _actionMenu.SetActive(false);
@@ -91,11 +98,14 @@ public class MenuManager : MonoBehaviour {
         }
         _selectedHeroObject.GetComponentInChildren<TextMeshProUGUI>().text = hero.UnitName;
         _selectedHeroObject.SetActive(true);
+
+        hero.SubscribeToAPChange(RefreshAP);
+        _previousSelectedHero = hero;
     }
 
     public void ShowHeroActions(BaseHero hero) {
         //turn menu object visible + put specific actions available to selected hero
-        RefreshAP(hero);
+        RefreshAP();
         _actionMenu.SetActive(true);
         Button MoveButton = _moveButton.GetComponent<Button>();
         MoveButton.onClick.AddListener(() => MoveClicked(hero));
@@ -200,9 +210,11 @@ public class MenuManager : MonoBehaviour {
         _attackPreview.SetActive(true);
     }
 
-    public void RefreshAP(BaseHero hero) {
-        TextMeshProUGUI remainingAP = _actionMenuAP.GetComponent<TextMeshProUGUI>();
-        remainingAP.text = $"AP: {hero.CurrentAP}";
+    public void RefreshAP() {
+        if (UnitManager.Instance.SelectedHero != null) {
+            TextMeshProUGUI remainingAP = _actionMenuAP.GetComponent<TextMeshProUGUI>();
+            remainingAP.text = $"AP: {UnitManager.Instance.SelectedHero.CurrentAP}";
+        }
     }
 
 }

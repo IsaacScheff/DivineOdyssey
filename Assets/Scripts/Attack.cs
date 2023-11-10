@@ -25,12 +25,12 @@ public abstract class Attack {
         AttackExecuted?.Invoke(this, e);
     }
     public abstract void Execute(BaseUnit attacker, BaseUnit defender, AttackManager attackManager);
-    public void UseAP(BaseUnit attacker) { //this will be moved during the UnitManager re-work
-        attacker.ModifyAP(-1 * CostAP);
-        if(attacker.Faction == Faction.Hero) {
-            MenuManager.Instance.RefreshAP((BaseHero)attacker);
-        }
-    }
+    // public void UseAP(BaseUnit attacker) { //this will be moved during the UnitManager re-work
+    //     attacker.ModifyAP(-1 * CostAP);
+    //     if(attacker.Faction == Faction.Hero) {
+    //         MenuManager.Instance.RefreshAP((BaseHero)attacker);
+    //     }
+    // }
 }
 
 public class AttackEventArgs : EventArgs {
@@ -97,7 +97,8 @@ public class Spear : Attack {
             UnityEngine.Debug.Log("Spear missed");
         }
 
-        UseAP(attackManager.Attacker); //this will be moved during the UnitManager re-work
+        //UseAP(attackManager.Attacker); //this will be moved during the UnitManager re-work
+        UnitManager.Instance.UseAP(attacker, CostAP);
         // Raise the event with the results of the attack
         OnAttackExecuted(new AttackEventArgs {
             Attacker = attacker,

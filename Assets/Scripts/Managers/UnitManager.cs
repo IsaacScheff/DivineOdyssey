@@ -21,6 +21,10 @@ public class UnitManager : MonoBehaviour {
         SelectedHero = hero;
         OnHeroSelected?.Invoke(hero); // Raise the event
     }
+    public void UseAP(BaseUnit unit, int amount) {
+        unit.ModifyAP(-amount);
+    }
+
 
     public void SpawnHeroes() { //these random placements will be replaced with set ones for each encounter
         var heroCount = 1;
