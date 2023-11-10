@@ -8,10 +8,8 @@ using UnityEngine.UI;
 
 public class UnitManager : MonoBehaviour {
     public static UnitManager Instance;
-
     private List<ScriptableUnit> _units;
     public event Action<BaseHero> OnHeroSelected;
-
     public BaseHero SelectedHero;
     public bool HeroMoving;
     void Awake() {
@@ -40,7 +38,7 @@ public class UnitManager : MonoBehaviour {
         GameManager.Instance.ChangeState(GameState.SpawnEnemies);
     }
 
-    public void SpawnEnemies() { //same as functino above
+    public void SpawnEnemies() { //same note as function above
         var enemyCount = 1; 
 
         for(int i = 0; i < enemyCount; i++) {
@@ -58,13 +56,4 @@ public class UnitManager : MonoBehaviour {
         return (T)_units.Where(u => u.Faction == faction).OrderBy(o => UnityEngine.Random.value).First().UnitPrefab;
     }
 
-    public void ShowMoves(Tile startTile, int moves) {
-        foreach(Tile tile in GridManager.Instance.Tiles.Values){
-            var path = Pathfinding.FindPath(startTile, tile);
-            if(path != null && path.Count <= moves) {
-                tile.MoveHighlightOn();
-            }
-        }
-        HeroMoving = true;
-    }
 }

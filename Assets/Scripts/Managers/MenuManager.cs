@@ -171,7 +171,8 @@ public class MenuManager : MonoBehaviour {
     }
 
     public void MoveClicked(BaseHero hero) {
-        UnitManager.Instance.ShowMoves(hero.OccupiedTile, hero.CurrentMovement);
+        GridManager.Instance.HighlightMoveOptions(hero.OccupiedTile, hero.CurrentMovement);
+        UnitManager.Instance.HeroMoving = true;
         _cancelButton.SetActive(true);
     }
 

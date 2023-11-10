@@ -58,7 +58,14 @@ public class GridManager : MonoBehaviour {
         else 
             return null;
     }
-
+    public void HighlightMoveOptions(Tile startTile, int moves) {
+        foreach (Tile tile in Tiles.Values) {
+            var path = Pathfinding.FindPath(startTile, tile);
+            if (path != null && path.Count <= moves) {
+                tile.MoveHighlightOn();
+            }
+        }
+    }
     public void ClearPotentialMoves() {
         foreach (Tile tile in _tiles.Values) {
             if(tile.IsPotentialMoveNotNull) tile.MoveHighlightOff();
@@ -69,7 +76,6 @@ public class GridManager : MonoBehaviour {
             tile.AttackHighlightOn();
         }
     }
-
     public void ClearPotentialAttacks() {
         foreach (Tile tile in _tiles.Values) {
             if(tile.IsPotentialAttackNotNull) tile.AttackHighlightOff();
@@ -78,15 +84,12 @@ public class GridManager : MonoBehaviour {
 
     public List<Tile> FindTargetableSquares(Tile attacker, int attackRange) {
         List<Tile> squaresInRange = new List<Tile>();
-
         // Loop through all tiles in the grid
         foreach (var keyValuePair in _tiles) {
             Tile potentialTile = keyValuePair.Value;
-
             // Calculate the Manhattan distance between the attacker and the potential tile
             int distance = Mathf.Abs((int)attacker.Coords.Pos.x - (int)potentialTile.Coords.Pos.x) +
                         Mathf.Abs((int)attacker.Coords.Pos.y - (int)potentialTile.Coords.Pos.y);
-
             // If the potential tile is within range, and isn't the attacker tile itself
             //and is not cover
             if (distance <= attackRange && potentialTile != attacker && !potentialTile.Cover) {
