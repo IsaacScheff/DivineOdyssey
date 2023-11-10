@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +10,7 @@ public class UnitManager : MonoBehaviour {
     public static UnitManager Instance;
 
     private List<ScriptableUnit> _units;
+    public event Action<BaseHero> OnHeroSelected;
 
     public BaseHero SelectedHero;
     public bool HeroMoving;
@@ -16,6 +18,10 @@ public class UnitManager : MonoBehaviour {
         Instance = this;
 
         _units = Resources.LoadAll<ScriptableUnit>("Units").ToList();
+    }
+    public void SetSelectedHero(BaseHero hero) {
+        SelectedHero = hero;
+        OnHeroSelected?.Invoke(hero); // Raise the event
     }
 
     public void SpawnHeroes() { //these random placements will be replaced with set ones for each encounter
@@ -49,12 +55,7 @@ public class UnitManager : MonoBehaviour {
     }
 
     private T GetRandomUnit<T>(Faction faction) where T : BaseUnit {
-        return (T)_units.Where(u => u.Faction == faction).OrderBy(o => Random.value).First().UnitPrefab;
-    }
-
-    public void SetSelectedHero(BaseHero hero) {
-        SelectedHero = hero;
-        MenuManager.Instance.ShowSelectedHero(hero);
+        return (T)_units.Where(u => u.Faction == faction).OrderBy(o => UnityEngine.Random.value).First().UnitPrefab;
     }
 
     public void ShowMoves(Tile startTile, int moves) {

@@ -19,10 +19,22 @@ public class MenuManager : MonoBehaviour {
     [SerializeField] private GameObject _actionMenuAP;
     private List<GameObject> _attackButtonList = new List<GameObject>();
 
-
-
     void Awake() {
         Instance = this;
+    }
+
+    void Start() {
+        // Subscribe to the OnHeroSelected event
+        if (UnitManager.Instance != null) {
+            UnitManager.Instance.OnHeroSelected += ShowSelectedHero;
+        }
+    }
+
+    void OnDestroy() {
+        // Unsubscribe to prevent memory leaks
+        if (UnitManager.Instance != null) {
+            UnitManager.Instance.OnHeroSelected -= ShowSelectedHero;
+        }
     }
 
     public void ShowTileInfo(Tile tile) {
@@ -61,13 +73,15 @@ public class MenuManager : MonoBehaviour {
     }
 
     public void ShowSelectedHero(BaseHero hero) {
-        if(hero == null){ 
+        // Existing logic to show the hero in the UI
+        if(hero == null) {
             _selectedHeroObject.SetActive(false);
             _actionMenu.SetActive(false);
             return;
         }
         _selectedHeroObject.GetComponentInChildren<TextMeshProUGUI>().text = hero.UnitName;
         _selectedHeroObject.SetActive(true);
+        // ... rest of the method ...
     }
 
     public void ShowHeroActions(BaseHero hero) {
