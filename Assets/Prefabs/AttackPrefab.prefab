@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 5615353672848219835}
   - component: {fileID: 4220517576593024910}
   - component: {fileID: 1794971813125386853}
+  - component: {fileID: 8039272961444174870}
   m_Layer: 5
   m_Name: AttackPrefab
   m_TagString: Untagged
@@ -121,3 +122,15 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &8039272961444174870
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5737560571813546851}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 256df1ab012ba4380b578401655e27b2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

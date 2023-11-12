@@ -148,6 +148,10 @@ public class MenuManager : MonoBehaviour {
             GameObject buttonObj = GetAttackButtonFromPool(); 
             Button button = buttonObj.GetComponent<Button>();
 
+            // Store the Attack instance in the button GameObject
+            buttonObj.GetComponent<AttackButton>().Attack = attack;
+            attack.AttackExecuted += OnAttackExecuted;
+
             // Set up the text for the button
             GameObject textObj = new GameObject($"{attack}Button");
             textObj.transform.SetParent(buttonObj.transform, false);
@@ -178,9 +182,20 @@ public class MenuManager : MonoBehaviour {
         _cancelButton.SetActive(true);
     }
 
-
+    private void OnAttackExecuted(object sender, AttackEventArgs e) {
+        string resultText = $"Attack: {e.Attack.Name}\n" +
+                            $"Success: {e.IsHit}\n" +
+                            $"Damage Dealt: {e.DamageDealt}";
+        _attackPreview.GetComponentInChildren<TextMeshProUGUI>().text = resultText;
+        _attackPreview.SetActive(true);
+    }
     public void RemoveHeroAttackButtons() {
         foreach (GameObject buttonObj in _attackButtonList) {
+            AttackButton attackButtonComponent = buttonObj.GetComponent<AttackButton>();
+            if (attackButtonComponent != null && attackButtonComponent.Attack != null) {
+                attackButtonComponent.Attack.AttackExecuted -= OnAttackExecuted;
+            }
+            
             ReturnAttackButtonToPool(buttonObj);
         }
         _attackButtonList.Clear();

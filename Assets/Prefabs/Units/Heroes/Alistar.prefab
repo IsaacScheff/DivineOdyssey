@@ -101,7 +101,7 @@ MonoBehaviour:
   OccupiedTile: {fileID: 0}
   Faction: 0
   TakenActions: 0
-  _baseMovement: 5
+  _baseMovement: 15
   _baseHealth: 30
   _basePsyche: 40
   _baseStrength: 8
