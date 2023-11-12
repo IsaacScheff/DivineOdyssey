@@ -95,12 +95,17 @@ public class MenuManager : MonoBehaviour {
     public void ShowSelectedHero(BaseHero hero) {
         if (_previousSelectedHero != null) {
             _previousSelectedHero.UnsubscribeFromAPChange(RefreshAP);
+            _previousSelectedHero.OnAPChanged -= OnHeroAPChanged;
         }
         if(hero == null) {
             _selectedHeroObject.SetActive(false);
             _actionMenu.SetActive(false);
             return;
+        } else {
+            hero.OnAPChanged += OnHeroAPChanged;
+            _previousSelectedHero = hero;
         }
+
         _selectedHeroObject.GetComponentInChildren<TextMeshProUGUI>().text = hero.UnitName;
         _selectedHeroObject.SetActive(true);
 
@@ -109,17 +114,28 @@ public class MenuManager : MonoBehaviour {
     }
 
     public void ShowHeroActions(BaseHero hero) {
-        //turn menu object visible + put specific actions available to selected hero
+        // Turn menu object visible + put specific actions available to selected hero
         RefreshAP();
         _actionMenu.SetActive(true);
+
         Button MoveButton = _moveButton.GetComponent<Button>();
         MoveButton.onClick.AddListener(() => MoveClicked(hero));
 
+        // Enable the Move button only if the hero has at least 1 AP
+        _moveButton.GetComponent<Button>().interactable = hero.CurrentAP >= 1;
+
+        // Set up listeners for other buttons
         Button AttackButton = _attackButton.GetComponent<Button>();
         AttackButton.onClick.AddListener(() => ShowHeroAttacks(hero)); 
 
         Button CancelButton = _cancelButton.GetComponent<Button>();
         CancelButton.onClick.AddListener(() => CancelClicked());
+    }
+
+    private void OnHeroAPChanged() {
+        if (UnitManager.Instance.SelectedHero != null) {
+            _moveButton.GetComponent<Button>().interactable = UnitManager.Instance.SelectedHero.CurrentAP >= 1;
+        }
     }
 
     public void ShowHeroAttacks(BaseHero hero) {
