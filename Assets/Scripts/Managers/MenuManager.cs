@@ -29,11 +29,16 @@ public class MenuManager : MonoBehaviour {
 
     private void InitializeAttackButtonPool() {
         for (int i = 0; i < _poolSize; i++) {
-            GameObject button = Instantiate(_attackButtonPrefab);
-            button.SetActive(false);
-            _attackButtonPool.Enqueue(button);
+            GameObject buttonObj = Instantiate(_attackButtonPrefab);
+            Button button = buttonObj.GetComponent<Button>();
+            if (button != null) {
+                button.interactable = false;
+            }
+            buttonObj.SetActive(false);
+            _attackButtonPool.Enqueue(buttonObj);
         }
     }
+
 
     void Start() {
         // Subscribe to the OnHeroSelected event
@@ -122,18 +127,18 @@ public class MenuManager : MonoBehaviour {
         RemoveHeroAttackButtons();
         int buttonHeight = 30;
         int index = 0;
+
         foreach (Attack attack in hero.AvailableAttacks) {
             GameObject buttonObj = GetAttackButtonFromPool(); 
-            
             Button button = buttonObj.GetComponent<Button>();
 
+            // Set up the text for the button
             GameObject textObj = new GameObject($"{attack}Button");
             textObj.transform.SetParent(buttonObj.transform, false);
 
             TextMeshProUGUI buttonText = textObj.AddComponent<TextMeshProUGUI>();
             buttonText.text = attack.Name;
             buttonText.alignment = TextAlignmentOptions.Center;
-            
             buttonText.fontSize = 14;
             buttonText.color = Color.black;
 
@@ -142,7 +147,10 @@ public class MenuManager : MonoBehaviour {
             textRectTransform.anchorMax = new Vector2(1, 1);
             textRectTransform.sizeDelta = new Vector2(0, 0);
 
+            // Enable or disable the button based on the hero's available AP
+            button.interactable = hero.CurrentAP >= attack.PublicCostAP;
             button.onClick.AddListener(() => attack.Target(hero, GridManager.Instance));
+
             // Adjust the button's position based on its index.
             RectTransform buttonRectTransform = buttonObj.GetComponent<RectTransform>();
             buttonRectTransform.anchoredPosition = new Vector2(0, (-index * buttonHeight * 1.3f) + 120);
@@ -150,8 +158,10 @@ public class MenuManager : MonoBehaviour {
 
             _attackButtonList.Add(buttonObj);
         }
+
         _cancelButton.SetActive(true);
     }
+
 
     public void RemoveHeroAttackButtons() {
         foreach (GameObject buttonObj in _attackButtonList) {
@@ -159,16 +169,18 @@ public class MenuManager : MonoBehaviour {
         }
         _attackButtonList.Clear();
     }
+
     public GameObject GetAttackButtonFromPool() {
-        if (_attackButtonPool.Count > 0) {
-            GameObject button = _attackButtonPool.Dequeue();
-            button.transform.SetParent(_actionMenu.transform, false);
-            button.SetActive(true);
-            return button;
-        } else {
-            return Instantiate(_attackButtonPrefab);
+        GameObject buttonObj = _attackButtonPool.Count > 0 ? _attackButtonPool.Dequeue() : Instantiate(_attackButtonPrefab);
+        buttonObj.transform.SetParent(_actionMenu.transform, false);
+        Button button = buttonObj.GetComponent<Button>();
+        if (button != null) {
+            button.interactable = false;
         }
+        buttonObj.SetActive(true);
+        return buttonObj;
     }
+
 
     public void ReturnAttackButtonToPool(GameObject button) {
         button.SetActive(false);
