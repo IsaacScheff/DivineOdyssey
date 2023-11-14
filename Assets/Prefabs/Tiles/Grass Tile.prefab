@@ -81,6 +81,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: cf971fd29324441b9a774dc096c79212, type: 3}
+--- !u!1 &186694029152908398 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2347189936968369760, guid: cf971fd29324441b9a774dc096c79212, type: 3}
+  m_PrefabInstance: {fileID: 2451543646685065742}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &884039240025520593 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 3332977035428318175, guid: cf971fd29324441b9a774dc096c79212, type: 3}
@@ -106,24 +111,20 @@ MonoBehaviour:
   TileName: Grass
   _renderer: {fileID: 5492206439072880988}
   _highlight: {fileID: 884039240025520593}
-  _potentialMove: {fileID: 4579332901636906213}
-  _potentialAttack: {fileID: 8345318862735053202}
+  _potentialMove: {fileID: 186694029152908398}
+  _potentialAttack: {fileID: 2386754585898598841}
   _isWalkable: 1
+  _isCover: 0
   OccupiedUnit: {fileID: 0}
   _baseColor: {r: 0.24306656, g: 0.7830189, b: 0.1735938, a: 1}
   _offsetColor: {r: 0.24313726, g: 0.7137255, b: 0.17254902, a: 1}
---- !u!1 &4579332901636906213 stripped
+--- !u!1 &2386754585898598841 stripped
 GameObject:
-  m_CorrespondingSourceObject: {fileID: 2128143203207278315, guid: cf971fd29324441b9a774dc096c79212, type: 3}
+  m_CorrespondingSourceObject: {fileID: 223725685284418487, guid: cf971fd29324441b9a774dc096c79212, type: 3}
   m_PrefabInstance: {fileID: 2451543646685065742}
   m_PrefabAsset: {fileID: 0}
 --- !u!212 &5492206439072880988 stripped
 SpriteRenderer:
   m_CorrespondingSourceObject: {fileID: 7943678342623538002, guid: cf971fd29324441b9a774dc096c79212, type: 3}
-  m_PrefabInstance: {fileID: 2451543646685065742}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &8345318862735053202 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 5896661890951013276, guid: cf971fd29324441b9a774dc096c79212, type: 3}
   m_PrefabInstance: {fileID: 2451543646685065742}
   m_PrefabAsset: {fileID: 0}

@@ -73,6 +73,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: cf971fd29324441b9a774dc096c79212, type: 3}
+--- !u!1 &236360675931110033 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2347189936968369760, guid: cf971fd29324441b9a774dc096c79212, type: 3}
+  m_PrefabInstance: {fileID: 2582071148697206001}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &978478435558815534 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 3332977035428318175, guid: cf971fd29324441b9a774dc096c79212, type: 3}
@@ -98,11 +103,16 @@ MonoBehaviour:
   TileName: Mountain
   _renderer: {fileID: 5613949532051838883}
   _highlight: {fileID: 978478435558815534}
-  _potentialMove: {fileID: 0}
-  _potentialAttack: {fileID: 0}
+  _potentialMove: {fileID: 236360675931110033}
+  _potentialAttack: {fileID: 2364259326692134726}
   _isWalkable: 0
-  _isCover: 1
+  _isCover: 0
   OccupiedUnit: {fileID: 0}
+--- !u!1 &2364259326692134726 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 223725685284418487, guid: cf971fd29324441b9a774dc096c79212, type: 3}
+  m_PrefabInstance: {fileID: 2582071148697206001}
+  m_PrefabAsset: {fileID: 0}
 --- !u!212 &5613949532051838883 stripped
 SpriteRenderer:
   m_CorrespondingSourceObject: {fileID: 7943678342623538002, guid: cf971fd29324441b9a774dc096c79212, type: 3}
