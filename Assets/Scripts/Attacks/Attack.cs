@@ -25,12 +25,6 @@ public abstract class Attack {
         AttackExecuted?.Invoke(this, e);
     }
     public abstract void Execute(BaseUnit attacker, BaseUnit defender, AttackManager attackManager);
-    // public void UseAP(BaseUnit attacker) { //this will be moved during the UnitManager re-work
-    //     attacker.ModifyAP(-1 * CostAP);
-    //     if(attacker.Faction == Faction.Hero) {
-    //         MenuManager.Instance.RefreshAP((BaseHero)attacker);
-    //     }
-    // }
 }
 
 public class AttackEventArgs : EventArgs {
@@ -61,19 +55,17 @@ public class AttackEventArgs : EventArgs {
 //     }
 // }
 
-public class Spear : Attack {
+public class BaseMelee : Attack {
     // Properties for encapsulation
     protected override int Range => 1;
-    protected override int HitChance => 80;
-    protected override int CritChance => 7;
-    protected override int Damage => 10;
-    protected override int CritMultiplier => 2;
-    protected override int CostAP => 1;
-    
-    public override string Name => "Spear";
+    protected override int HitChance => 0;
+    protected override int CritChance => 0;
+    protected override int Damage => 0;
+    protected override int CritMultiplier => 0;
+    protected override int CostAP => 0;
+    public override string Name => "BaseMelee";
     
     public override void Target(BaseUnit attacker, GridManager gridManager) {
-        UnityEngine.Debug.Log($"{attacker} used spear");
         List<Tile> tileList = gridManager.FindTargetableSquares(attacker.OccupiedTile, Range);
         GridManager.Instance.HighlightAttackOptions(attacker.OccupiedTile, Range);
         AttackManager.Instance.CurrentAttack = this;
@@ -91,10 +83,10 @@ public class Spear : Attack {
         if(isHit) {
             damageDealt = attackManager.RollDamage(Damage, attacker.CurrentStrength, defender.CurrentGrit, CritChance, CritMultiplier);
             attackManager.Target.OccupiedUnit.ModifyHealth(-1 * damageDealt);
-            UnityEngine.Debug.Log($"Spear hit for {damageDealt} damage");
+            UnityEngine.Debug.Log($"{this.Name} hit for {damageDealt} damage");
         } else {
             //this else will be removed when listener added to Menu/UI Manager
-            UnityEngine.Debug.Log("Spear missed");
+            UnityEngine.Debug.Log($"{this.Name} missed");
         }
 
         //UseAP(attackManager.Attacker); //this will be moved during the UnitManager re-work
@@ -108,6 +100,16 @@ public class Spear : Attack {
             Attack = this 
         });
     }
+}
+
+public class Spear : BaseMelee {
+    // Properties for encapsulation
+    protected override int HitChance => 80;
+    protected override int CritChance => 7;
+    protected override int Damage => 10;
+    protected override int CritMultiplier => 2;
+    protected override int CostAP => 1;
+    public override string Name => "Spear";
 }
 
 // ... other attack classes

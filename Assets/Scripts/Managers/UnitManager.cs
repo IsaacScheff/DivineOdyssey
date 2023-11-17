@@ -69,9 +69,9 @@ public class UnitManager : MonoBehaviour {
         return (T)_units.Where(u => u.Faction == faction).OrderBy(o => UnityEngine.Random.value).First().UnitPrefab;
     }
 
-    private void KillUnit(BaseUnit deadman) {
-        deadman.OnHealthChanged -= () => CheckUnitHealth(deadman);
-        Destroy(deadman.gameObject);
+    private void KillUnit(BaseUnit unit) {
+        unit.OnHealthChanged -= () => CheckUnitHealth(unit);
+        Destroy(unit.gameObject);
     }
 
 }

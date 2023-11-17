@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: Verrier
   m_EditorClassIdentifier: 
   Faction: 0
-  UnitPrefab: {fileID: -2313783212387727918, guid: 033b06555d6374738ab9181dc079a406, type: 3}
+  UnitPrefab: {fileID: 5778501395187660600, guid: ff8f193cdf07545128d794e0165b03af, type: 3}
