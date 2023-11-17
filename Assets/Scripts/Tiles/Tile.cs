@@ -94,6 +94,9 @@ public abstract class Tile : MonoBehaviour {
 
         if(OccupiedUnit != null){
             if(OccupiedUnit.Faction == Faction.Hero) {
+                if(UnitManager.Instance.SelectedHero == true) {
+                    MenuManager.Instance.CancelClicked();
+                }
                 UnitManager.Instance.SetSelectedHero((BaseHero)OccupiedUnit);
                 GridManager.Instance.StartTile = this;
                 if(UnitManager.Instance.SelectedHero.TakenActions == false) {

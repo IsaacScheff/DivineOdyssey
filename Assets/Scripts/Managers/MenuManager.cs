@@ -119,7 +119,7 @@ public class MenuManager : MonoBehaviour {
         _actionMenu.SetActive(true);
 
         Button MoveButton = _moveButton.GetComponent<Button>();
-        MoveButton.onClick.AddListener(() => MoveClicked(hero));
+        MoveButton.onClick.AddListener(() => MoveClicked());
 
         // Enable the Move button only if the hero has at least 1 AP
         _moveButton.GetComponent<Button>().interactable = hero.CurrentAP >= 1;
@@ -222,9 +222,8 @@ public class MenuManager : MonoBehaviour {
         _moveButton.SetActive(false);
         _attackButton.SetActive(false);
     }
-
-    public void MoveClicked(BaseHero hero) {
-        GridManager.Instance.HighlightMoveOptions(hero.OccupiedTile, hero.CurrentMovement);
+     public void MoveClicked() {
+        GridManager.Instance.HighlightMoveOptions(UnitManager.Instance.SelectedHero.OccupiedTile, UnitManager.Instance.SelectedHero.CurrentMovement);
         UnitManager.Instance.HeroMoving = true;
         _cancelButton.SetActive(true);
     }
