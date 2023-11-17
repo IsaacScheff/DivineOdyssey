@@ -34,17 +34,16 @@ public class UnitManager : MonoBehaviour {
         }
     }
     public void SpawnHeroes() { //these random placements will be replaced with set ones for each encounter
-        var heroCount = 2;
+        UnitType[] heroes = {UnitType.Alistar, UnitType.Verrier};
 
-        for(int i = 0; i < heroCount; i++) {
-            var randomPrefab = GetRandomUnit<BaseHero>(Faction.Hero);
-            var spawnedHero = Instantiate(randomPrefab);
+        foreach(UnitType hero in heroes) {
+            var heroPrefab = GetUnitPrefab(hero) as BaseHero;
+            var spawnedHero = Instantiate(heroPrefab);
             SubscribeToUnitEvents(spawnedHero);
             var randomSpawnTile = GridManager.Instance.GetHeroSpawnTile();
 
             randomSpawnTile.SetUnit(spawnedHero);
             spawnedHero.OccupiedTile = randomSpawnTile;
-            //Debug.Log(spawnedHero.OccupiedTile);
         }
 
         GameManager.Instance.ChangeState(GameState.SpawnEnemies);
@@ -69,6 +68,16 @@ public class UnitManager : MonoBehaviour {
         return (T)_units.Where(u => u.Faction == faction).OrderBy(o => UnityEngine.Random.value).First().UnitPrefab;
     }
 
+    // Modified to return a specific unit based on an identifier
+    private BaseUnit GetUnitPrefab(UnitType unitType) {
+        foreach (ScriptableUnit scriptableUnit in _units) {
+            if (scriptableUnit.Name == unitType) {
+                return scriptableUnit.UnitPrefab;
+            }
+        }
+        Debug.LogError("Unit prefab not found for type: " + unitType);
+        return null;
+    }
     private void KillUnit(BaseUnit unit) {
         unit.OnHealthChanged -= () => CheckUnitHealth(unit);
         Destroy(unit.gameObject);

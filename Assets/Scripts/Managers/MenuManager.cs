@@ -148,6 +148,9 @@ public class MenuManager : MonoBehaviour {
             GameObject buttonObj = GetAttackButtonFromPool(); 
             Button button = buttonObj.GetComponent<Button>();
 
+            // Clear existing listeners
+            button.onClick.RemoveAllListeners();
+
             // Store the Attack instance in the button GameObject
             buttonObj.GetComponent<AttackButton>().Attack = attack;
             attack.AttackExecuted += OnAttackExecuted;

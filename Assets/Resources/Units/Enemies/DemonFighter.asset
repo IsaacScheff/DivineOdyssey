@@ -13,4 +13,5 @@ MonoBehaviour:
   m_Name: DemonFighter
   m_EditorClassIdentifier: 
   Faction: 1
+  Name: 2
   UnitPrefab: {fileID: 2005418705647732425, guid: a5758be1e71dd44d3ac95083c1c6c36a, type: 3}
