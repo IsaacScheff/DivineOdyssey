@@ -11,6 +11,6 @@ public class Verrier : BaseHero {
 
         // Add the AttackExample and Spear attacks to the unit's list.
         //AvailableAttacks.Add(new AttackExample());
-        AvailableAttacks.Add(new Spear());
+        AvailableAttacks.Add(new Bite());
     }
 }

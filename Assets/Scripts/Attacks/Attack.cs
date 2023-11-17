@@ -55,15 +55,15 @@ public class AttackEventArgs : EventArgs {
 //     }
 // }
 
-public class BaseMelee : Attack {
+public class BasePhysicalAttack : Attack {
     // Properties for encapsulation
-    protected override int Range => 1;
+    protected override int Range => 0;
     protected override int HitChance => 0;
     protected override int CritChance => 0;
     protected override int Damage => 0;
     protected override int CritMultiplier => 0;
     protected override int CostAP => 0;
-    public override string Name => "BaseMelee";
+    public override string Name => "BasePhysicalAttack";
     
     public override void Target(BaseUnit attacker, GridManager gridManager) {
         List<Tile> tileList = gridManager.FindTargetableSquares(attacker.OccupiedTile, Range);
@@ -102,6 +102,12 @@ public class BaseMelee : Attack {
     }
 }
 
+public class BaseMelee : BasePhysicalAttack {
+    // Properties for encapsulation
+    protected override int Range => 1;
+    public override string Name => "BaseMelee";
+}
+
 public class Spear : BaseMelee {
     // Properties for encapsulation
     protected override int HitChance => 80;
@@ -110,6 +116,32 @@ public class Spear : BaseMelee {
     protected override int CritMultiplier => 2;
     protected override int CostAP => 1;
     public override string Name => "Spear";
+}
+
+public class Bite : BaseMelee {
+    // Properties for encapsulation
+    protected override int HitChance => 80;
+    protected override int CritChance => 7;
+    protected override int Damage => 13;
+    protected override int CritMultiplier => 2;
+    protected override int CostAP => 1;
+    public override string Name => "Bite";
+}
+
+public class BasePhysicalRange : BasePhysicalAttack {
+    // Properties for encapsulation
+    public override string Name => "BasePhysicalRange";
+}
+
+public class Fireball : BasePhysicalRange {
+    // Properties for encapsulation
+    protected override int Range => 6;
+    protected override int HitChance => 80;
+    protected override int CritChance => 7;
+    protected override int Damage => 10;
+    protected override int CritMultiplier => 2;
+    protected override int CostAP => 1;
+    public override string Name => "Fireball";
 }
 
 // ... other attack classes
