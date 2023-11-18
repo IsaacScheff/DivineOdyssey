@@ -99,6 +99,7 @@ public class BasePhysicalAttack : Attack {
             IsHit = isHit,
             Attack = this 
         });
+        MenuManager.Instance.RemoveHeroAttackButtons();
     }
 }
 

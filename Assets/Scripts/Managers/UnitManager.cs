@@ -18,6 +18,7 @@ public class UnitManager : MonoBehaviour {
         _units = Resources.LoadAll<ScriptableUnit>("Units").ToList();
     }
     public void SetSelectedHero(BaseHero hero) {
+        MenuManager.Instance.RemoveHeroAttackButtons();
         SelectedHero = hero;
         OnHeroSelected?.Invoke(hero); // Raise the event
     }

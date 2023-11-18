@@ -18,28 +18,11 @@ public class MenuManager : MonoBehaviour {
     [SerializeField] private GameObject _cancelButton;
     [SerializeField] private GameObject _actionMenuAP;
     private List<GameObject> _attackButtonList = new List<GameObject>();
-    private Queue<GameObject> _attackButtonPool = new Queue<GameObject>();
-    private int _poolSize = 6; 
     private BaseHero _previousSelectedHero;
 
     void Awake() {
         Instance = this;
-        InitializeAttackButtonPool();
     }
-
-    private void InitializeAttackButtonPool() {
-        for (int i = 0; i < _poolSize; i++) {
-            GameObject buttonObj = Instantiate(_attackButtonPrefab);
-            Button button = buttonObj.GetComponent<Button>();
-            if (button != null) {
-                button.interactable = false;
-            }
-            buttonObj.SetActive(false);
-            _attackButtonPool.Enqueue(buttonObj);
-        }
-    }
-
-
     void Start() {
         // Subscribe to the OnHeroSelected event
         if (UnitManager.Instance != null) {
@@ -114,6 +97,9 @@ public class MenuManager : MonoBehaviour {
     }
 
     public void ShowHeroActions(BaseHero hero) {
+        // First, remove any existing attack buttons
+        RemoveHeroAttackButtons();
+
         // Turn menu object visible + put specific actions available to selected hero
         RefreshAP();
         _actionMenu.SetActive(true);
@@ -137,26 +123,35 @@ public class MenuManager : MonoBehaviour {
             _moveButton.GetComponent<Button>().interactable = UnitManager.Instance.SelectedHero.CurrentAP >= 1;
         }
     }
+    private void SetupAttackButton(GameObject buttonObj, Attack attack, BaseHero hero) {
+        Button button = buttonObj.GetComponent<Button>();
+        TextMeshProUGUI buttonText = buttonObj.GetComponentInChildren<TextMeshProUGUI>();
+
+        if (buttonText != null) {
+            buttonText.text = attack.Name;
+        }
+
+        button.interactable = hero.CurrentAP >= attack.PublicCostAP;
+        button.onClick.AddListener(() => attack.Target(hero, GridManager.Instance));
+    }
 
     public void ShowHeroAttacks(BaseHero hero) {
+        if(UnitManager.Instance.HeroMoving == true) {
+            CancelClicked();
+            return;
+        }
         HideHeroActions();
-        RemoveHeroAttackButtons();
+        RemoveHeroAttackButtons(); // This will now destroy the old buttons
         int buttonHeight = 30;
         int index = 0;
 
         foreach (Attack attack in hero.AvailableAttacks) {
-            GameObject buttonObj = GetAttackButtonFromPool(); 
+            // Instantiate a new button for each attack
+            GameObject buttonObj = Instantiate(_attackButtonPrefab, _actionMenu.transform);
             Button button = buttonObj.GetComponent<Button>();
-
-            // Clear existing listeners
-            button.onClick.RemoveAllListeners();
-
-            // Store the Attack instance in the button GameObject
-            buttonObj.GetComponent<AttackButton>().Attack = attack;
-            attack.AttackExecuted += OnAttackExecuted;
-
-            // Set up the text for the button
-            GameObject textObj = new GameObject($"{attack}Button");
+            
+            // Create a new TextMeshProUGUI GameObject as a child of the button
+            GameObject textObj = new GameObject("ButtonText");
             textObj.transform.SetParent(buttonObj.transform, false);
 
             TextMeshProUGUI buttonText = textObj.AddComponent<TextMeshProUGUI>();
@@ -164,11 +159,6 @@ public class MenuManager : MonoBehaviour {
             buttonText.alignment = TextAlignmentOptions.Center;
             buttonText.fontSize = 14;
             buttonText.color = Color.black;
-
-            RectTransform textRectTransform = textObj.GetComponent<RectTransform>();
-            textRectTransform.anchorMin = new Vector2(0, 0);
-            textRectTransform.anchorMax = new Vector2(1, 1);
-            textRectTransform.sizeDelta = new Vector2(0, 0);
 
             // Enable or disable the button based on the hero's available AP
             button.interactable = hero.CurrentAP >= attack.PublicCostAP;
@@ -179,6 +169,7 @@ public class MenuManager : MonoBehaviour {
             buttonRectTransform.anchoredPosition = new Vector2(0, (-index * buttonHeight * 1.3f) + 120);
             index++;
 
+            // Add the button to the list of active buttons
             _attackButtonList.Add(buttonObj);
         }
 
@@ -194,38 +185,16 @@ public class MenuManager : MonoBehaviour {
     }
     public void RemoveHeroAttackButtons() {
         foreach (GameObject buttonObj in _attackButtonList) {
-            AttackButton attackButtonComponent = buttonObj.GetComponent<AttackButton>();
-            if (attackButtonComponent != null && attackButtonComponent.Attack != null) {
-                attackButtonComponent.Attack.AttackExecuted -= OnAttackExecuted;
-            }
-            
-            ReturnAttackButtonToPool(buttonObj);
+            Destroy(buttonObj);
         }
         _attackButtonList.Clear();
-    }
-
-    public GameObject GetAttackButtonFromPool() {
-        GameObject buttonObj = _attackButtonPool.Count > 0 ? _attackButtonPool.Dequeue() : Instantiate(_attackButtonPrefab);
-        buttonObj.transform.SetParent(_actionMenu.transform, false);
-        Button button = buttonObj.GetComponent<Button>();
-        if (button != null) {
-            button.interactable = false;
-        }
-        buttonObj.SetActive(true);
-        return buttonObj;
-    }
-
-
-    public void ReturnAttackButtonToPool(GameObject button) {
-        button.SetActive(false);
-        _attackButtonPool.Enqueue(button);
     }
 
     public void HideHeroActions() {
         _moveButton.SetActive(false);
         _attackButton.SetActive(false);
     }
-     public void MoveClicked() {
+    public void MoveClicked() {
         GridManager.Instance.HighlightMoveOptions(UnitManager.Instance.SelectedHero.OccupiedTile, UnitManager.Instance.SelectedHero.CurrentMovement);
         UnitManager.Instance.HeroMoving = true;
         _cancelButton.SetActive(true);
@@ -235,6 +204,7 @@ public class MenuManager : MonoBehaviour {
         AttackManager.Instance.ClearAttack();
         GridManager.Instance.ClearPotentialAttacks();
         GridManager.Instance.ClearPotentialMoves();
+        UnitManager.Instance.HeroMoving = false;
         RemoveHeroAttackButtons();
         _cancelButton.SetActive(false);
         _attackButton.SetActive(true);

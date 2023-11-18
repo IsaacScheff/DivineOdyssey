@@ -71,49 +71,104 @@ public abstract class Tile : MonoBehaviour {
         MenuManager.Instance.ShowTileInfo(null);
     }
 
-    void OnMouseDown() {
-        if(GameManager.Instance.GameState != GameState.HeroesTurn) return;
+    // void OnMouseDown() {
+    //     if(GameManager.Instance.GameState != GameState.HeroesTurn) return;
 
-        if(AttackManager.Instance.CurrentAttack != null) {
+    //     if(AttackManager.Instance.CurrentAttack != null) {
+    //         AttackManager.Instance.Target = this;
+    //         AttackManager.Instance.CurrentAttack.Execute(
+    //             AttackManager.Instance.Attacker,
+    //             this.OccupiedUnit,
+    //             AttackManager.Instance
+    //         );
+    //         MenuManager.Instance.RemoveHeroAttackButtons();  // Clear existing attack buttons
+    //         MenuManager.Instance.CancelClicked();
+    //         GridManager.Instance.ClearPotentialAttacks();
+    //         return;
+    //     }
+
+    //     if(this._potentialAttack.activeSelf) {
+    //         AttackManager.Instance.Target = this;
+    //         GridManager.Instance.ClearPotentialAttacks();
+    //         return;
+    //     } 
+
+    //     if(OccupiedUnit != null){
+    //         if(OccupiedUnit.Faction == Faction.Hero) {
+    //             if(UnitManager.Instance.SelectedHero == true) {
+    //                 MenuManager.Instance.CancelClicked();
+    //                 MenuManager.Instance.RemoveHeroAttackButtons();
+    //             }
+    //             UnitManager.Instance.SetSelectedHero((BaseHero)OccupiedUnit);
+    //             GridManager.Instance.StartTile = this;
+    //             if(UnitManager.Instance.SelectedHero.TakenActions == false) {
+    //                 MenuManager.Instance.ShowHeroActions((BaseHero)OccupiedUnit);
+    //             }
+    //         }
+    //     } else if(UnitManager.Instance.SelectedHero != null && UnitManager.Instance.HeroMoving == true) {
+    //         if(this._potentialMove != null && this._potentialMove.activeSelf) {
+    //             SetUnit(UnitManager.Instance.SelectedHero);
+    //             UnitManager.Instance.UseAP(UnitManager.Instance.SelectedHero, 1);
+    //             MenuManager.Instance.CancelClicked();
+    //         }
+    //         UnitManager.Instance.HeroMoving = false;
+    //         GridManager.Instance.ClearPotentialMoves();
+    //     }
+    // }
+    void OnMouseDown() {
+        if (GameManager.Instance.GameState != GameState.HeroesTurn) return;
+
+        // When an attack is selected and a target tile is clicked
+        if (AttackManager.Instance.CurrentAttack != null) {
+            // Set the target and execute the attack
             AttackManager.Instance.Target = this;
             AttackManager.Instance.CurrentAttack.Execute(
                 AttackManager.Instance.Attacker,
                 this.OccupiedUnit,
                 AttackManager.Instance
             );
+
+            // Clear potential attacks and reset UI
+            MenuManager.Instance.RemoveHeroAttackButtons();  // Clear existing attack buttons
             MenuManager.Instance.CancelClicked();
             GridManager.Instance.ClearPotentialAttacks();
             return;
         }
 
-        if(this._potentialAttack.activeSelf) {
-            AttackManager.Instance.Target = this;
-            GridManager.Instance.ClearPotentialAttacks();
+        // When an attack mode is active but a non-targetable tile is clicked
+        if (AttackManager.Instance.CurrentAttack != null && !this._potentialAttack.activeSelf) {
+            // Cancel the attack mode
+            MenuManager.Instance.CancelClicked();
+            MenuManager.Instance.RemoveHeroAttackButtons();
             return;
-        } 
+        }
 
-        if(OccupiedUnit != null){
-            if(OccupiedUnit.Faction == Faction.Hero) {
-                if(UnitManager.Instance.SelectedHero == true) {
-                    MenuManager.Instance.CancelClicked();
-                    MenuManager.Instance.RemoveHeroAttackButtons();
-                }
-                UnitManager.Instance.SetSelectedHero((BaseHero)OccupiedUnit);
-                GridManager.Instance.StartTile = this;
-                if(UnitManager.Instance.SelectedHero.TakenActions == false) {
-                    MenuManager.Instance.ShowHeroActions((BaseHero)OccupiedUnit);
-                }
-            }
-        } else if(UnitManager.Instance.SelectedHero != null && UnitManager.Instance.HeroMoving == true) {
-            if(this._potentialMove != null && this._potentialMove.activeSelf) {
-                SetUnit(UnitManager.Instance.SelectedHero);
-                UnitManager.Instance.UseAP(UnitManager.Instance.SelectedHero, 1);
+        // When a hero unit is clicked
+        if (OccupiedUnit != null && OccupiedUnit.Faction == Faction.Hero) {
+            // Unselect the current hero if any
+            if (UnitManager.Instance.SelectedHero != null) {
                 MenuManager.Instance.CancelClicked();
+                MenuManager.Instance.RemoveHeroAttackButtons();
             }
-            UnitManager.Instance.HeroMoving = false;
+
+            // Select the new hero
+            UnitManager.Instance.SetSelectedHero((BaseHero)OccupiedUnit);
+            GridManager.Instance.StartTile = this;
+            if (!UnitManager.Instance.SelectedHero.TakenActions) {
+                MenuManager.Instance.ShowHeroActions((BaseHero)OccupiedUnit);
+            }
+        }
+        
+        // When moving a hero to a new tile
+        else if (UnitManager.Instance.SelectedHero != null && UnitManager.Instance.HeroMoving && this._potentialMove.activeSelf) {
+            SetUnit(UnitManager.Instance.SelectedHero);
+            UnitManager.Instance.UseAP(UnitManager.Instance.SelectedHero, 1);
+            MenuManager.Instance.CancelClicked();
             GridManager.Instance.ClearPotentialMoves();
+            UnitManager.Instance.HeroMoving = false;
         }
     }
+
 
     public void SetUnit(BaseUnit unit) {
         if(unit.OccupiedTile != null) unit.OccupiedTile.OccupiedUnit = null;
