@@ -34,6 +34,9 @@ public class MenuManager : MonoBehaviour {
         }
         Button MenuButton = _menuButton.GetComponent<Button>();
         MenuButton.onClick.AddListener(() => ToggleMenu());
+
+        Button EndTurnButton = _endTurnButton.GetComponent<Button>();
+        EndTurnButton.onClick.AddListener(() => EndTurn());
     }
 
     void OnDestroy() {
@@ -105,7 +108,6 @@ public class MenuManager : MonoBehaviour {
     public void ShowHeroActions(BaseHero hero) {
         if (_isMenuOpen) {
             CloseMenu();
-            _isMenuOpen = false;
         }
         // First, remove any existing attack buttons
         RemoveHeroAttackButtons();
@@ -238,14 +240,18 @@ public class MenuManager : MonoBehaviour {
         }
         _isMenuOpen = !_isMenuOpen;
     }
-
     private void OpenMenu() {
         CancelClicked();
         _actionMenu.SetActive(false);
         _generalMenu.SetActive(true);
     }
-
     private void CloseMenu() {
         _generalMenu.SetActive(false);
+        _isMenuOpen = false; // Ensure consistency of the menu state
+    }
+    private void EndTurn() {
+        Debug.Log("Ending player turn");
+        CloseMenu();
+        GameManager.Instance.ChangeState(GameState.EnemiesTurn);
     }
 }
