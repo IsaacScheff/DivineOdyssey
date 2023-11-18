@@ -51,7 +51,7 @@ public class AttackManager : MonoBehaviour {
         CurrentAttack = null;
         Target = null;
     }
-    public bool RollAttack(int hitChance) => hitChance > rng.Next(1, 101); //need to incorporate accuracy and evasion
+    public bool RollAttack(int hitChance, int accuracy, int evasion) => hitChance + accuracy - evasion > rng.Next(1, 101); //need to incorporate accuracy and evasion
     public int RollDamage(int attackDamage, int attackStat, int defenseStat, int critChance, int critMultiplier) {
         int critDamage = critChance > rng.Next(1, 101) ? critMultiplier : 1;
         return (attackDamage + attackStat - defenseStat) * critDamage;

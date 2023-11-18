@@ -77,7 +77,7 @@ public class BasePhysicalAttack : Attack {
             attackManager.ClearAttack();
             return;
         }
-        bool isHit = attackManager.RollAttack(HitChance);
+        bool isHit = attackManager.RollAttack(HitChance, attacker.CurrentAccuracy, defender.CurrentEvasion);
         int damageDealt = 0;
 
         if(isHit) {

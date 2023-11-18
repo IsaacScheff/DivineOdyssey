@@ -71,50 +71,6 @@ public abstract class Tile : MonoBehaviour {
         MenuManager.Instance.ShowTileInfo(null);
     }
 
-    // void OnMouseDown() {
-    //     if(GameManager.Instance.GameState != GameState.HeroesTurn) return;
-
-    //     if(AttackManager.Instance.CurrentAttack != null) {
-    //         AttackManager.Instance.Target = this;
-    //         AttackManager.Instance.CurrentAttack.Execute(
-    //             AttackManager.Instance.Attacker,
-    //             this.OccupiedUnit,
-    //             AttackManager.Instance
-    //         );
-    //         MenuManager.Instance.RemoveHeroAttackButtons();  // Clear existing attack buttons
-    //         MenuManager.Instance.CancelClicked();
-    //         GridManager.Instance.ClearPotentialAttacks();
-    //         return;
-    //     }
-
-    //     if(this._potentialAttack.activeSelf) {
-    //         AttackManager.Instance.Target = this;
-    //         GridManager.Instance.ClearPotentialAttacks();
-    //         return;
-    //     } 
-
-    //     if(OccupiedUnit != null){
-    //         if(OccupiedUnit.Faction == Faction.Hero) {
-    //             if(UnitManager.Instance.SelectedHero == true) {
-    //                 MenuManager.Instance.CancelClicked();
-    //                 MenuManager.Instance.RemoveHeroAttackButtons();
-    //             }
-    //             UnitManager.Instance.SetSelectedHero((BaseHero)OccupiedUnit);
-    //             GridManager.Instance.StartTile = this;
-    //             if(UnitManager.Instance.SelectedHero.TakenActions == false) {
-    //                 MenuManager.Instance.ShowHeroActions((BaseHero)OccupiedUnit);
-    //             }
-    //         }
-    //     } else if(UnitManager.Instance.SelectedHero != null && UnitManager.Instance.HeroMoving == true) {
-    //         if(this._potentialMove != null && this._potentialMove.activeSelf) {
-    //             SetUnit(UnitManager.Instance.SelectedHero);
-    //             UnitManager.Instance.UseAP(UnitManager.Instance.SelectedHero, 1);
-    //             MenuManager.Instance.CancelClicked();
-    //         }
-    //         UnitManager.Instance.HeroMoving = false;
-    //         GridManager.Instance.ClearPotentialMoves();
-    //     }
-    // }
     void OnMouseDown() {
         if (GameManager.Instance.GameState != GameState.HeroesTurn) return;
 

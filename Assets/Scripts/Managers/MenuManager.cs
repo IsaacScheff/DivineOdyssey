@@ -217,7 +217,7 @@ public class MenuManager : MonoBehaviour {
         //which offense and defense stats are used
         int noCrit = AttackManager.Instance.RollDamage(attack.PublicDamage, AttackManager.Instance.Attacker.CurrentStrength, target.CurrentGrit, 0, 1);
         int critDamage = AttackManager.Instance.RollDamage(attack.PublicDamage, AttackManager.Instance.Attacker.CurrentStrength, target.CurrentGrit, 100, 2);
-        preview += $"{attack.PublicHitChance}% to hit\n\n";
+        preview += $"{attack.PublicHitChance + AttackManager.Instance.Attacker.CurrentAccuracy - target.CurrentEvasion}% to hit\n\n";
         preview += $"Normal Damage: \n{noCrit}\n\n";
         preview += $"Crit Chance: \n{attack.PublicCritChance}%\n\n";
         preview += $"Crit Damage: \n{critDamage}";
