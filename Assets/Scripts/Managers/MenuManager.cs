@@ -17,6 +17,10 @@ public class MenuManager : MonoBehaviour {
     [SerializeField] private GameObject _attackButtonPrefab;
     [SerializeField] private GameObject _cancelButton;
     [SerializeField] private GameObject _actionMenuAP;
+    [SerializeField] private GameObject _generalMenu;
+    [SerializeField] private GameObject _endTurnButton;
+    [SerializeField] private GameObject _menuButton;
+    private bool _isMenuOpen = false;
     private List<GameObject> _attackButtonList = new List<GameObject>();
     private BaseHero _previousSelectedHero;
 
@@ -28,6 +32,8 @@ public class MenuManager : MonoBehaviour {
         if (UnitManager.Instance != null) {
             UnitManager.Instance.OnHeroSelected += ShowSelectedHero;
         }
+        Button MenuButton = _menuButton.GetComponent<Button>();
+        MenuButton.onClick.AddListener(() => ToggleMenu());
     }
 
     void OnDestroy() {
@@ -97,6 +103,10 @@ public class MenuManager : MonoBehaviour {
     }
 
     public void ShowHeroActions(BaseHero hero) {
+        if (_isMenuOpen) {
+            CloseMenu();
+            _isMenuOpen = false;
+        }
         // First, remove any existing attack buttons
         RemoveHeroAttackButtons();
 
@@ -122,17 +132,6 @@ public class MenuManager : MonoBehaviour {
         if (UnitManager.Instance.SelectedHero != null) {
             _moveButton.GetComponent<Button>().interactable = UnitManager.Instance.SelectedHero.CurrentAP >= 1;
         }
-    }
-    private void SetupAttackButton(GameObject buttonObj, Attack attack, BaseHero hero) {
-        Button button = buttonObj.GetComponent<Button>();
-        TextMeshProUGUI buttonText = buttonObj.GetComponentInChildren<TextMeshProUGUI>();
-
-        if (buttonText != null) {
-            buttonText.text = attack.Name;
-        }
-
-        button.interactable = hero.CurrentAP >= attack.PublicCostAP;
-        button.onClick.AddListener(() => attack.Target(hero, GridManager.Instance));
     }
 
     public void ShowHeroAttacks(BaseHero hero) {
@@ -231,5 +230,22 @@ public class MenuManager : MonoBehaviour {
             remainingAP.text = $"AP: {UnitManager.Instance.SelectedHero.CurrentAP}";
         }
     }
+    private void ToggleMenu() {
+        if (_isMenuOpen) {
+            CloseMenu();
+        } else {
+            OpenMenu();
+        }
+        _isMenuOpen = !_isMenuOpen;
+    }
 
+    private void OpenMenu() {
+        CancelClicked();
+        _actionMenu.SetActive(false);
+        _generalMenu.SetActive(true);
+    }
+
+    private void CloseMenu() {
+        _generalMenu.SetActive(false);
+    }
 }
