@@ -13,6 +13,7 @@ public class TurnManager : MonoBehaviour {
         foreach (var enemy in FindObjectsOfType<BaseEnemy>()) {
             UnitManager.Instance.ExecuteBehavior(enemy);
         }
+        GameManager.Instance.ChangeState(GameState.HeroesTurn);
     }
 
 
