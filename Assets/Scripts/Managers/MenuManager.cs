@@ -238,12 +238,12 @@ public class MenuManager : MonoBehaviour {
         } else {
             OpenMenu();
         }
-        _isMenuOpen = !_isMenuOpen;
     }
     private void OpenMenu() {
         CancelClicked();
         _actionMenu.SetActive(false);
         _generalMenu.SetActive(true);
+        _isMenuOpen = true;
     }
     private void CloseMenu() {
         _generalMenu.SetActive(false);
