@@ -2,15 +2,19 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+
 public static class Targetfinding {
+    private const int MaxIterations = 10000; // Define a maximum number of iterations
+
     public static List<Tile> FindPath(Tile startNode, Tile targetNode) {
-        if(startNode == null || targetNode == null) {
+        if (startNode == null || targetNode == null) {
             throw new ArgumentNullException("StartNode or TargetNode is null.");
         }
 
         var toSearch = new List<Tile>() { startNode };
-        var processed = new List<Tile>();
-    
+        var processed = new HashSet<Tile>();
+        int iterations = 0;
+
         while (toSearch.Any()) {
             var current = toSearch[0];
             foreach (var t in toSearch) {
@@ -24,12 +28,10 @@ public static class Targetfinding {
                 if (targetNode.OccupiedUnit != null && targetNode.OccupiedUnit is BaseHero) {
                     return ConstructPath(startNode, targetNode);
                 }
-                // If the target node is not occupied by a BaseHero, don't construct a path
                 return null;
             }
 
             foreach (var neighbor in current.Neighbors) {
-                // Adjust the condition to include tiles occupied by BaseHero units
                 if ((!neighbor.Walkable && neighbor.OccupiedUnit is BaseHero) || (neighbor.Walkable && !processed.Contains(neighbor))) {
                     var inSearch = toSearch.Contains(neighbor);
                     var costToNeighbor = current.G + current.GetDistance(neighbor);
@@ -45,8 +47,14 @@ public static class Targetfinding {
                     }
                 }
             }
+
+            if (++iterations > MaxIterations) {
+                Debug.LogError("Targetfinding: Exceeded max iterations. No path found.");
+                return null;
+            }
         }
-        return null; // Return null if no path is found to a tile occupied by a BaseHero
+
+        return null;
     }
 
     private static List<Tile> ConstructPath(Tile startNode, Tile targetNode) {
@@ -55,8 +63,12 @@ public static class Targetfinding {
         while (currentPathTile != startNode) {
             path.Add(currentPathTile);
             currentPathTile = currentPathTile.Connection;
+            if (currentPathTile == null) {
+                Debug.LogError("Targetfinding: Path construction failed due to a missing connection.");
+                return null;
+            }
         }
-        //path.Reverse(); // Optional: reverse the path if you want it from start to target
+        //path.Reverse();
         return path;
     }
 }
