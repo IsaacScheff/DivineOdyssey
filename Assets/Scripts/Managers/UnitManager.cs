@@ -109,17 +109,17 @@ public class UnitManager : MonoBehaviour {
             Debug.Log(target);
         }
 
-        Debug.Log("UnitManager 112");
-
         BaseUnit targetHero = CompareAttackResults(possibleTargets, enemy); 
         Debug.Log(targetHero);
         
+        var pathToTarget = Targetfinding.FindPath(enemy.OccupiedTile, targetHero.OccupiedTile);
+        Invoke("ClearGridPotentialMoves", 3); //consider using coroutines for delays to improve performance etc.
+        MoveEnemy(enemy, pathToTarget[1]);
+
         GridManager.Instance.HighlightMoveOptions(enemy.OccupiedTile, enemy.CurrentMovement);
+        //move next to targetHero
 
-        Invoke("ClearGridPotentialMoves", 3);
-        //consider using coroutines for delays to improve performance etc. 
-
-        //move to closest square adjacent to this target and attack them 
+        //attack target hero
     }
 
     public void AggressiveRangeBehavior(BaseEnemy enemy) {
@@ -175,5 +175,10 @@ public class UnitManager : MonoBehaviour {
 
         return expDamage;
     }   
+
+    public void MoveEnemy(BaseUnit enemy, Tile tile) { //will change from just target tile to navigating whole path
+        tile.SetUnit(enemy);
+        //reduce AP
+    }
 
 }
