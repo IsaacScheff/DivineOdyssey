@@ -102,12 +102,18 @@ public class UnitManager : MonoBehaviour {
     public void ClearGridPotentialMoves() {
         GridManager.Instance.ClearPotentialMoves();
     }
-    public void AggressiveMeleeBehavior(BaseEnemy enemy) {
+    public void AggressiveMeleeBehavior(BaseEnemy enemy) { //pass in list of attacks?
         //UnityEngine.Debug.Log("Aggro melee behavior function runs");
-        List<BaseHero> possibleTargets = FindPossibleTargets(enemy, enemy.CurrentMovement);
-        Debug.Log(possibleTargets);
-        //itterate through possibleTargets and run expectedDamage 
-        //to find target with lowest expected health reamining 
+        List<BaseUnit> possibleTargets = FindPossibleTargets(enemy, enemy.CurrentMovement);
+        foreach(BaseUnit target in possibleTargets) {
+            Debug.Log(target);
+        }
+
+        Debug.Log("UnitManager 112");
+
+        BaseUnit targetHero = CompareAttackResults(possibleTargets, enemy); 
+        Debug.Log(targetHero);
+        
         GridManager.Instance.HighlightMoveOptions(enemy.OccupiedTile, enemy.CurrentMovement);
 
         Invoke("ClearGridPotentialMoves", 3);
@@ -120,25 +126,53 @@ public class UnitManager : MonoBehaviour {
         // Implement the behavior logic for aggressive ranged enemies
     }
 
-    public List<BaseHero> FindPossibleTargets(BaseEnemy activeEnemy, int range) {
-        List<BaseHero> targets = new List<BaseHero>();
+    public List<BaseUnit> FindPossibleTargets(BaseEnemy activeEnemy, int range) {
+        List<BaseUnit> targets = new List<BaseUnit>();
         //use current movement to determine what heroes can be reached and attacked 
         Debug.Log("find targets function");
         foreach (Tile tile in GridManager.Instance.Tiles.Values) {
             var path = Targetfinding.FindPath(activeEnemy.OccupiedTile, tile);
             if (path != null && path.Count <= range) {
                 //tile.MoveHighlightOn();
-                Debug.Log(path[0].OccupiedUnit);
+                targets.Add(path[0].OccupiedUnit);
             }
         }
-    
         return targets;
     }
 
-    public int ExpectedDamage() {
-    //hero.currentHealth - (0.5 * hitChance * (regularDamage * (100 - critChance) + (critChance * critDamage)))
-        int expDamage = 0;
-        
+    public BaseUnit CompareAttackResults(List<BaseUnit> targets, BaseEnemy attacker) {
+        BaseUnit selectedTarget = null;
+        float selectedTargetExpectedHealth = float.MaxValue;
+        float expectedHealth;
+
+        Attack attack = attacker.AvailableAttacks[0]; //Assuming one attack for simplicity
+        //Debug.Log(attack);
+
+        foreach(BaseUnit target in targets) {
+            expectedHealth = ExpectedDamage(target, attacker, attack);
+
+            if(expectedHealth < selectedTargetExpectedHealth) {
+                selectedTarget = target;
+                selectedTargetExpectedHealth = expectedHealth;
+            }
+        }
+        return selectedTarget;
+    }
+
+    public float ExpectedDamage(BaseUnit defender, BaseUnit attacker, Attack attack) {
+        // Convert percentages to decimals for calculation
+        float hitChance = attack.PublicHitChance / 100f;
+        float critChance = attack.PublicCritChance / 100f;
+        float nonCritChance = 1 - critChance;
+
+        // Calculate expected damage
+        float expectedNormalDamage = attack.PublicDamage * nonCritChance;
+        float expectedCritDamage = attack.PublicDamage * attack.PublicCritMultiplier * critChance;
+        float totalExpectedDamage = (expectedNormalDamage + expectedCritDamage) * hitChance;
+
+        // Calculate expected damage to the defender
+        float expDamage = defender.CurrentHealth - totalExpectedDamage;
+
         return expDamage;
     }   
 
