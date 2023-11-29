@@ -112,20 +112,29 @@ public class UnitManager : MonoBehaviour {
         BaseUnit targetHero = CompareAttackResults(possibleTargets, enemy); 
         Debug.Log(targetHero);
         
-        var pathToTarget = Targetfinding.FindPath(enemy.OccupiedTile, targetHero.OccupiedTile);
-        Invoke("ClearGridPotentialMoves", 3); //consider using coroutines for delays to improve performance etc.
-        MoveEnemy(enemy, pathToTarget[1]);
-
         GridManager.Instance.HighlightMoveOptions(enemy.OccupiedTile, enemy.CurrentMovement);
-        //move next to targetHero
+        
+        var pathToTarget = Targetfinding.FindPath(enemy.OccupiedTile, targetHero.OccupiedTile);
+        StartCoroutine(ExecuteWithDelay(enemy, pathToTarget[1]));
+
+        AttackHero(enemy, targetHero);
 
         //attack target hero
     }
+    IEnumerator ExecuteWithDelay(BaseEnemy enemy, Tile nextTile) {
+        yield return new WaitForSeconds(2);  // Wait for 2 seconds
+        MoveEnemy(enemy, nextTile);  // Continue execution after delay
+        ClearGridPotentialMoves();
+    }
 
+    public void AttackHero(BaseUnit enemy, BaseUnit target) {
+        AttackManager.Instance.Target = target.OccupiedTile;
+        AttackManager.Instance.CurrentAttack.Execute(enemy, target, AttackManager.Instance);
+        AttackManager.Instance.ClearAttack();
+    }
     public void AggressiveRangeBehavior(BaseEnemy enemy) {
         // Implement the behavior logic for aggressive ranged enemies
     }
-
     public List<BaseUnit> FindPossibleTargets(BaseEnemy activeEnemy, int range) {
         List<BaseUnit> targets = new List<BaseUnit>();
         //use current movement to determine what heroes can be reached and attacked 
@@ -139,7 +148,6 @@ public class UnitManager : MonoBehaviour {
         }
         return targets;
     }
-
     public BaseUnit CompareAttackResults(List<BaseUnit> targets, BaseEnemy attacker) {
         BaseUnit selectedTarget = null;
         float selectedTargetExpectedHealth = float.MaxValue;
@@ -156,9 +164,9 @@ public class UnitManager : MonoBehaviour {
                 selectedTargetExpectedHealth = expectedHealth;
             }
         }
+        AttackManager.Instance.CurrentAttack = attack;
         return selectedTarget;
     }
-
     public float ExpectedDamage(BaseUnit defender, BaseUnit attacker, Attack attack) {
         // Convert percentages to decimals for calculation
         float hitChance = attack.PublicHitChance / 100f;
@@ -175,7 +183,6 @@ public class UnitManager : MonoBehaviour {
 
         return expDamage;
     }   
-
     public void MoveEnemy(BaseUnit enemy, Tile tile) { //will change from just target tile to navigating whole path
         tile.SetUnit(enemy);
         //reduce AP
