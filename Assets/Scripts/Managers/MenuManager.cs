@@ -250,7 +250,7 @@ public class MenuManager : MonoBehaviour {
         _isMenuOpen = false; // Ensure consistency of the menu state
     }
     private void EndTurn() {
-        Debug.Log("Ending player turn");
+        //Debug.Log("Ending player turn");
         CloseMenu();
         GameManager.Instance.ChangeState(GameState.EnemiesTurn);
     }

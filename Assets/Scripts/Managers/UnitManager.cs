@@ -99,14 +99,47 @@ public class UnitManager : MonoBehaviour {
             behavior.Invoke(enemy);
         }
     }
-
+    public void ClearGridPotentialMoves() {
+        GridManager.Instance.ClearPotentialMoves();
+    }
     public void AggressiveMeleeBehavior(BaseEnemy enemy) {
-        UnityEngine.Debug.Log("Aggro melee behavior function runs");
-        // Implement the behavior logic for aggressive melee enemies
+        //UnityEngine.Debug.Log("Aggro melee behavior function runs");
+        List<BaseHero> possibleTargets = FindPossibleTargets(enemy, enemy.CurrentMovement);
+        Debug.Log(possibleTargets);
+        //itterate through possibleTargets and run expectedDamage 
+        //to find target with lowest expected health reamining 
+        GridManager.Instance.HighlightMoveOptions(enemy.OccupiedTile, enemy.CurrentMovement);
+
+        Invoke("ClearGridPotentialMoves", 3);
+        //consider using coroutines for delays to improve performance etc. 
+
+        //move to closest square adjacent to this target and attack them 
     }
 
     public void AggressiveRangeBehavior(BaseEnemy enemy) {
         // Implement the behavior logic for aggressive ranged enemies
     }
+
+    public List<BaseHero> FindPossibleTargets(BaseEnemy activeEnemy, int range) {
+        List<BaseHero> targets = new List<BaseHero>();
+        //use current movement to determine what heroes can be reached and attacked 
+        Debug.Log("find targets function");
+        foreach (Tile tile in GridManager.Instance.Tiles.Values) {
+            var path = Targetfinding.FindPath(activeEnemy.OccupiedTile, tile);
+            if (path != null && path.Count <= range) {
+                //tile.MoveHighlightOn();
+                Debug.Log(path[0].OccupiedUnit);
+            }
+        }
+    
+        return targets;
+    }
+
+    public int ExpectedDamage() {
+    //hero.currentHealth - (0.5 * hitChance * (regularDamage * (100 - critChance) + (critChance * critDamage)))
+        int expDamage = 0;
+        
+        return expDamage;
+    }   
 
 }
