@@ -102,7 +102,7 @@ public class UnitManager : MonoBehaviour {
     public void ClearGridPotentialMoves() {
         GridManager.Instance.ClearPotentialMoves();
     }
-    public void AggressiveMeleeBehavior(BaseEnemy enemy) { //pass in list of attacks?
+    public void AggressiveMeleeBehavior(BaseEnemy enemy) { 
         //UnityEngine.Debug.Log("Aggro melee behavior function runs");
         List<BaseUnit> possibleTargets = FindPossibleTargets(enemy, enemy.CurrentMovement + 1);
         foreach(BaseUnit target in possibleTargets) {
@@ -112,10 +112,12 @@ public class UnitManager : MonoBehaviour {
         BaseUnit targetHero = CompareAttackResults(possibleTargets, enemy); 
         Debug.Log(targetHero);
         
-        GridManager.Instance.HighlightMoveOptions(enemy.OccupiedTile, enemy.CurrentMovement);
+        //GridManager.Instance.HighlightMoveOptions(enemy.OccupiedTile, enemy.CurrentMovement);
         
         var pathToTarget = Targetfinding.FindPath(enemy.OccupiedTile, targetHero.OccupiedTile);
-        StartCoroutine(ExecuteWithDelay(enemy, pathToTarget[1]));
+
+        if(pathToTarget.Count > 1)
+            StartCoroutine(ExecuteWithDelay(enemy, pathToTarget[1]));
 
         AttackHero(enemy, targetHero);
 
