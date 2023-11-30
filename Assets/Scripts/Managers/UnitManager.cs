@@ -104,7 +104,7 @@ public class UnitManager : MonoBehaviour {
     }
     public void AggressiveMeleeBehavior(BaseEnemy enemy) { //pass in list of attacks?
         //UnityEngine.Debug.Log("Aggro melee behavior function runs");
-        List<BaseUnit> possibleTargets = FindPossibleTargets(enemy, enemy.CurrentMovement);
+        List<BaseUnit> possibleTargets = FindPossibleTargets(enemy, enemy.CurrentMovement + 1);
         foreach(BaseUnit target in possibleTargets) {
             Debug.Log(target);
         }
@@ -138,7 +138,7 @@ public class UnitManager : MonoBehaviour {
     public List<BaseUnit> FindPossibleTargets(BaseEnemy activeEnemy, int range) {
         List<BaseUnit> targets = new List<BaseUnit>();
         //use current movement to determine what heroes can be reached and attacked 
-        Debug.Log("find targets function");
+        //Debug.Log("find targets function");
         foreach (Tile tile in GridManager.Instance.Tiles.Values) {
             var path = Targetfinding.FindPath(activeEnemy.OccupiedTile, tile);
             if (path != null && path.Count <= range) {
