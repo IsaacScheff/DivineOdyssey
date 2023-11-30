@@ -14,13 +14,14 @@ public class UnitManager : MonoBehaviour {
     public bool HeroMoving;
     Dictionary<EnemyAI, EnemyBehavior> enemyBehaviorDict = new Dictionary<EnemyAI, EnemyBehavior>();
 
+    private System.Random _random = new System.Random();
+
     void Awake() {
         Instance = this;
 
         _units = Resources.LoadAll<ScriptableUnit>("Units").ToList();
 
         InitializeEnemyBehaviors();
-
     }
     private void InitializeEnemyBehaviors() {
         enemyBehaviorDict.Add(EnemyAI.AggresiveMelee, AggressiveMeleeBehavior);
@@ -108,20 +109,22 @@ public class UnitManager : MonoBehaviour {
         foreach(BaseUnit target in possibleTargets) {
             Debug.Log(target);
         }
+        if(possibleTargets.Count != 0) {
+            BaseUnit targetHero = CompareAttackResults(possibleTargets, enemy); 
+            Debug.Log(targetHero);
+            
+            //GridManager.Instance.HighlightMoveOptions(enemy.OccupiedTile, enemy.CurrentMovement);
+            
+            var pathToTarget = Targetfinding.FindPath(enemy.OccupiedTile, targetHero.OccupiedTile);
 
-        BaseUnit targetHero = CompareAttackResults(possibleTargets, enemy); 
-        Debug.Log(targetHero);
-        
-        //GridManager.Instance.HighlightMoveOptions(enemy.OccupiedTile, enemy.CurrentMovement);
-        
-        var pathToTarget = Targetfinding.FindPath(enemy.OccupiedTile, targetHero.OccupiedTile);
+            if(pathToTarget.Count > 1)
+                StartCoroutine(ExecuteWithDelay(enemy, pathToTarget[1]));
 
-        if(pathToTarget.Count > 1)
-            StartCoroutine(ExecuteWithDelay(enemy, pathToTarget[1]));
-
-        AttackHero(enemy, targetHero);
-
-        //attack target hero
+            AttackHero(enemy, targetHero);
+        } else {
+            var randomPath = MoveToRandom(enemy);
+            MoveEnemy(enemy, randomPath[0]);
+        }
     }
     IEnumerator ExecuteWithDelay(BaseEnemy enemy, Tile nextTile) {
         yield return new WaitForSeconds(2);  // Wait for 2 seconds
@@ -150,6 +153,27 @@ public class UnitManager : MonoBehaviour {
         }
         return targets;
     }
+
+    public List<Tile> MoveToRandom(BaseEnemy activeEnemy) {
+        List<List<Tile>> possiblePaths = new List<List<Tile>>();
+
+        foreach (Tile tile in GridManager.Instance.Tiles.Values) {
+            var path = Pathfinding.FindPath(activeEnemy.OccupiedTile, tile);
+            if (path != null && path.Count <= activeEnemy.CurrentMovement) {
+                possiblePaths.Add(path);
+            }
+        }
+
+        // Check if possiblePaths has any paths before trying to access an element
+        if (possiblePaths.Count > 0) {
+            var random = new System.Random();
+            var chosenPath = possiblePaths[random.Next(possiblePaths.Count)];
+            return chosenPath;
+        } else {
+            return null; // Return null or an empty list if no path is found
+        }
+    }
+
     public BaseUnit CompareAttackResults(List<BaseUnit> targets, BaseEnemy attacker) {
         BaseUnit selectedTarget = null;
         float selectedTargetExpectedHealth = float.MaxValue;

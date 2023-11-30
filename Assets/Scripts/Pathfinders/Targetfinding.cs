@@ -9,7 +9,7 @@ public static class Targetfinding {
         if (startNode == null || targetNode == null) {
             throw new ArgumentNullException("StartNode or TargetNode is null.");
         }
-        Debug.Log("Target Finding started");
+        //Debug.Log("Target Finding started");
 
         var toSearch = new PriorityQueue<Tile, float>();
         var processed = new HashSet<Tile>();
