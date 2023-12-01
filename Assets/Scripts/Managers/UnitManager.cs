@@ -211,7 +211,7 @@ public class UnitManager : MonoBehaviour {
     }   
     public void MoveEnemy(BaseUnit enemy, Tile tile) { //will change from just target tile to navigating whole path
         tile.SetUnit(enemy);
-        //reduce AP
+        enemy.ModifyAP(-1);
     }
 
 }
