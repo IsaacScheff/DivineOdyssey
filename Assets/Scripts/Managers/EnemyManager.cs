@@ -20,7 +20,7 @@ public class EnemyManager : MonoBehaviour {
         TurnManager.Instance.EndEnemyTurn();
         //StartCoroutine(EndWithDelay());
     }
-    // IEnumerator EndWithDelay() { //this function is for testing enemy tun GameState functionality 
+    // IEnumerator EndWithDelay() { //this function is for testing enemy turn GameState functionality 
     //     yield return new WaitForSeconds(5);  
     //     TurnManager.Instance.EndEnemyTurn();
     // }
@@ -37,25 +37,27 @@ public class EnemyManager : MonoBehaviour {
     public void AggressiveMeleeBehavior(BaseEnemy enemy) { 
         //UnityEngine.Debug.Log("Aggro melee behavior function runs");
         List<BaseUnit> possibleTargets = FindPossibleTargets(enemy, enemy.CurrentMovement + 1);
-        foreach(BaseUnit target in possibleTargets) {
-            Debug.Log(target);
-        }
+        // foreach(BaseUnit target in possibleTargets) {
+        //     Debug.Log(target);
+        // }
         if(possibleTargets.Count != 0) {
             BaseUnit targetHero = CompareAttackResults(possibleTargets, enemy); 
-            Debug.Log(targetHero);
+            //Debug.Log(targetHero);
             
             //GridManager.Instance.HighlightMoveOptions(enemy.OccupiedTile, enemy.CurrentMovement);
             
             var pathToTarget = Targetfinding.FindPath(enemy.OccupiedTile, targetHero.OccupiedTile);
 
             if(pathToTarget != null && pathToTarget.Count > 1) {
-                MoveEnemy(enemy, pathToTarget[1]);
+                //MoveEnemy(enemy, pathToTarget[1]);
+                MoveEnemyAlongPath(enemy, pathToTarget);
             }
             AttackHero(enemy, targetHero);
         } else {
             var randomPath = MoveToRandom(enemy);
             if(randomPath != null && randomPath.Count > 0) {
-                MoveEnemy(enemy, randomPath[0]);
+               // MoveEnemy(enemy, randomPath[0]);
+               MoveEnemyAlongPath(enemy, randomPath);
             }
         }
     }
@@ -93,7 +95,7 @@ public class EnemyManager : MonoBehaviour {
 
         foreach (Tile tile in GridManager.Instance.Tiles.Values) {
             var path = Pathfinding.FindPath(activeEnemy.OccupiedTile, tile);
-            if (path != null && path.Count <= activeEnemy.CurrentMovement) {
+            if (path != null && path.Count <= activeEnemy.CurrentMovement + 1) { //1 added to current movement as last tile in path is not moved on to
                 possiblePaths.Add(path);
             }
         }
@@ -145,4 +147,18 @@ public class EnemyManager : MonoBehaviour {
         tile.SetUnit(enemy);
         enemy.ModifyAP(-1);
     }
+
+    public void MoveEnemyAlongPath(BaseUnit enemy, List<Tile> path) {
+        StartCoroutine(MoveAlongPathCoroutine(enemy, path));
+    }
+    IEnumerator MoveAlongPathCoroutine(BaseUnit enemy, List<Tile> path) {
+        for(int i = path.Count; i > 1; i--) {
+            yield return StartCoroutine(MoveEnemySlow(enemy, path[i - 1]));
+        }
+    }
+    IEnumerator MoveEnemySlow(BaseUnit enemy, Tile tile) { 
+        yield return new WaitForSeconds(0.5f);  
+        MoveEnemy(enemy, tile);  
+    }
+
 }
