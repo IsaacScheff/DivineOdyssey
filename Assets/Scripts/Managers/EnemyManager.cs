@@ -18,7 +18,12 @@ public class EnemyManager : MonoBehaviour {
                 ExecuteBehavior(enemy);
         }
         TurnManager.Instance.EndEnemyTurn();
+        //StartCoroutine(EndWithDelay());
     }
+    // IEnumerator EndWithDelay() { //this function is for testing enemy tun GameState functionality 
+    //     yield return new WaitForSeconds(5);  
+    //     TurnManager.Instance.EndEnemyTurn();
+    // }
     private void InitializeEnemyBehaviors() {
         enemyBehaviorDict.Add(EnemyAI.AggresiveMelee, AggressiveMeleeBehavior);
         enemyBehaviorDict.Add(EnemyAI.AggresiveRange, AggressiveRangeBehavior);

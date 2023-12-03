@@ -240,6 +240,7 @@ public class MenuManager : MonoBehaviour {
         }
     }
     private void OpenMenu() {
+        if(GameManager.Instance.GameState != GameState.HeroesTurn) return;
         CancelClicked();
         _actionMenu.SetActive(false);
         _generalMenu.SetActive(true);
