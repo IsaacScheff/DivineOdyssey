@@ -14,8 +14,9 @@ public class EnemyManager : MonoBehaviour {
     public void ExecuteEnemyTurns() {
         var enemies = UnitManager.Instance.ActiveEnemies;
         foreach (BaseEnemy enemy in enemies) {
-            if(enemy != null)
+            if(enemy != null){
                 ExecuteBehavior(enemy);
+            }
         }
         TurnManager.Instance.EndEnemyTurn();
         //StartCoroutine(EndWithDelay());
@@ -25,8 +26,15 @@ public class EnemyManager : MonoBehaviour {
     //     TurnManager.Instance.EndEnemyTurn();
     // }
     private void InitializeEnemyBehaviors() {
-        enemyBehaviorDict.Add(EnemyAI.AggresiveMelee, AggressiveMeleeBehavior);
+        enemyBehaviorDict.Add(EnemyAI.AggresiveMelee, ExecuteAggressiveMeleeBehavior);
         enemyBehaviorDict.Add(EnemyAI.AggresiveRange, AggressiveRangeBehavior);
+    }
+    private void ExecuteAggressiveMeleeBehavior(BaseEnemy enemy) {
+        StartCoroutine(AggressiveMeleeBehaviorCoroutine(enemy));
+    }
+    private IEnumerator AggressiveMeleeBehaviorCoroutine(BaseEnemy enemy) {
+        yield return StartCoroutine(AggressiveMeleeBehavior(enemy));
+        // Any additional logic after AggressiveMeleeBehavior completes
     }
     public void ExecuteBehavior(BaseEnemy enemy) {
         EnemyAI aiType = enemy.EnemyAI; 
@@ -34,38 +42,41 @@ public class EnemyManager : MonoBehaviour {
             behavior.Invoke(enemy);
         }
     }
-    public void AggressiveMeleeBehavior(BaseEnemy enemy) { 
-        //UnityEngine.Debug.Log("Aggro melee behavior function runs");
-        List<BaseUnit> possibleTargets = FindPossibleTargets(enemy, enemy.CurrentMovement + 1);
-        // foreach(BaseUnit target in possibleTargets) {
-        //     Debug.Log(target);
-        // }
-        if(possibleTargets.Count != 0) {
-            BaseUnit targetHero = CompareAttackResults(possibleTargets, enemy); 
-            //Debug.Log(targetHero);
-            
-            //GridManager.Instance.HighlightMoveOptions(enemy.OccupiedTile, enemy.CurrentMovement);
-            
-            var pathToTarget = Targetfinding.FindPath(enemy.OccupiedTile, targetHero.OccupiedTile);
+    public IEnumerator AggressiveMeleeBehavior(BaseEnemy enemy) {
+        BaseUnit targetHero;
+        while (enemy.CurrentAP > 0) {
+            if (enemy.CurrentAP == 1) {
+                var adjacentTargets = FindPossibleTargets(enemy, 1);
+                if(adjacentTargets.Count > 0){
+                    targetHero = CompareAttackResults(adjacentTargets, enemy);
+                    AttackHero(enemy, targetHero);
+                } else {
+                    //ends turn to save up AP
+                    break;
+                }
+            } else {
+                List<BaseUnit> possibleTargets = FindPossibleTargets(enemy, enemy.CurrentMovement + 1);
+                if (possibleTargets.Count != 0) {
+                    targetHero = CompareAttackResults(possibleTargets, enemy);
+                    
+                    var pathToTarget = Targetfinding.FindPath(enemy.OccupiedTile, targetHero.OccupiedTile);
 
-            if(pathToTarget != null && pathToTarget.Count > 1) {
-                //MoveEnemy(enemy, pathToTarget[1]);
-                MoveEnemyAlongPath(enemy, pathToTarget);
+                    if (pathToTarget != null && pathToTarget.Count > 1) {
+                        MoveEnemyAlongPath(enemy, pathToTarget);
+                    }
+                    AttackHero(enemy, targetHero);
+                } else {
+                    var randomPath = MoveToRandom(enemy);
+                    if (randomPath != null && randomPath.Count > 0) {
+                        MoveEnemyAlongPath(enemy, randomPath);
+                    }
+                }
             }
-            AttackHero(enemy, targetHero);
-        } else {
-            var randomPath = MoveToRandom(enemy);
-            if(randomPath != null && randomPath.Count > 0) {
-               // MoveEnemy(enemy, randomPath[0]);
-               MoveEnemyAlongPath(enemy, randomPath);
-            }
+            // Ensure AP is decremented appropriately here
         }
+        yield return null;
     }
-    // IEnumerator ExecuteWithDelay(BaseEnemy enemy, Tile nextTile) {
-    //     yield return new WaitForSeconds(2);  // Wait for 2 seconds
-    //     MoveEnemy(enemy, nextTile);  // Continue execution after delay
-    //     ClearGridPotentialMoves();
-    // }
+
      public void ClearGridPotentialMoves() {
         GridManager.Instance.ClearPotentialMoves();
     }
