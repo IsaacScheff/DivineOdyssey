@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 public class EnemyManager : MonoBehaviour {
     public static EnemyManager Instance;
@@ -10,7 +11,14 @@ public class EnemyManager : MonoBehaviour {
 
         InitializeEnemyBehaviors();
     }
-
+    public void ExecuteEnemyTurns() {
+        var enemies = UnitManager.Instance.ActiveEnemies;
+        foreach (BaseEnemy enemy in enemies) {
+            if(enemy != null)
+                ExecuteBehavior(enemy);
+        }
+        GameManager.Instance.ChangeState(GameState.HeroesTurn);
+    }
     private void InitializeEnemyBehaviors() {
         enemyBehaviorDict.Add(EnemyAI.AggresiveMelee, AggressiveMeleeBehavior);
         enemyBehaviorDict.Add(EnemyAI.AggresiveRange, AggressiveRangeBehavior);
@@ -35,20 +43,27 @@ public class EnemyManager : MonoBehaviour {
             
             var pathToTarget = Targetfinding.FindPath(enemy.OccupiedTile, targetHero.OccupiedTile);
 
-            if(pathToTarget.Count > 1)
-                StartCoroutine(ExecuteWithDelay(enemy, pathToTarget[1]));
-
+            // if(pathToTarget.Count > 1){
+            //     //StartCoroutine(ExecuteWithDelay(enemy, pathToTarget[1]));
+            //     MoveEnemy(enemy, pathToTarget[1]);
+            // }
+            if(pathToTarget != null && pathToTarget.Count > 1) {
+                MoveEnemy(enemy, pathToTarget[1]);
+            }
             AttackHero(enemy, targetHero);
         } else {
             var randomPath = MoveToRandom(enemy);
-            MoveEnemy(enemy, randomPath[0]);
+            // MoveEnemy(enemy, randomPath[0]);
+            if(randomPath != null && randomPath.Count > 0) {
+                MoveEnemy(enemy, randomPath[0]);
+            }
         }
     }
-    IEnumerator ExecuteWithDelay(BaseEnemy enemy, Tile nextTile) {
-        yield return new WaitForSeconds(2);  // Wait for 2 seconds
-        MoveEnemy(enemy, nextTile);  // Continue execution after delay
-        ClearGridPotentialMoves();
-    }
+    // IEnumerator ExecuteWithDelay(BaseEnemy enemy, Tile nextTile) {
+    //     yield return new WaitForSeconds(2);  // Wait for 2 seconds
+    //     MoveEnemy(enemy, nextTile);  // Continue execution after delay
+    //     ClearGridPotentialMoves();
+    // }
      public void ClearGridPotentialMoves() {
         GridManager.Instance.ClearPotentialMoves();
     }
@@ -73,7 +88,6 @@ public class EnemyManager : MonoBehaviour {
         }
         return targets;
     }
-
     public List<Tile> MoveToRandom(BaseEnemy activeEnemy) {
         List<List<Tile>> possiblePaths = new List<List<Tile>>();
 
@@ -83,7 +97,6 @@ public class EnemyManager : MonoBehaviour {
                 possiblePaths.Add(path);
             }
         }
-
         // Check if possiblePaths has any paths before trying to access an element
         if (possiblePaths.Count > 0) {
             var random = new System.Random();
@@ -93,7 +106,6 @@ public class EnemyManager : MonoBehaviour {
             return null; // Return null or an empty list if no path is found
         }
     }
-
     public BaseUnit CompareAttackResults(List<BaseUnit> targets, BaseEnemy attacker) {
         BaseUnit selectedTarget = null;
         float selectedTargetExpectedHealth = float.MaxValue;

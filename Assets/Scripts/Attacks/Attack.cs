@@ -128,12 +128,10 @@ public class Bite : BaseMelee {
     protected override int CostAP => 1;
     public override string Name => "Bite";
 }
-
 public class BasePhysicalRange : BasePhysicalAttack {
     // Properties for encapsulation
     public override string Name => "BasePhysicalRange";
 }
-
 public class Fireball : BasePhysicalRange {
     // Properties for encapsulation
     protected override int Range => 6;

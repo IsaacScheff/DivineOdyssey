@@ -205,7 +205,6 @@ public class BaseUnit : MonoBehaviour {
         CurrentEvasion += amount;
     }
     public void ModifyAP(int amount) {
-        //CurrentAP = Mathf.Clamp(CurrentAP + amount, 0, _baseAP * 2);
         CurrentAP += amount;
     }
     // Helper method to set up the unit

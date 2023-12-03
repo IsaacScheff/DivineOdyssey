@@ -31,7 +31,7 @@ public class GameManager : MonoBehaviour {
             case GameState.HeroesTurn:
                 break;
             case GameState.EnemiesTurn:
-                TurnManager.Instance.ExecuteEnemyTurns();
+                EnemyManager.Instance.ExecuteEnemyTurns();
                 break;
             default:
                 throw new ArgumentOutOfRangeException(nameof(newState), newState, null);

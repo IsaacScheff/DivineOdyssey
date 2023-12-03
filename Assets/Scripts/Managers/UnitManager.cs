@@ -13,6 +13,8 @@ public class UnitManager : MonoBehaviour {
     public BaseHero SelectedHero;
     public bool HeroMoving;
     private System.Random _random = new System.Random();
+    public List<BaseHero> ActiveHeroes;
+    public List<BaseEnemy> ActiveEnemies;
 
     void Awake() {
         Instance = this;
@@ -47,11 +49,11 @@ public class UnitManager : MonoBehaviour {
 
             randomSpawnTile.SetUnit(spawnedHero);
             spawnedHero.OccupiedTile = randomSpawnTile;
+            ActiveHeroes.Add(spawnedHero);
         }
 
         GameManager.Instance.ChangeState(GameState.SpawnEnemies);
     }
-
     public void SpawnEnemies() { //same note as function above
         var enemyCount = 1; 
 
@@ -62,15 +64,13 @@ public class UnitManager : MonoBehaviour {
             var randomSpawnTile = GridManager.Instance.GetEnemySpawnTile();
 
             randomSpawnTile.SetUnit(spawnedEnemy);
+            ActiveEnemies.Add(spawnedEnemy);
         }
-
         GameManager.Instance.ChangeState(GameState.HeroesTurn);
     }
-
     private T GetRandomUnit<T>(Faction faction) where T : BaseUnit {
         return (T)_units.Where(u => u.Faction == faction).OrderBy(o => UnityEngine.Random.value).First().UnitPrefab;
     }
-
     // Modified to return a specific unit based on an identifier
     private BaseUnit GetUnitPrefab(UnitType unitType) {
         foreach (ScriptableUnit scriptableUnit in _units) {
@@ -83,7 +83,13 @@ public class UnitManager : MonoBehaviour {
     }
     private void KillUnit(BaseUnit unit) {
         unit.OnHealthChanged -= () => CheckUnitHealth(unit);
+
+        if (unit is BaseHero hero) {
+            ActiveHeroes.Remove(hero);
+        } else if (unit is BaseEnemy enemy) {
+            ActiveEnemies.Remove(enemy);
+        }
+
         Destroy(unit.gameObject);
     }
-
 }

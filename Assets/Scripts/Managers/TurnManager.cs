@@ -8,17 +8,15 @@ public class TurnManager : MonoBehaviour {
     void Awake() {
         Instance = this;
     }
-
-    public void ExecuteEnemyTurns() {
-        foreach (var enemy in FindObjectsOfType<BaseEnemy>()) {
-            EnemyManager.Instance.ExecuteBehavior(enemy);
+    public void EndHeroTurn() {
+        foreach (BaseHero hero in UnitManager.Instance.ActiveHeroes) {
+            hero.ModifyAP(hero.BaseAP);
         }
-        GameManager.Instance.ChangeState(GameState.HeroesTurn);
     }
-
-
-    // function to handle turn switching
-    // at end of turn need AP to carry over
+    public void EndEnemyTurn() {
+         foreach (BaseEnemy enemy in UnitManager.Instance.ActiveEnemies) {
+            enemy.ModifyAP(enemy.BaseAP);
+        }
+    }
     // need to check for end of turn effects ending or count downs
-
 }
