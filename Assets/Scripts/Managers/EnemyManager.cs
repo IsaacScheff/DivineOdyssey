@@ -17,7 +17,7 @@ public class EnemyManager : MonoBehaviour {
             if(enemy != null)
                 ExecuteBehavior(enemy);
         }
-        GameManager.Instance.ChangeState(GameState.HeroesTurn);
+        TurnManager.Instance.EndEnemyTurn();
     }
     private void InitializeEnemyBehaviors() {
         enemyBehaviorDict.Add(EnemyAI.AggresiveMelee, AggressiveMeleeBehavior);
@@ -43,17 +43,12 @@ public class EnemyManager : MonoBehaviour {
             
             var pathToTarget = Targetfinding.FindPath(enemy.OccupiedTile, targetHero.OccupiedTile);
 
-            // if(pathToTarget.Count > 1){
-            //     //StartCoroutine(ExecuteWithDelay(enemy, pathToTarget[1]));
-            //     MoveEnemy(enemy, pathToTarget[1]);
-            // }
             if(pathToTarget != null && pathToTarget.Count > 1) {
                 MoveEnemy(enemy, pathToTarget[1]);
             }
             AttackHero(enemy, targetHero);
         } else {
             var randomPath = MoveToRandom(enemy);
-            // MoveEnemy(enemy, randomPath[0]);
             if(randomPath != null && randomPath.Count > 0) {
                 MoveEnemy(enemy, randomPath[0]);
             }
@@ -145,5 +140,4 @@ public class EnemyManager : MonoBehaviour {
         tile.SetUnit(enemy);
         enemy.ModifyAP(-1);
     }
-
 }

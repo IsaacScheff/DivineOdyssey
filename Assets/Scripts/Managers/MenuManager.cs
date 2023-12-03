@@ -252,6 +252,6 @@ public class MenuManager : MonoBehaviour {
     private void EndTurn() {
         Debug.Log("Ending player turn");
         CloseMenu();
-        GameManager.Instance.ChangeState(GameState.EnemiesTurn);
+        TurnManager.Instance.EndHeroTurn();
     }
 }
