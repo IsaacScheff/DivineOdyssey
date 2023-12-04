@@ -63,16 +63,17 @@ public class EnemyManager : MonoBehaviour {
 
                     if (pathToTarget != null && pathToTarget.Count > 1) {
                         MoveEnemyAlongPath(enemy, pathToTarget);
+                        enemy.ModifyAP(-1);
                     }
                     AttackHero(enemy, targetHero);
                 } else {
                     var randomPath = MoveToRandom(enemy);
                     if (randomPath != null && randomPath.Count > 0) {
                         MoveEnemyAlongPath(enemy, randomPath);
+                        enemy.ModifyAP(-1);
                     }
                 }
             }
-            // Ensure AP is decremented appropriately here
         }
         yield return null;
     }
@@ -154,9 +155,8 @@ public class EnemyManager : MonoBehaviour {
 
         return expDamage;
     }   
-    public void MoveEnemy(BaseUnit enemy, Tile tile) { //will change from just target tile to navigating whole path
+    public void MoveEnemy(BaseUnit enemy, Tile tile) { 
         tile.SetUnit(enemy);
-        enemy.ModifyAP(-1);
     }
 
     public void MoveEnemyAlongPath(BaseUnit enemy, List<Tile> path) {
