@@ -44,6 +44,9 @@ public static class Targetfinding {
                         neighbor.SetConnection(current);
                         neighbor.SetH(neighbor.GetDistance(targetNode));
                         toSearch.Enqueue(neighbor, neighbor.F);
+
+                        // Log the connection being set
+                        //Debug.Log($"Setting connection: {neighbor.name} -> {current.name}");
                     }
                 }
             }
@@ -76,6 +79,9 @@ public static class Targetfinding {
             path.Add(currentPathTile);
             visitedTiles.Add(currentPathTile);
             currentPathTile = currentPathTile.Connection;
+
+            // Log the current path tile and its connection
+            //Debug.Log($"Current Path Tile: {currentPathTile.name}, Connection: {currentPathTile.Connection?.name}");
         }
 
         if (currentPathTile == null) {
