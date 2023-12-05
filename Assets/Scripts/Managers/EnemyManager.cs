@@ -4,10 +4,13 @@ using UnityEngine;
 using System;
 using Unity.PlasticSCM.Editor.WebApi;
 using System.IO;
+using System.Runtime.CompilerServices;
 
 public class EnemyManager : MonoBehaviour {
     public static EnemyManager Instance;
     Dictionary<EnemyAI, EnemyBehavior> enemyBehaviorDict = new Dictionary<EnemyAI, EnemyBehavior>();
+    public delegate IEnumerator EnemyBehavior(BaseEnemy enemy);
+
     void Awake() {
         Instance = this;
 
@@ -29,10 +32,12 @@ public class EnemyManager : MonoBehaviour {
     public void ExecuteBehavior(BaseEnemy enemy) {
         EnemyAI aiType = enemy.EnemyAI; 
         if (enemyBehaviorDict.TryGetValue(aiType, out EnemyBehavior behavior)) {
-            behavior.Invoke(enemy);
+            //behavior.Invoke(enemy);
+            StartCoroutine(behavior(enemy)); // Start the coroutine
         }
     }
-    public void AggressiveMeleeBehavior(BaseEnemy enemy) { 
+    //public void AggressiveMeleeBehavior(BaseEnemy enemy) { 
+    public IEnumerator AggressiveMeleeBehavior(BaseEnemy enemy) {
         while(enemy.CurrentAP > 0) {
             List<BaseUnit> possibleTargets = FindPossibleTargets(enemy, enemy.CurrentMovement + 1);
         
@@ -43,11 +48,14 @@ public class EnemyManager : MonoBehaviour {
                 var pathToTarget = Targetfinding.FindPath(enemy.OccupiedTile, targetHero.OccupiedTile);
 
                 if(pathToTarget.Count > 1){
-                    MoveEnemy(enemy, pathToTarget[1]);
+                    yield return StartCoroutine(MoveEnemyAlongPath(enemy, pathToTarget));
+                    //MoveEnemy(enemy, pathToTarget[1]);
                     enemy.ModifyAP(-1);
+                    yield return new WaitForSeconds(1); // Wait for a second after moving
                 }
-
-                AttackHero(enemy, targetHero);
+                yield return StartCoroutine(AttackHero(enemy, targetHero));
+                yield return new WaitForSeconds(1); // Wait for a second after attacking
+                //AttackHero(enemy, targetHero);
             } else {
                 var randomPath = MoveToRandom(enemy);
                 MoveEnemy(enemy, randomPath[0]);
@@ -60,16 +68,16 @@ public class EnemyManager : MonoBehaviour {
         yield return new WaitForSeconds(1);  // Wait for 1 second
         MoveEnemy(enemy, nextTile);  // Continue execution after delay
     }
-    // public void ClearGridPotentialMoves() {
-    //     GridManager.Instance.ClearPotentialMoves();
-    // }
-    public void AttackHero(BaseUnit enemy, BaseUnit target) {
+    //public void AttackHero(BaseUnit enemy, BaseUnit target) {
+    IEnumerator AttackHero(BaseUnit enemy, BaseUnit target) {
         AttackManager.Instance.Target = target.OccupiedTile;
         AttackManager.Instance.CurrentAttack.Execute(enemy, target, AttackManager.Instance);
         AttackManager.Instance.ClearAttack();
+        yield return null; // Added this line
     }
-    public void AggressiveRangeBehavior(BaseEnemy enemy) {
+    IEnumerator AggressiveRangeBehavior(BaseEnemy enemy) {
         // Implement the behavior logic for aggressive ranged enemies
+        yield return null;
     }
     public List<BaseUnit> FindPossibleTargets(BaseEnemy activeEnemy, int range) {
         List<BaseUnit> targets = new List<BaseUnit>();
@@ -145,7 +153,14 @@ public class EnemyManager : MonoBehaviour {
     public void MoveEnemy(BaseUnit enemy, Tile tile) { //will change from just target tile to navigating whole path
         tile.SetUnit(enemy);
     }
-
+    public IEnumerator MoveEnemyAlongPath(BaseUnit enemy, List<Tile> path) {
+        path.Reverse();
+        path.RemoveAt(path.Count - 1);
+        foreach (var tile in path) {
+            MoveEnemy(enemy, tile); // Move enemy to next tile
+            yield return new WaitForSeconds(0.5f); // Wait half a second before moving to the next tile
+        }
+    }
 }
 // public class EnemyManager : MonoBehaviour {
 //     public static EnemyManager Instance;
