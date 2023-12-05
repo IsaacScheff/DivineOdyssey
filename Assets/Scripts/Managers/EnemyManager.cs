@@ -14,17 +14,14 @@ public class EnemyManager : MonoBehaviour {
     }
     public IEnumerator ExecuteEnemyTurns() {
         var enemies = UnitManager.Instance.ActiveEnemies;
-        List<Coroutine> behaviorCoroutines = new List<Coroutine>();
 
         foreach (BaseEnemy enemy in enemies) {
             if (enemy != null) {
-                Coroutine behaviorCoroutine = StartCoroutine(ExecuteBehavior(enemy));
-                behaviorCoroutines.Add(behaviorCoroutine);
+                // Start the behavior coroutine for each enemy and wait for it to complete
+                yield return StartCoroutine(ExecuteBehavior(enemy));
+                
+                yield return new WaitForSeconds(1.0f); //small delay between enemies acting
             }
-        }
-        // Wait for all enemy behaviors to complete
-        foreach (var coroutine in behaviorCoroutines) {
-            yield return coroutine;
         }
         // End enemy turn after all behaviors are completed
         TurnManager.Instance.EndEnemyTurn();
@@ -37,7 +34,6 @@ public class EnemyManager : MonoBehaviour {
     IEnumerator ExecuteBehavior(BaseEnemy enemy) {
         EnemyAI aiType = enemy.EnemyAI; 
         if (enemyBehaviorDict.TryGetValue(aiType, out EnemyBehavior behavior)) {
-            //behavior.Invoke(enemy);
             yield return StartCoroutine(behavior(enemy)); // Start the coroutine
         }
     }
@@ -47,7 +43,6 @@ public class EnemyManager : MonoBehaviour {
         
             if(possibleTargets.Count != 0) {
                 BaseUnit targetHero = CompareAttackResults(possibleTargets, enemy); 
-                Debug.Log(targetHero);
 
                 var pathToTarget = Targetfinding.FindPath(enemy.OccupiedTile, targetHero.OccupiedTile);
 
@@ -70,7 +65,7 @@ public class EnemyManager : MonoBehaviour {
         AttackManager.Instance.Target = target.OccupiedTile;
         AttackManager.Instance.CurrentAttack.Execute(enemy, target, AttackManager.Instance);
         AttackManager.Instance.ClearAttack();
-        yield return null; // Added this line
+        yield return null;
     }
     IEnumerator AggressiveRangeBehavior(BaseEnemy enemy) {
         // Implement the behavior logic for aggressive ranged enemies
@@ -79,12 +74,10 @@ public class EnemyManager : MonoBehaviour {
     public List<BaseUnit> FindPossibleTargets(BaseEnemy activeEnemy, int range) {
         List<BaseUnit> targets = new List<BaseUnit>();
         //use current movement to determine what heroes can be reached and attacked 
-        //Debug.Log("find targets function");
         foreach (Tile tile in GridManager.Instance.Tiles.Values) {
             var path = Targetfinding.FindPath(activeEnemy.OccupiedTile, tile);
             if (path != null && path.Count <= range) {
                 targets.Add(path[0].OccupiedUnit);
-                Debug.Log($"target:{path[0].OccupiedUnit} on {path[0]} what about {path[path.Count - 1]}");
             }
         }
         return targets;
@@ -119,7 +112,6 @@ public class EnemyManager : MonoBehaviour {
         //Debug.Log(attack);
 
         foreach(BaseUnit target in targets) {
-        Debug.Log(target);
             expectedHealth = ExpectedDamage(target, attacker, attack);
 
             if(expectedHealth < selectedTargetExpectedHealth) {

@@ -33,7 +33,6 @@ public class UnitManager : MonoBehaviour {
         unit.OnHealthChanged += () => CheckUnitHealth(unit);
     }
     private void CheckUnitHealth(BaseUnit unit) {
-        Debug.Log("health change");
         if (unit.CurrentHealth <= 0) {
             KillUnit(unit);
         }
@@ -55,7 +54,7 @@ public class UnitManager : MonoBehaviour {
         GameManager.Instance.ChangeState(GameState.SpawnEnemies);
     }
     public void SpawnEnemies() { //same note as function above
-        var enemyCount = 1; 
+        var enemyCount = 2; 
 
         for(int i = 0; i < enemyCount; i++) {
             var randomPrefab = GetRandomUnit<BaseEnemy>(Faction.Enemy);
