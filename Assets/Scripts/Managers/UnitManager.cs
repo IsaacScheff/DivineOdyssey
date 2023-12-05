@@ -89,7 +89,8 @@ public class UnitManager : MonoBehaviour {
         } else if (unit is BaseEnemy enemy) {
             ActiveEnemies.Remove(enemy);
         }
-
+        Tile tile = unit.OccupiedTile;
+        tile.OccupiedUnit = null; 
         Destroy(unit.gameObject);
     }
 }
