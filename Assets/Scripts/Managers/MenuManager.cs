@@ -108,6 +108,7 @@ public class MenuManager : MonoBehaviour {
     }
 
     public void ShowHeroActions(BaseHero hero) {
+        if (GameManager.Instance.GameState != GameState.HeroesTurn) return;
         if (_isMenuOpen) {
             CloseMenu();
         }
@@ -139,6 +140,7 @@ public class MenuManager : MonoBehaviour {
     }
 
     public void ShowHeroAttacks(BaseHero hero) {
+        if (GameManager.Instance.GameState != GameState.HeroesTurn) return;
         if(UnitManager.Instance.HeroMoving == true) {
             CancelClicked();
             return;
@@ -198,6 +200,7 @@ public class MenuManager : MonoBehaviour {
         _attackButton.SetActive(false);
     }
     public void MoveClicked() {
+        if (GameManager.Instance.GameState != GameState.HeroesTurn) return;
         GridManager.Instance.HighlightMoveOptions(UnitManager.Instance.SelectedHero.OccupiedTile, UnitManager.Instance.SelectedHero.CurrentMovement);
         UnitManager.Instance.HeroMoving = true;
         _cancelButton.SetActive(true);
@@ -254,6 +257,7 @@ public class MenuManager : MonoBehaviour {
         _isMenuOpen = false; // Ensure consistency of the menu state
     }
     private void EndTurn() {
+        if (GameManager.Instance.GameState != GameState.HeroesTurn) return;
         Debug.Log("Ending player turn");
         CloseMenu();
         TurnManager.Instance.EndHeroTurn();
