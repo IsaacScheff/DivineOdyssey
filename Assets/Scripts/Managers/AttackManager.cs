@@ -24,6 +24,7 @@ public class AttackManager : MonoBehaviour {
             // Subscribe to the new attack's event
             if (_currentAttack != null) {
                 _currentAttack.AttackExecuted += OnAttackExecuted;
+                _currentAttack.AttackExecuted += MenuManager.Instance.ShowAttackResult;
             }
         }
     }
@@ -44,6 +45,7 @@ public class AttackManager : MonoBehaviour {
     void OnDestroy() { // When AttackManager is destroyed, unsubscribe from the event to prevent memory leaks
         if (_currentAttack != null) {
             _currentAttack.AttackExecuted -= OnAttackExecuted;
+            _currentAttack.AttackExecuted -= MenuManager.Instance.ShowAttackResult;
         }
     }
     public void ClearAttack() {

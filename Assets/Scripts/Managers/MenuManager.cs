@@ -20,6 +20,7 @@ public class MenuManager : MonoBehaviour {
     [SerializeField] private GameObject _generalMenu;
     [SerializeField] private GameObject _endTurnButton;
     [SerializeField] private GameObject _menuButton;
+    [SerializeField] private GameObject _attackResult;
     private bool _isMenuOpen = false;
     private List<GameObject> _attackButtonList = new List<GameObject>();
     private BaseHero _previousSelectedHero;
@@ -77,9 +78,10 @@ public class MenuManager : MonoBehaviour {
                     $"Resilience: {u.CurrentResilience} \n" +
                     $"Accuracy: {u.CurrentAccuracy} \n" +
                     $"Evasion: {u.CurrentEvasion}";
+                _attackResult.SetActive(false);
                 _tileUnitStats.SetActive(true);
             } else {
-                //ShowAttackPreview(AttackManager.Instance.CurrentAttack, tile.OccupiedUnit);
+                ShowAttackPreview(AttackManager.Instance.CurrentAttack, tile.OccupiedUnit);
             }
         }
     }
@@ -213,6 +215,7 @@ public class MenuManager : MonoBehaviour {
     }
 
     public void ShowAttackPreview(Attack attack, BaseUnit target) {
+        _attackResult.SetActive(false);
         string preview = $"{attack.Name}\nAP Cost: {attack.PublicCostAP}\n\n";
         //for now just looking at physical attack stats, will have to add property to attack to determine 
         //which offense and defense stats are used
@@ -254,5 +257,24 @@ public class MenuManager : MonoBehaviour {
         Debug.Log("Ending player turn");
         CloseMenu();
         TurnManager.Instance.EndHeroTurn();
+    }
+
+    public void ShowAttackResult(object sender, AttackEventArgs e) {
+        _attackPreview.SetActive(false);
+        string result = "";
+
+        if (e.IsHit) {
+            result += "The attack was a hit!\n";
+            // if (e.IsCritical) {
+            //     result += "It was a critical hit!\n"; //event needs to send whether crit or not
+            // }
+            result += $"The target took {e.DamageDealt} damage.\n";
+        } else {
+            result += "The attack was a miss.\n";
+        }
+        result += $"{e.Defender} has {e.Defender.CurrentHealth} health remaining.";
+        Debug.Log(result);
+        _attackResult.GetComponentInChildren<TextMeshProUGUI>().text = result;
+        _attackResult.SetActive(true);
     }
 }
