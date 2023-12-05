@@ -117,7 +117,8 @@ public abstract class Tile : MonoBehaviour {
         
         // When moving a hero to a new tile
         else if (UnitManager.Instance.SelectedHero != null && UnitManager.Instance.HeroMoving && this._potentialMove.activeSelf) {
-            SetUnit(UnitManager.Instance.SelectedHero);
+            //SetUnit(UnitManager.Instance.SelectedHero);
+            StartCoroutine(UnitManager.Instance.MoveHeroAlongPath(UnitManager.Instance.SelectedHero, Pathfinding.FindPath(UnitManager.Instance.SelectedHero.OccupiedTile, this)));
             UnitManager.Instance.UseAP(UnitManager.Instance.SelectedHero, 1);
             MenuManager.Instance.CancelClicked();
             GridManager.Instance.ClearPotentialMoves();
