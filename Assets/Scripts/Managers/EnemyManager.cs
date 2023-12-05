@@ -1,10 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using System;
-using Unity.PlasticSCM.Editor.WebApi;
-using System.IO;
-using System.Runtime.CompilerServices;
 
 public class EnemyManager : MonoBehaviour {
     public static EnemyManager Instance;
@@ -16,27 +12,35 @@ public class EnemyManager : MonoBehaviour {
 
         InitializeEnemyBehaviors();
     }
-    public void ExecuteEnemyTurns() {
+    public IEnumerator ExecuteEnemyTurns() {
         var enemies = UnitManager.Instance.ActiveEnemies;
+        List<Coroutine> behaviorCoroutines = new List<Coroutine>();
+
         foreach (BaseEnemy enemy in enemies) {
-            if(enemy != null){
-                ExecuteBehavior(enemy);
+            if (enemy != null) {
+                Coroutine behaviorCoroutine = StartCoroutine(ExecuteBehavior(enemy));
+                behaviorCoroutines.Add(behaviorCoroutine);
             }
         }
+        // Wait for all enemy behaviors to complete
+        foreach (var coroutine in behaviorCoroutines) {
+            yield return coroutine;
+        }
+        // End enemy turn after all behaviors are completed
         TurnManager.Instance.EndEnemyTurn();
     }
+
     private void InitializeEnemyBehaviors() {
         enemyBehaviorDict.Add(EnemyAI.AggresiveMelee, AggressiveMeleeBehavior);
         enemyBehaviorDict.Add(EnemyAI.AggresiveRange, AggressiveRangeBehavior);
     }
-    public void ExecuteBehavior(BaseEnemy enemy) {
+    IEnumerator ExecuteBehavior(BaseEnemy enemy) {
         EnemyAI aiType = enemy.EnemyAI; 
         if (enemyBehaviorDict.TryGetValue(aiType, out EnemyBehavior behavior)) {
             //behavior.Invoke(enemy);
-            StartCoroutine(behavior(enemy)); // Start the coroutine
+            yield return StartCoroutine(behavior(enemy)); // Start the coroutine
         }
     }
-    //public void AggressiveMeleeBehavior(BaseEnemy enemy) { 
     public IEnumerator AggressiveMeleeBehavior(BaseEnemy enemy) {
         while(enemy.CurrentAP > 0) {
             List<BaseUnit> possibleTargets = FindPossibleTargets(enemy, enemy.CurrentMovement + 1);
@@ -49,13 +53,11 @@ public class EnemyManager : MonoBehaviour {
 
                 if(pathToTarget.Count > 1){
                     yield return StartCoroutine(MoveEnemyAlongPath(enemy, pathToTarget));
-                    //MoveEnemy(enemy, pathToTarget[1]);
                     enemy.ModifyAP(-1);
                     yield return new WaitForSeconds(1); // Wait for a second after moving
                 }
                 yield return StartCoroutine(AttackHero(enemy, targetHero));
                 yield return new WaitForSeconds(1); // Wait for a second after attacking
-                //AttackHero(enemy, targetHero);
             } else {
                 var randomPath = MoveToRandom(enemy);
                 MoveEnemy(enemy, randomPath[0]);
@@ -64,11 +66,6 @@ public class EnemyManager : MonoBehaviour {
             }
         }
     }
-    IEnumerator ExecuteWithDelay(BaseEnemy enemy, Tile nextTile) {
-        yield return new WaitForSeconds(1);  // Wait for 1 second
-        MoveEnemy(enemy, nextTile);  // Continue execution after delay
-    }
-    //public void AttackHero(BaseUnit enemy, BaseUnit target) {
     IEnumerator AttackHero(BaseUnit enemy, BaseUnit target) {
         AttackManager.Instance.Target = target.OccupiedTile;
         AttackManager.Instance.CurrentAttack.Execute(enemy, target, AttackManager.Instance);
@@ -134,7 +131,6 @@ public class EnemyManager : MonoBehaviour {
         return selectedTarget;
     }
     public float ExpectedDamage(BaseUnit defender, BaseUnit attacker, Attack attack) {
-    //Debug.Log($"D:{defender} A:{attacker} attack:{attack}");
         // Convert percentages to decimals for calculation
         float hitChance = attack.PublicHitChance / 100f;
         float critChance = attack.PublicCritChance / 100f;
