@@ -47,6 +47,7 @@ public abstract class Tile : MonoBehaviour {
     [SerializeField] private GameObject _highlight;
     [SerializeField] private GameObject _potentialMove;
     [SerializeField] private GameObject _potentialAttack;
+    [SerializeField] private GameObject _movePath;
     public bool IsPotentialMoveNotNull => _potentialMove != null;
     public bool IsPotentialAttackNotNull => _potentialAttack != null;
 
@@ -64,13 +65,20 @@ public abstract class Tile : MonoBehaviour {
     void OnMouseEnter() {
         _highlight.SetActive(true);
         MenuManager.Instance.ShowTileInfo(this);
+        if (_potentialMove.activeSelf) {
+        var path = Pathfinding.FindPath(UnitManager.Instance.SelectedHero.OccupiedTile, this);
+        if (path != null) {
+            foreach (var tile in path) {
+                tile.MovePathOn();
+            }
+        }
     }
-
+    }
     void OnMouseExit() {
+        GridManager.Instance.ClearMovePath();
         _highlight.SetActive(false);
         MenuManager.Instance.ShowTileInfo(null);
     }
-
     void OnMouseDown() {
         if (GameManager.Instance.GameState != GameState.HeroesTurn) return;
 
@@ -141,7 +149,13 @@ public abstract class Tile : MonoBehaviour {
     public void MoveHighlightOff() {
         _potentialMove.SetActive(false);
     }
+    public void MovePathOn() {
+        _movePath.SetActive(true);
+    }
 
+    public void MovePathOff() {
+        _movePath.SetActive(false);
+    }
     public void AttackHighlightOn() {
         _potentialAttack.SetActive(true);
     }

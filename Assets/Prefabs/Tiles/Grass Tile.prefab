@@ -113,6 +113,7 @@ MonoBehaviour:
   _highlight: {fileID: 884039240025520593}
   _potentialMove: {fileID: 186694029152908398}
   _potentialAttack: {fileID: 2386754585898598841}
+  _movePath: {fileID: 3986584938902891830}
   _isWalkable: 1
   _isCover: 0
   OccupiedUnit: {fileID: 0}
@@ -121,6 +122,11 @@ MonoBehaviour:
 --- !u!1 &2386754585898598841 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 223725685284418487, guid: cf971fd29324441b9a774dc096c79212, type: 3}
+  m_PrefabInstance: {fileID: 2451543646685065742}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &3986584938902891830 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1537574740418223928, guid: cf971fd29324441b9a774dc096c79212, type: 3}
   m_PrefabInstance: {fileID: 2451543646685065742}
   m_PrefabAsset: {fileID: 0}
 --- !u!212 &5492206439072880988 stripped
