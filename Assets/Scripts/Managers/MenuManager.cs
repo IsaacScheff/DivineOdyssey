@@ -79,7 +79,7 @@ public class MenuManager : MonoBehaviour {
                     $"Evasion: {u.CurrentEvasion}";
                 _tileUnitStats.SetActive(true);
             } else {
-                ShowAttackPreview(AttackManager.Instance.CurrentAttack, tile.OccupiedUnit);
+                //ShowAttackPreview(AttackManager.Instance.CurrentAttack, tile.OccupiedUnit);
             }
         }
     }
