@@ -73,10 +73,12 @@ public class EnemyManager : MonoBehaviour {
         }
     }
     IEnumerator AttackHero(BaseUnit enemy, BaseUnit target) {
+        target.OccupiedTile.AttackHighlightOn();
         AttackManager.Instance.Target = target.OccupiedTile;
         AttackManager.Instance.CurrentAttack.Execute(enemy, target, AttackManager.Instance);
         AttackManager.Instance.ClearAttack();
-        yield return null;
+        yield return new WaitForSeconds(1); // Wait for a second to simulate attack animation
+        target.OccupiedTile.AttackHighlightOff();
     }
     IEnumerator AggressiveRangeBehavior(BaseEnemy enemy) {
         // Implement the behavior logic for aggressive ranged enemies
