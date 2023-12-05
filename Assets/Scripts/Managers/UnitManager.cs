@@ -95,7 +95,6 @@ public class UnitManager : MonoBehaviour {
     public IEnumerator MoveHeroAlongPath(BaseHero hero, List<Tile> path) {
         GameManager.Instance.ChangeState(GameState.HeroMoving);
         path.Reverse();
-        path.RemoveAt(path.Count - 1);
         foreach (var tile in path) {
             MoveHero(hero, tile); // Move hero to next tile
             yield return new WaitForSeconds(0.5f); // Wait half a second before moving to the next tile
