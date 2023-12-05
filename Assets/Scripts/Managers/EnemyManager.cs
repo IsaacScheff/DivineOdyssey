@@ -33,36 +33,36 @@ public class EnemyManager : MonoBehaviour {
         }
     }
     public void AggressiveMeleeBehavior(BaseEnemy enemy) { 
-        //UnityEngine.Debug.Log("Aggro melee behavior function runs");
-        List<BaseUnit> possibleTargets = FindPossibleTargets(enemy, enemy.CurrentMovement + 1);
-        foreach(BaseUnit target in possibleTargets) {
-            Debug.Log(target);
-        }
-        if(possibleTargets.Count != 0) {
-            BaseUnit targetHero = CompareAttackResults(possibleTargets, enemy); 
-            Debug.Log(targetHero);
+        while(enemy.CurrentAP > 0) {
+            List<BaseUnit> possibleTargets = FindPossibleTargets(enemy, enemy.CurrentMovement + 1);
+        
+            if(possibleTargets.Count != 0) {
+                BaseUnit targetHero = CompareAttackResults(possibleTargets, enemy); 
+                Debug.Log(targetHero);
 
-            //GridManager.Instance.HighlightMoveOptions(enemy.OccupiedTile, enemy.CurrentMovement);
+                var pathToTarget = Targetfinding.FindPath(enemy.OccupiedTile, targetHero.OccupiedTile);
 
-            var pathToTarget = Targetfinding.FindPath(enemy.OccupiedTile, targetHero.OccupiedTile);
+                if(pathToTarget.Count > 1){
+                    MoveEnemy(enemy, pathToTarget[1]);
+                    enemy.ModifyAP(-1);
+                }
 
-            if(pathToTarget.Count > 1)
-                StartCoroutine(ExecuteWithDelay(enemy, pathToTarget[1]));
-
-            AttackHero(enemy, targetHero);
-        } else {
-            var randomPath = MoveToRandom(enemy);
-            MoveEnemy(enemy, randomPath[0]);
+                AttackHero(enemy, targetHero);
+            } else {
+                var randomPath = MoveToRandom(enemy);
+                MoveEnemy(enemy, randomPath[0]);
+                enemy.ModifyAP(-1);
+                break;
+            }
         }
     }
     IEnumerator ExecuteWithDelay(BaseEnemy enemy, Tile nextTile) {
-        yield return new WaitForSeconds(2);  // Wait for 2 seconds
+        yield return new WaitForSeconds(1);  // Wait for 1 second
         MoveEnemy(enemy, nextTile);  // Continue execution after delay
-        ClearGridPotentialMoves();
     }
-     public void ClearGridPotentialMoves() {
-        GridManager.Instance.ClearPotentialMoves();
-    }
+    // public void ClearGridPotentialMoves() {
+    //     GridManager.Instance.ClearPotentialMoves();
+    // }
     public void AttackHero(BaseUnit enemy, BaseUnit target) {
         AttackManager.Instance.Target = target.OccupiedTile;
         AttackManager.Instance.CurrentAttack.Execute(enemy, target, AttackManager.Instance);
@@ -78,8 +78,8 @@ public class EnemyManager : MonoBehaviour {
         foreach (Tile tile in GridManager.Instance.Tiles.Values) {
             var path = Targetfinding.FindPath(activeEnemy.OccupiedTile, tile);
             if (path != null && path.Count <= range) {
-                //tile.MoveHighlightOn();
                 targets.Add(path[0].OccupiedUnit);
+                Debug.Log($"target:{path[0].OccupiedUnit} on {path[0]} what about {path[path.Count - 1]}");
             }
         }
         return targets;
@@ -114,6 +114,7 @@ public class EnemyManager : MonoBehaviour {
         //Debug.Log(attack);
 
         foreach(BaseUnit target in targets) {
+        Debug.Log(target);
             expectedHealth = ExpectedDamage(target, attacker, attack);
 
             if(expectedHealth < selectedTargetExpectedHealth) {
@@ -125,6 +126,7 @@ public class EnemyManager : MonoBehaviour {
         return selectedTarget;
     }
     public float ExpectedDamage(BaseUnit defender, BaseUnit attacker, Attack attack) {
+    //Debug.Log($"D:{defender} A:{attacker} attack:{attack}");
         // Convert percentages to decimals for calculation
         float hitChance = attack.PublicHitChance / 100f;
         float critChance = attack.PublicCritChance / 100f;
@@ -142,7 +144,6 @@ public class EnemyManager : MonoBehaviour {
     }   
     public void MoveEnemy(BaseUnit enemy, Tile tile) { //will change from just target tile to navigating whole path
         tile.SetUnit(enemy);
-        enemy.ModifyAP(-1);
     }
 
 }
