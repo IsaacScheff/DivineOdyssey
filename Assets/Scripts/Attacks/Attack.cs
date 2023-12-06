@@ -74,8 +74,8 @@ public class BasePhysicalAttack : Attack {
             var line = Linefinder.GetLine(attacker.OccupiedTile, tile);
             if(line.Count > 0) {
                 line.RemoveAt(0);
-                bool hasObstacle = line.Take(line.Count - 1).Any(t => !t.Walkable);
-                if ((!hasObstacle || (hasObstacle && line.Last().OccupiedUnit != null)) && !(line.Last().OccupiedUnit == null && !line.Last().Walkable)){
+                bool hasObstacle = line.Take(line.Count - 1).Any(t => !t.Walkable || t.OccupiedUnit != null);
+                if (!hasObstacle && (line.Last().OccupiedUnit != null || line.Last().Walkable)) {
                     //add tile to list of potential targets
                     tile.AttackHighlightOn();
                 }

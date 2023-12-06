@@ -271,15 +271,15 @@ public class MenuManager : MonoBehaviour {
         string result = "";
 
         if (e.IsHit) {
-            result += "The attack was a hit!\n";
+            result += $"The {e.Attack} was a hit!\n\n";
             // if (e.IsCritical) {
-            //     result += "It was a critical hit!\n"; //event needs to send whether crit or not
+            //     result += "It was a critical hit!\n\n"; //event needs to send whether crit or not
             // }
-            result += $"The target took {e.DamageDealt} damage.\n";
+            result += $"{e.Defender.UnitName} took {e.DamageDealt} damage.\n\n";
         } else {
-            result += "The attack was a miss.\n";
+            result += $"The {e.Attack} was a miss.\n\n";
         }
-        result += $"{e.Defender.name} has {e.Defender.CurrentHealth} health remaining.";
+        result += $"{e.Defender.UnitName} has {e.Defender.CurrentHealth} health remaining.";
         Debug.Log(result);
         _attackResult.GetComponentInChildren<TextMeshProUGUI>().text = result;
         _attackResult.SetActive(true);
