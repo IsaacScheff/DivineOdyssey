@@ -1,6 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
+using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public abstract class Attack {
@@ -67,7 +70,22 @@ public class BasePhysicalAttack : Attack {
     
     public override void Target(BaseUnit attacker, GridManager gridManager) {
         List<Tile> tileList = gridManager.FindTargetableSquares(attacker.OccupiedTile, Range);
-        GridManager.Instance.HighlightAttackOptions(attacker.OccupiedTile, Range);
+        foreach(Tile tile in tileList) {
+            var line = Linefinder.GetLine(attacker.OccupiedTile, tile);
+            if(line.Count > 0) {
+                foreach (var t in line) {
+                    UnityEngine.Debug.Log(t);
+                } 
+                UnityEngine.Debug.Log(line);
+                line.RemoveAt(0);
+                bool hasObstacle = line.Any(t => !t.Walkable);
+                if (!hasObstacle) {
+                    //add tile to list of potential targets
+                    tile.AttackHighlightOn();
+                }
+            }
+        }
+        //GridManager.Instance.HighlightAttackOptions(attacker.OccupiedTile, Range);
         AttackManager.Instance.CurrentAttack = this;
         AttackManager.Instance.Attacker = attacker;
     }
