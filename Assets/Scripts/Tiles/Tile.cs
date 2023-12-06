@@ -32,7 +32,6 @@ public abstract class Tile : MonoBehaviour {
         }
         return Coords.GetDistance(other.Coords);
     }
-
     public void SetConnection(Tile tile) => Connection = tile;
     public void SetG(float g) => G = g;
     public void SetH(float h) => H = h;
@@ -48,6 +47,7 @@ public abstract class Tile : MonoBehaviour {
     [SerializeField] private GameObject _potentialMove;
     [SerializeField] private GameObject _potentialAttack;
     [SerializeField] private GameObject _movePath;
+    [SerializeField] private GameObject _attackPath;
     public bool IsPotentialMoveNotNull => _potentialMove.activeSelf;
     public bool IsPotentialAttackNotNull => _potentialAttack.activeSelf;
 
@@ -61,21 +61,29 @@ public abstract class Tile : MonoBehaviour {
     public virtual void Init(int x, int y) {
         
     }
-
     void OnMouseEnter() {
         _highlight.SetActive(true);
         MenuManager.Instance.ShowTileInfo(this);
         if (_potentialMove.activeSelf) {
-        var path = Pathfinding.FindPath(UnitManager.Instance.SelectedHero.OccupiedTile, this);
-        if (path != null) {
-            foreach (var tile in path) {
-                tile.MovePathOn();
+            var path = Pathfinding.FindPath(UnitManager.Instance.SelectedHero.OccupiedTile, this);
+            if (path != null) {
+                foreach (var tile in path) {
+                    tile.MovePathOn();
+                }
+            }
+        }
+        if(_potentialAttack.activeSelf) {
+            var path = Linefinder.GetLine(AttackManager.Instance.Attacker.OccupiedTile, this);
+            if (path != null) {
+                foreach (var tile in path) {
+                    tile.AttackPathOn();
+                }
             }
         }
     }
-    }
     void OnMouseExit() {
         GridManager.Instance.ClearMovePath();
+        GridManager.Instance.ClearAttackPath();
         _highlight.SetActive(false);
         MenuManager.Instance.ShowTileInfo(null);
     }
@@ -125,7 +133,6 @@ public abstract class Tile : MonoBehaviour {
         
         // When moving a hero to a new tile
         else if (UnitManager.Instance.SelectedHero != null && UnitManager.Instance.HeroMoving && this._potentialMove.activeSelf) {
-            //SetUnit(UnitManager.Instance.SelectedHero);
             StartCoroutine(UnitManager.Instance.MoveHeroAlongPath(UnitManager.Instance.SelectedHero, Pathfinding.FindPath(UnitManager.Instance.SelectedHero.OccupiedTile, this)));
             UnitManager.Instance.UseAP(UnitManager.Instance.SelectedHero, 1);
             MenuManager.Instance.CancelClicked();
@@ -133,26 +140,21 @@ public abstract class Tile : MonoBehaviour {
             UnitManager.Instance.HeroMoving = false;
         }
     }
-
-
     public void SetUnit(BaseUnit unit) {
         if(unit.OccupiedTile != null) unit.OccupiedTile.OccupiedUnit = null;
         unit.transform.position = transform.position;
         OccupiedUnit = unit;
         unit.OccupiedTile = this;
     }
-
     public void MoveHighlightOn() {
         _potentialMove.SetActive(true);
     }
-
     public void MoveHighlightOff() {
         _potentialMove.SetActive(false);
     }
     public void MovePathOn() {
         _movePath.SetActive(true);
     }
-
     public void MovePathOff() {
         _movePath.SetActive(false);
     }
@@ -161,6 +163,12 @@ public abstract class Tile : MonoBehaviour {
     }
     public void AttackHighlightOff() {
         _potentialAttack.SetActive(false);
+    }
+    public void AttackPathOn() {
+        _attackPath.SetActive(true);
+    }
+    public void AttackPathOff() {
+        _attackPath.SetActive(false);
     }
 }
 

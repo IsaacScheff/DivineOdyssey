@@ -86,6 +86,11 @@ public class GridManager : MonoBehaviour {
             tile.MovePathOff();
         }
     }
+    public void ClearAttackPath() {
+        foreach (Tile tile in _tiles.Values) {
+            tile.AttackPathOff();
+        }
+    }
     public List<Tile> FindTargetableSquares(Tile attacker, int attackRange) {
         List<Tile> squaresInRange = new List<Tile>();
         // Loop through all tiles in the grid

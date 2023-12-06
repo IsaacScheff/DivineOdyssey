@@ -54,15 +54,16 @@ public class UnitManager : MonoBehaviour {
         GameManager.Instance.ChangeState(GameState.SpawnEnemies);
     }
     public void SpawnEnemies() { //same note as function above
-        var enemyCount = 2; 
+         UnitType[] enemies = {UnitType.DemonFighter, UnitType.DemonMage};
 
-        for(int i = 0; i < enemyCount; i++) {
-            var randomPrefab = GetRandomUnit<BaseEnemy>(Faction.Enemy);
-            var spawnedEnemy = Instantiate(randomPrefab);
+        foreach(UnitType enemy in enemies) {
+            var enemyPrefab = GetUnitPrefab(enemy) as BaseEnemy;
+            var spawnedEnemy = Instantiate(enemyPrefab);
             SubscribeToUnitEvents(spawnedEnemy);
             var randomSpawnTile = GridManager.Instance.GetEnemySpawnTile();
 
             randomSpawnTile.SetUnit(spawnedEnemy);
+            spawnedEnemy.OccupiedTile = randomSpawnTile;
             ActiveEnemies.Add(spawnedEnemy);
         }
         GameManager.Instance.ChangeState(GameState.HeroesTurn);

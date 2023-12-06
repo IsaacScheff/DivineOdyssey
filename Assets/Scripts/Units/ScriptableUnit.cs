@@ -17,7 +17,8 @@ public enum Faction {
 public enum UnitType {
     Alistar,
     Verrier,
-    DemonFighter
+    DemonFighter,
+    DemonMage
     // Add more as needed
 }
 
