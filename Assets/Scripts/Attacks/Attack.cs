@@ -78,14 +78,13 @@ public class BasePhysicalAttack : Attack {
                 } 
                 UnityEngine.Debug.Log(line);
                 line.RemoveAt(0);
-                bool hasObstacle = line.Any(t => !t.Walkable);
-                if (!hasObstacle) {
+                bool hasObstacle = line.Take(line.Count - 1).Any(t => !t.Walkable);
+                if ((!hasObstacle || (hasObstacle && line.Last().OccupiedUnit != null)) && !(line.Last().OccupiedUnit == null && !line.Last().Walkable)){
                     //add tile to list of potential targets
                     tile.AttackHighlightOn();
                 }
             }
         }
-        //GridManager.Instance.HighlightAttackOptions(attacker.OccupiedTile, Range);
         AttackManager.Instance.CurrentAttack = this;
         AttackManager.Instance.Attacker = attacker;
     }
