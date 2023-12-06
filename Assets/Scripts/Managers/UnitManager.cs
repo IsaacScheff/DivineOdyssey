@@ -97,7 +97,7 @@ public class UnitManager : MonoBehaviour {
         path.Reverse();
         foreach (var tile in path) {
             MoveHero(hero, tile); // Move hero to next tile
-            yield return new WaitForSeconds(0.5f); // Wait half a second before moving to the next tile
+            yield return new WaitForSeconds(0.3f); // Wait half a second before moving to the next tile
         }
         GameManager.Instance.ChangeState(GameState.HeroesTurn);
     }

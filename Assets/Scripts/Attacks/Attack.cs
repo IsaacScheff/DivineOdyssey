@@ -73,10 +73,6 @@ public class BasePhysicalAttack : Attack {
         foreach(Tile tile in tileList) {
             var line = Linefinder.GetLine(attacker.OccupiedTile, tile);
             if(line.Count > 0) {
-                foreach (var t in line) {
-                    UnityEngine.Debug.Log(t);
-                } 
-                UnityEngine.Debug.Log(line);
                 line.RemoveAt(0);
                 bool hasObstacle = line.Take(line.Count - 1).Any(t => !t.Walkable);
                 if ((!hasObstacle || (hasObstacle && line.Last().OccupiedUnit != null)) && !(line.Last().OccupiedUnit == null && !line.Last().Walkable)){

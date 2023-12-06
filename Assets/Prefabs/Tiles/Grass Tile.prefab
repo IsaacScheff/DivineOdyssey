@@ -55,6 +55,22 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3153307040206357561, guid: cf971fd29324441b9a774dc096c79212, type: 3}
+      propertyPath: m_SpriteTilingProperty.newSize.x
+      value: 1.28
+      objectReference: {fileID: 0}
+    - target: {fileID: 3153307040206357561, guid: cf971fd29324441b9a774dc096c79212, type: 3}
+      propertyPath: m_SpriteTilingProperty.newSize.y
+      value: 1.28
+      objectReference: {fileID: 0}
+    - target: {fileID: 3153307040206357561, guid: cf971fd29324441b9a774dc096c79212, type: 3}
+      propertyPath: m_SpriteTilingProperty.oldSize.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3153307040206357561, guid: cf971fd29324441b9a774dc096c79212, type: 3}
+      propertyPath: m_SpriteTilingProperty.oldSize.y
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3633177020646898772, guid: cf971fd29324441b9a774dc096c79212, type: 3}
       propertyPath: m_Name
       value: Grass Tile
@@ -63,6 +79,18 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7943678342623538002, guid: cf971fd29324441b9a774dc096c79212, type: 3}
+      propertyPath: m_Size.x
+      value: 1.28
+      objectReference: {fileID: 0}
+    - target: {fileID: 7943678342623538002, guid: cf971fd29324441b9a774dc096c79212, type: 3}
+      propertyPath: m_Size.y
+      value: 1.28
+      objectReference: {fileID: 0}
+    - target: {fileID: 7943678342623538002, guid: cf971fd29324441b9a774dc096c79212, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
     - target: {fileID: 8420183300761717727, guid: cf971fd29324441b9a774dc096c79212, type: 3}
       propertyPath: m_Color.a
       value: 0.34117648

@@ -48,8 +48,8 @@ public abstract class Tile : MonoBehaviour {
     [SerializeField] private GameObject _potentialMove;
     [SerializeField] private GameObject _potentialAttack;
     [SerializeField] private GameObject _movePath;
-    public bool IsPotentialMoveNotNull => _potentialMove != null;
-    public bool IsPotentialAttackNotNull => _potentialAttack != null;
+    public bool IsPotentialMoveNotNull => _potentialMove.activeSelf;
+    public bool IsPotentialAttackNotNull => _potentialAttack.activeSelf;
 
     [SerializeField] private bool _isWalkable; 
     [SerializeField] private bool _isCover;
@@ -83,7 +83,7 @@ public abstract class Tile : MonoBehaviour {
         if (GameManager.Instance.GameState != GameState.HeroesTurn) return;
 
         // When an attack is selected and a target tile is clicked
-        if (AttackManager.Instance.CurrentAttack != null) {
+        if (AttackManager.Instance.CurrentAttack != null && this._potentialAttack.activeSelf) {
             // Set the target and execute the attack
             AttackManager.Instance.Target = this;
             AttackManager.Instance.CurrentAttack.Execute(

@@ -158,7 +158,7 @@ public class EnemyManager : MonoBehaviour {
         path.RemoveAt(path.Count - 1);
         foreach (var tile in path) {
             MoveEnemy(enemy, tile); // Move enemy to next tile
-            yield return new WaitForSeconds(0.5f); // Wait half a second before moving to the next tile
+            yield return new WaitForSeconds(0.3f); // Wait half a second before moving to the next tile
         }
     }
 }

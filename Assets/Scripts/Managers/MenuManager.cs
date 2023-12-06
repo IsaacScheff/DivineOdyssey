@@ -81,7 +81,10 @@ public class MenuManager : MonoBehaviour {
                 _attackResult.SetActive(false);
                 _tileUnitStats.SetActive(true);
             } else {
-                ShowAttackPreview(AttackManager.Instance.CurrentAttack, tile.OccupiedUnit);
+                if(tile.IsPotentialAttackNotNull) {
+                    Debug.Log(tile);
+                    ShowAttackPreview(AttackManager.Instance.CurrentAttack, tile.OccupiedUnit);
+                }
             }
         }
     }
@@ -276,7 +279,7 @@ public class MenuManager : MonoBehaviour {
         } else {
             result += "The attack was a miss.\n";
         }
-        result += $"{e.Defender} has {e.Defender.CurrentHealth} health remaining.";
+        result += $"{e.Defender.name} has {e.Defender.CurrentHealth} health remaining.";
         Debug.Log(result);
         _attackResult.GetComponentInChildren<TextMeshProUGUI>().text = result;
         _attackResult.SetActive(true);
