@@ -96,12 +96,7 @@ public class BasePhysicalAttack : Attack {
         if(isHit) {
             damageDealt = attackManager.RollDamage(Damage, attacker.CurrentStrength, defender.CurrentGrit, CritChance, CritMultiplier);
             attackManager.Target.OccupiedUnit.ModifyHealth(-1 * damageDealt);
-            UnityEngine.Debug.Log($"{this.Name} hit for {damageDealt} damage");
-        } else {
-            //this else will be removed when listener added to Menu/UI Manager
-            UnityEngine.Debug.Log($"{this.Name} missed");
-        }
-
+        } 
         //UseAP(attackManager.Attacker); //this will be moved during the UnitManager re-work
         UnitManager.Instance.UseAP(attacker, CostAP);
         // Raise the event with the results of the attack

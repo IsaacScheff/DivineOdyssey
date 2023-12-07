@@ -81,8 +81,40 @@ public class EnemyManager : MonoBehaviour {
         target.OccupiedTile.AttackHighlightOff();
     }
     IEnumerator AggressiveRangeBehavior(BaseEnemy enemy) {
-        // Implement the behavior logic for aggressive ranged enemies
-        yield return null;
+        while(enemy.CurrentAP > 0) {
+            if(enemy.CurrentAP > 1) {
+                List<BaseUnit> possibleTargets = FindPossibleTargets(enemy, enemy.CurrentMovement + enemy.AvailableAttacks[0].PublicRange);
+            
+                if(possibleTargets.Count != 0) {
+                    BaseUnit targetHero = CompareAttackResults(possibleTargets, enemy); 
+
+                    var pathToTarget = Targetfinding.FindPath(enemy.OccupiedTile, targetHero.OccupiedTile);
+
+                    if(pathToTarget.Count > 1){
+                        yield return StartCoroutine(MoveEnemyAlongPath(enemy, pathToTarget));
+                        enemy.ModifyAP(-1);
+                        yield return new WaitForSeconds(1); // Wait for a second after moving
+                    }
+                    yield return StartCoroutine(AttackHero(enemy, targetHero));
+                    yield return new WaitForSeconds(1); // Wait for a second after attacking
+                } else {
+                    var randomPath = MoveToRandom(enemy); 
+                    MoveEnemy(enemy, randomPath[0]); //this just teleports for time being
+                    enemy.ModifyAP(-1);
+                    break;
+                }
+            } else {
+                //not technically adjacent, but reachable without movement
+                List<BaseUnit> adjacentTargets = FindPossibleTargets(enemy, enemy.AvailableAttacks[0].PublicRange);
+                if(adjacentTargets.Count != 0) {
+                    BaseUnit targetHero = CompareAttackResults(adjacentTargets, enemy); 
+                    yield return StartCoroutine(AttackHero(enemy, targetHero));
+                    yield return new WaitForSeconds(1); // Wait for a second after attacking
+                } else {
+                    break;
+                }
+            }
+        }
     }
     public List<BaseUnit> FindPossibleTargets(BaseEnemy activeEnemy, int range) {
         List<BaseUnit> targets = new List<BaseUnit>();

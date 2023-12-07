@@ -280,7 +280,7 @@ public class MenuManager : MonoBehaviour {
             result += $"The {e.Attack} was a miss.\n\n";
         }
         result += $"{e.Defender.UnitName} has {e.Defender.CurrentHealth} health remaining.";
-        Debug.Log(result);
+        //Debug.Log(result);
         _attackResult.GetComponentInChildren<TextMeshProUGUI>().text = result;
         _attackResult.SetActive(true);
     }

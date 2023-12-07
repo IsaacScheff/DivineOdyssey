@@ -72,7 +72,7 @@ public abstract class Tile : MonoBehaviour {
                 }
             }
         }
-        if(_potentialAttack.activeSelf) {
+        if(_potentialAttack.activeSelf && GameManager.Instance.GameState == GameState.HeroesTurn) {
             var path = Linefinder.GetLine(AttackManager.Instance.Attacker.OccupiedTile, this);
             if (path != null) {
                 foreach (var tile in path) {
