@@ -75,6 +75,7 @@ public class BasePhysicalAttack : Attack {
             if(line.Count > 0) {
                 line.RemoveAt(0);
                 bool hasObstacle = line.Take(line.Count - 1).Any(t => !t.Walkable || t.OccupiedUnit != null);
+                //should edit to also check for line of sight in each individual tile
                 if (!hasObstacle && (line.Last().OccupiedUnit != null || line.Last().Walkable)) {
                     //add tile to list of potential targets
                     tile.AttackHighlightOn();
