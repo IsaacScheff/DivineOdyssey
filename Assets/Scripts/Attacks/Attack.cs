@@ -141,7 +141,7 @@ public class BasePhysicalRange : BasePhysicalAttack {
     // Properties for encapsulation
     public override string Name => "BasePhysicalRange";
 }
-public class Fireball : BasePhysicalRange {
+public class ConjureFire : BasePhysicalRange {
     // Properties for encapsulation
     protected override int Range => 6;
     protected override int HitChance => 80;
@@ -149,7 +149,18 @@ public class Fireball : BasePhysicalRange {
     protected override int Damage => 10;
     protected override int CritMultiplier => 2;
     protected override int CostAP => 1;
-    public override string Name => "Fireball";
+    public override string Name => "Conjure Fire";
+}
+
+public class PommelStrike : Spear {
+    protected override int Damage => 7;
+    public override string Name => "Pommel Strike"; 
+}
+
+public class AxeSwing : Spear {
+    protected override int Damage => 21;
+    protected override int CostAP => 3;
+    public override string Name => "Axe Swing";
 }
 
 // ... other attack classes

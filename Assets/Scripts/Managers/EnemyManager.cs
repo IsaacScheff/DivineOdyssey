@@ -32,6 +32,7 @@ public class EnemyManager : MonoBehaviour {
     private void InitializeEnemyBehaviors() {
         enemyBehaviorDict.Add(EnemyAI.AggresiveMelee, AggressiveMeleeBehavior);
         enemyBehaviorDict.Add(EnemyAI.AggresiveRange, AggressiveRangeBehavior);
+        enemyBehaviorDict.Add(EnemyAI.DemonBoss, DemonBossBehavior);
     }
     IEnumerator ExecuteBehavior(BaseEnemy enemy) {
         EnemyAI aiType = enemy.EnemyAI; 
@@ -45,7 +46,7 @@ public class EnemyManager : MonoBehaviour {
                 List<BaseUnit> possibleTargets = FindPossibleTargets(enemy, enemy.CurrentMovement + 1);
             
                 if(possibleTargets.Count != 0) {
-                    BaseUnit targetHero = CompareAttackResults(possibleTargets, enemy); 
+                    BaseUnit targetHero = CompareAttackResults(possibleTargets, enemy, enemy.AvailableAttacks[0]); //assumes one attack 
 
                     var pathToTarget = Targetfinding.FindPath(enemy.OccupiedTile, targetHero.OccupiedTile);
 
@@ -54,6 +55,7 @@ public class EnemyManager : MonoBehaviour {
                         enemy.ModifyAP(-1);
                         yield return new WaitForSeconds(1); // Wait for a second after moving
                     }
+                    AttackManager.Instance.CurrentAttack = enemy.AvailableAttacks[0];
                     yield return StartCoroutine(AttackHero(enemy, targetHero));
                     yield return new WaitForSeconds(1); // Wait for a second after attacking
                 } else {
@@ -65,7 +67,52 @@ public class EnemyManager : MonoBehaviour {
             } else {
                 List<BaseUnit> adjacentTargets = FindPossibleTargets(enemy, 1);
                 if(adjacentTargets.Count != 0) {
-                    BaseUnit targetHero = CompareAttackResults(adjacentTargets, enemy); 
+                    BaseUnit targetHero = CompareAttackResults(adjacentTargets, enemy, enemy.AvailableAttacks[0]); 
+                    AttackManager.Instance.CurrentAttack = enemy.AvailableAttacks[0];
+                    yield return StartCoroutine(AttackHero(enemy, targetHero));
+                    yield return new WaitForSeconds(1); // Wait for a second after attacking
+                } else {
+                    break;
+                }
+            }
+        }
+    }
+    public IEnumerator DemonBossBehavior(BaseEnemy enemy) {
+        while(enemy.CurrentAP > 0) {
+            if(enemy.CurrentAP > 1) {
+                List<BaseUnit> possibleTargets = FindPossibleTargets(enemy, enemy.CurrentMovement + 1);
+            
+                if(possibleTargets.Count != 0) {
+                    BaseUnit targetHero = CompareAttackResults(possibleTargets, enemy, enemy.AvailableAttacks[0]); 
+
+                    var pathToTarget = Targetfinding.FindPath(enemy.OccupiedTile, targetHero.OccupiedTile);
+
+                    if(pathToTarget.Count > 1){
+                        yield return StartCoroutine(MoveEnemyAlongPath(enemy, pathToTarget));
+                        enemy.ModifyAP(-1);
+                        yield return new WaitForSeconds(1); // Wait for a second after moving
+                    }
+                    if(enemy.CurrentAP > 2 && ExpectedDamage(targetHero, enemy, enemy.AvailableAttacks[0]) >= targetHero.CurrentHealth) {
+                        //checks for having 3 or more AP and if the first attack will not kill the target
+                        AttackManager.Instance.CurrentAttack = enemy.AvailableAttacks[1]; //uses second attack when AP available and first attack won't kill
+                        yield return StartCoroutine(AttackHero(enemy, targetHero));
+                        yield return new WaitForSeconds(1); // Wait for a second after attacking
+                    } else {
+                        AttackManager.Instance.CurrentAttack = enemy.AvailableAttacks[0]; 
+                        yield return StartCoroutine(AttackHero(enemy, targetHero));
+                        yield return new WaitForSeconds(1); // Wait for a second after attacking
+                    }
+                } else {
+                    var randomPath = MoveToRandom(enemy); 
+                    MoveEnemy(enemy, randomPath[0]); //this just teleports for time being
+                    enemy.ModifyAP(-1);
+                    break;
+                }
+            } else {
+                List<BaseUnit> adjacentTargets = FindPossibleTargets(enemy, 1);
+                if(adjacentTargets.Count != 0) {
+                    BaseUnit targetHero = CompareAttackResults(adjacentTargets, enemy, enemy.AvailableAttacks[0]); 
+                    AttackManager.Instance.CurrentAttack = enemy.AvailableAttacks[0];
                     yield return StartCoroutine(AttackHero(enemy, targetHero));
                     yield return new WaitForSeconds(1); // Wait for a second after attacking
                 } else {
@@ -88,7 +135,7 @@ public class EnemyManager : MonoBehaviour {
                 List<BaseUnit> possibleTargets = FindPossibleTargets(enemy, enemy.CurrentMovement + enemy.AvailableAttacks[0].PublicRange);
             
                 if(possibleTargets.Count != 0) {
-                    BaseUnit targetHero = CompareAttackResults(possibleTargets, enemy); 
+                    BaseUnit targetHero = CompareAttackResults(possibleTargets, enemy, enemy.AvailableAttacks[0]); //assumes one attack
 
                     var pathToTarget = Targetfinding.FindPath(enemy.OccupiedTile, targetHero.OccupiedTile);
                     pathToTarget.Reverse();
@@ -105,7 +152,7 @@ public class EnemyManager : MonoBehaviour {
                         enemy.ModifyAP(-1);
                         yield return new WaitForSeconds(0.3f); // Wait for a smidge after moving
                     }
-
+                    AttackManager.Instance.CurrentAttack = enemy.AvailableAttacks[0];
                     yield return StartCoroutine(AttackHero(enemy, targetHero));
                     yield return new WaitForSeconds(1); // Wait for a second after attacking
                 } else {
@@ -118,7 +165,8 @@ public class EnemyManager : MonoBehaviour {
                 //not technically adjacent, but reachable without movement
                 List<BaseUnit> adjacentTargets = FindPossibleTargets(enemy, enemy.AvailableAttacks[0].PublicRange);
                 if(adjacentTargets.Count != 0) {
-                    BaseUnit targetHero = CompareAttackResults(adjacentTargets, enemy); 
+                    BaseUnit targetHero = CompareAttackResults(adjacentTargets, enemy, enemy.AvailableAttacks[0]);
+                    AttackManager.Instance.CurrentAttack = enemy.AvailableAttacks[0]; 
                     yield return StartCoroutine(AttackHero(enemy, targetHero));
                 }
             }
@@ -156,12 +204,12 @@ public class EnemyManager : MonoBehaviour {
         }
     }
 
-    public BaseUnit CompareAttackResults(List<BaseUnit> targets, BaseEnemy attacker) {
+    public BaseUnit CompareAttackResults(List<BaseUnit> targets, BaseEnemy attacker, Attack attack) {
         BaseUnit selectedTarget = null;
         float selectedTargetExpectedHealth = float.MaxValue;
         float expectedHealth;
 
-        Attack attack = attacker.AvailableAttacks[0]; //Assuming one attack for simplicity
+        //Attack attack = attacker.AvailableAttacks[0]; //Assuming one attack for simplicity
 
         foreach(BaseUnit target in targets) {
             expectedHealth = ExpectedDamage(target, attacker, attack);
@@ -175,6 +223,9 @@ public class EnemyManager : MonoBehaviour {
         return selectedTarget;
     }
     public float ExpectedDamage(BaseUnit defender, BaseUnit attacker, Attack attack) {
+        //returns the expected health remaining after an attack, not the expected damage value
+        //should consider changing name of function
+
         // Convert percentages to decimals for calculation
         float hitChance = attack.PublicHitChance / 100f;
         float critChance = attack.PublicCritChance / 100f;

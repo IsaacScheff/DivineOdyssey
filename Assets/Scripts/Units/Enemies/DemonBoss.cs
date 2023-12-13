@@ -8,6 +8,7 @@ public class DemonBoss : BaseEnemy {
         if (AvailableAttacks == null) {
             AvailableAttacks = new List<Attack>();
         }
-        AvailableAttacks.Add(new Spear());
+        AvailableAttacks.Add(new PommelStrike());
+        AvailableAttacks.Add(new AxeSwing());
     }
 }

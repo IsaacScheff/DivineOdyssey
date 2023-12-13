@@ -8,6 +8,6 @@ public class DemonMage : BaseEnemy {
         if (AvailableAttacks == null) {
             AvailableAttacks = new List<Attack>();
         }
-        AvailableAttacks.Add(new Fireball());
+        AvailableAttacks.Add(new ConjureFire());
     }
 }

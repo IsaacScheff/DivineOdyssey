@@ -9,6 +9,6 @@ public class Alistar : BaseHero {
             AvailableAttacks = new List<Attack>();
         }
         AvailableAttacks.Add(new Spear());
-        AvailableAttacks.Add(new Fireball());
+        AvailableAttacks.Add(new ConjureFire());
     }
 }
