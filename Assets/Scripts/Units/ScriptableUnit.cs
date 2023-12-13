@@ -17,6 +17,9 @@ public enum Faction {
 public enum UnitType {
     Alistar,
     Verrier,
+    Karen,
+    Sael,
+    Mephistopheles,
     DemonFighter,
     DemonMage,
     DemonBoss

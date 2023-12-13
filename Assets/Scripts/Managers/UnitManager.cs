@@ -38,7 +38,7 @@ public class UnitManager : MonoBehaviour {
         }
     }
     public void SpawnHeroes() { //these random placements will be replaced with set ones for each encounter
-        UnitType[] heroes = {UnitType.Alistar, UnitType.Verrier};
+        UnitType[] heroes = {UnitType.Alistar, UnitType.Verrier, UnitType.Karen, UnitType.Sael, UnitType.Mephistopheles};
 
         foreach(UnitType hero in heroes) {
             var heroPrefab = GetUnitPrefab(hero) as BaseHero;
@@ -54,8 +54,7 @@ public class UnitManager : MonoBehaviour {
         GameManager.Instance.ChangeState(GameState.SpawnEnemies);
     }
     public void SpawnEnemies() { //same note as function above
-         //UnitType[] enemies = {UnitType.DemonFighter, UnitType.DemonMage, UnitType.DemonBoss};
-         UnitType[] enemies = {UnitType.DemonBoss};
+        UnitType[] enemies = {UnitType.DemonFighter, UnitType.DemonMage, UnitType.DemonBoss};
 
         foreach(UnitType enemy in enemies) {
             var enemyPrefab = GetUnitPrefab(enemy) as BaseEnemy;

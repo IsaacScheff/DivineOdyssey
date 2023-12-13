@@ -271,13 +271,13 @@ public class MenuManager : MonoBehaviour {
         string result = "";
 
         if (e.IsHit) {
-            result += $"The {e.Attack} was a hit!\n\n";
+            result += $"The {e.Attack.Name} was a hit!\n\n";
             // if (e.IsCritical) {
             //     result += "It was a critical hit!\n\n"; //event needs to send whether crit or not
             // }
             result += $"{e.Defender.UnitName} took {e.DamageDealt} damage.\n\n";
         } else {
-            result += $"The {e.Attack} was a miss.\n\n";
+            result += $"The {e.Attack.Name} was a miss.\n\n";
         }
         result += $"{e.Defender.UnitName} has {e.Defender.CurrentHealth} health remaining.";
         //Debug.Log(result);
