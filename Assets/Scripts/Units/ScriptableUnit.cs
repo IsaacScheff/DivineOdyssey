@@ -18,7 +18,8 @@ public enum UnitType {
     Alistar,
     Verrier,
     DemonFighter,
-    DemonMage
+    DemonMage,
+    DemonBoss
     // Add more as needed
 }
 

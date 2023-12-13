@@ -82,49 +82,6 @@ public class EnemyManager : MonoBehaviour {
         yield return new WaitForSeconds(1); // Wait for a second to simulate attack animation
         target.OccupiedTile.AttackHighlightOff();
     }
-    // IEnumerator AggressiveRangeBehavior(BaseEnemy enemy) {
-    //     while(enemy.CurrentAP > 0) {
-    //         if(enemy.CurrentAP > 1) {
-    //             List<BaseUnit> possibleTargets = FindPossibleTargets(enemy, enemy.CurrentMovement + enemy.AvailableAttacks[0].PublicRange);
-            
-    //             if(possibleTargets.Count != 0) {
-    //                 BaseUnit targetHero = CompareAttackResults(possibleTargets, enemy); 
-
-    //                 var pathToTarget = Targetfinding.FindPath(enemy.OccupiedTile, targetHero.OccupiedTile);
-    //                 pathToTarget.Reverse();
-    //                 pathToTarget.RemoveAt(pathToTarget.Count - 1);
-
-    //                 foreach (var tile in pathToTarget) {
-    //                     var lineToTarget = Linefinder.GetLine(enemy.OccupiedTile, targetHero.OccupiedTile);
-    //                     bool hasObstacle = lineToTarget.Take(lineToTarget.Count - 1).Any(t => !t.Walkable || t.OccupiedUnit != null);
-
-    //                     if (!hasObstacle) {
-    //                         break;
-    //                     }
-
-    //                     MoveEnemy(enemy, tile);
-    //                     enemy.ModifyAP(-1);
-    //                     yield return new WaitForSeconds(1); // Wait for a second after moving
-    //                 }
-
-    //                 yield return StartCoroutine(AttackHero(enemy, targetHero));
-    //                 yield return new WaitForSeconds(1); // Wait for a second after attacking
-    //             } else {
-    //                 var randomPath = MoveToRandom(enemy); 
-    //                 MoveEnemy(enemy, randomPath[0]); //this just teleports for time being
-    //                 enemy.ModifyAP(-1);
-    //                 break;
-    //             }
-    //         } else {
-    //             //not technically adjacent, but reachable without movement
-    //             List<BaseUnit> adjacentTargets = FindPossibleTargets(enemy, enemy.AvailableAttacks[0].PublicRange);
-    //             if(adjacentTargets.Count != 0) {
-    //                 BaseUnit targetHero = CompareAttackResults(adjacentTargets, enemy); 
-    //                 yield return StartCoroutine(AttackHero(enemy, targetHero));
-    //             }
-    //         }
-    //     }
-    // }
     IEnumerator AggressiveRangeBehavior(BaseEnemy enemy) {
         while(enemy.CurrentAP > 0) {
             if(enemy.CurrentAP > 1) {
