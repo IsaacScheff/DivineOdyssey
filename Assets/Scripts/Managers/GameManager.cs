@@ -31,7 +31,8 @@ public class GameManager : MonoBehaviour {
             case GameState.HeroesTurn:
                 break;
             case GameState.EnemiesTurn:
-                StartCoroutine(EnemyManager.Instance.ExecuteEnemyTurns());
+                //StartCoroutine(EnemyManager.Instance.ExecuteEnemyTurns());
+                EnemyManager.Instance.StartEnemyTurns();
                 break;
             case GameState.HeroMoving:
                 break;
