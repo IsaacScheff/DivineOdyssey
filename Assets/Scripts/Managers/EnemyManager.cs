@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class EnemyManager : MonoBehaviour {
@@ -10,12 +11,13 @@ public class EnemyManager : MonoBehaviour {
     public List<Tile> PathForEnemy; 
     private Dictionary<BaseEnemy, EnemyStateMachine> enemyStateMachines = new Dictionary<BaseEnemy, EnemyStateMachine>();
     Dictionary<EnemyAI, EnemyBehavior> enemyBehaviorDict = new Dictionary<EnemyAI, EnemyBehavior>();
-    public delegate IEnumerator EnemyBehavior(BaseEnemy enemy);
+    public delegate IEnumerator EnemyBehavior(EnemyStateMachine stateMachine, EnemyState state);
+
 
     void Awake() {
         Instance = this;
 
-        //InitializeEnemyBehaviors();
+        InitializeEnemyBehaviors();
     }
     public void StartEnemyTurns() {
         foreach (BaseEnemy enemy in UnitManager.Instance.ActiveEnemies) {
@@ -27,22 +29,24 @@ public class EnemyManager : MonoBehaviour {
                 }
             }
         }
-
         StartCoroutine(ExecuteEnemyTurns());
     }
     private IEnumerator ExecuteEnemyTurns() {
         foreach (var enemyStateMachine in enemyStateMachines.Values) {
             yield return StartCoroutine(ExecuteEnemyTurn(enemyStateMachine));
         }
-        
         TurnManager.Instance.EndEnemyTurn();
     }
     private IEnumerator ExecuteEnemyTurn(EnemyStateMachine enemyStateMachine) {
         ActiveEnemy = enemyStateMachine.Enemy;
         EnemyState state = enemyStateMachine.CurrentState;
+        yield return StartCoroutine(ExecuteBehavior(enemyStateMachine, state));
+    }
+    private IEnumerator AggressiveMeleeBehavior(EnemyStateMachine stateMachine, EnemyState state) {
+        // Logic for aggressive melee behavior
         int count = 0;
-        while (enemyStateMachine.CurrentState != EnemyState.EndingTurn && count < 10) {
-            switch (enemyStateMachine.CurrentState) {
+        while (state != EnemyState.EndingTurn && count < 20) {
+            switch (state) {
                 case EnemyState.CheckingAP:
                     state = HandleCheckingAP(ActiveEnemy);
                     break;
@@ -65,14 +69,18 @@ public class EnemyManager : MonoBehaviour {
                     } else {
                         //make random move;
                         Debug.Log("No targets found, making random move");
+                        var randomPath = MoveToRandom(ActiveEnemy); 
+                        MoveEnemy(ActiveEnemy, randomPath[0]); //this just teleports for time being
+                        ActiveEnemy.ModifyAP(-1);
                         state = EnemyState.EndingTurn;
                     }
                     yield return null;
                     break;
             }
-            enemyStateMachine.AdvanceState(state);
+            stateMachine.AdvanceState(state);
             count++;
         }
+        yield return null;
     }
     private EnemyState HandleCheckingAP(BaseEnemy enemy) {
       switch(enemy.CurrentAP) {
@@ -84,17 +92,17 @@ public class EnemyManager : MonoBehaviour {
             return EnemyState.FindingTargets;
       }
     }
-    // private void InitializeEnemyBehaviors() {
-    //     enemyBehaviorDict.Add(EnemyAI.AggresiveMelee, AggressiveMeleeBehavior);
-    //     enemyBehaviorDict.Add(EnemyAI.AggresiveRange, AggressiveRangeBehavior);
-    //     enemyBehaviorDict.Add(EnemyAI.DemonBoss, DemonBossBehavior);
-    // }
-    // IEnumerator ExecuteBehavior(BaseEnemy enemy) {
-    //     EnemyAI aiType = enemy.EnemyAI; 
-    //     if (enemyBehaviorDict.TryGetValue(aiType, out EnemyBehavior behavior)) {
-    //         yield return StartCoroutine(behavior(enemy)); // Start the coroutine
-    //     }
-    // }
+    private void InitializeEnemyBehaviors() {
+        enemyBehaviorDict.Add(EnemyAI.AggroMelee, AggressiveMeleeBehavior);
+        //enemyBehaviorDict.Add(EnemyAI.AggresiveRange, AggressiveRangeBehavior);
+        //enemyBehaviorDict.Add(EnemyAI.DemonBoss, DemonBossBehavior);
+    }
+    IEnumerator ExecuteBehavior(EnemyStateMachine stateMachine, EnemyState state) {
+        EnemyAI aiType = stateMachine.Enemy.EnemyAI; 
+        if (enemyBehaviorDict.TryGetValue(aiType, out EnemyBehavior behavior)) {
+            yield return StartCoroutine(behavior(stateMachine, state)); // Start the coroutine
+        }
+    }
     public IEnumerator AttackHero(BaseUnit enemy, Tile target) {
         target.AttackHighlightOn();
         AttackManager.Instance.Target = target;
@@ -182,15 +190,6 @@ public class EnemyManager : MonoBehaviour {
         }
         yield return null;
     }
-}
-
-public enum EnemyState {
-    CheckingAP,
-    FindingTargets,
-    MovingToTarget,
-    Attacking,
-    EndingTurn,
-    CheckingAdjacentHeroes
 }
 
     //  public IEnumerator ExecuteEnemyTurns() {
