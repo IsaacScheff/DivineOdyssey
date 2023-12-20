@@ -21,27 +21,11 @@ public class EnemyStateMachine {
     }
 
     public void AdvanceState(EnemyState NextState) {
-        // Logic to advance state based on CurrentState and Enemy's status
-        // No coroutine handling here, just logic
          CurrentState = NextState;
-        //these really just handle transitions, naming scheme may need updating
-         // switch (CurrentState) {
-         //       case EnemyState.CheckingAP:
-         //          //HandleCheckingAP();
-         //          break;
-         //       case EnemyState.FindingTargets:
-         //          //HandleFindingTargets();
-         //          break;
-         //       case EnemyState.MovingToTarget:
-         //          //HandleMovingToTarget();
-         //          break;
-         //       case EnemyState.Attacking:
-         //          //HandleAttacking();
-         //          break;
-         //       case EnemyState.EndingTurn:
-         //          // End turn logic, if any
-         //          break;
-         // }
+    }
+    public void Reset() {
+        CurrentState = EnemyState.CheckingAP;
+        // Reset other necessary properties if any
     }
 }
 

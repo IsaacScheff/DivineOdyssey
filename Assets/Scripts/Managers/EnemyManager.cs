@@ -23,7 +23,7 @@ public class EnemyManager : MonoBehaviour {
                 if (!enemyStateMachines.ContainsKey(enemy)) {
                     enemyStateMachines[enemy] = new EnemyStateMachine(enemy);
                 } else {
-                    //enemyStateMachines[enemy].Reset();
+                    enemyStateMachines[enemy].Reset();
                 }
             }
         }
@@ -84,29 +84,17 @@ public class EnemyManager : MonoBehaviour {
             return EnemyState.FindingTargets;
       }
     }
-
-    // private IEnumerator ExecuteEnemyTurn(EnemyStateMachine enemyStateMachine) {
-    //     ActiveEnemy = enemyStateMachine.Enemy;
-    //     while (enemyStateMachine.CurrentState != EnemyState.EndingTurn) {
-    //         enemyStateMachine.AdvanceState();
-    //         yield return new WaitForSeconds(1);
-    //         // Here, you might want to yield return null or a WaitForSeconds 
-    //         // depending on the state to allow for animations and effects.
-    //         //yield return null; // Example placeholder
-    //     }
-    // }
     // private void InitializeEnemyBehaviors() {
     //     enemyBehaviorDict.Add(EnemyAI.AggresiveMelee, AggressiveMeleeBehavior);
     //     enemyBehaviorDict.Add(EnemyAI.AggresiveRange, AggressiveRangeBehavior);
     //     enemyBehaviorDict.Add(EnemyAI.DemonBoss, DemonBossBehavior);
     // }
-    IEnumerator ExecuteBehavior(BaseEnemy enemy) {
-        EnemyAI aiType = enemy.EnemyAI; 
-        if (enemyBehaviorDict.TryGetValue(aiType, out EnemyBehavior behavior)) {
-            yield return StartCoroutine(behavior(enemy)); // Start the coroutine
-        }
-    }
-    //public IEnumerator AttackHero(BaseUnit enemy, BaseUnit target) {
+    // IEnumerator ExecuteBehavior(BaseEnemy enemy) {
+    //     EnemyAI aiType = enemy.EnemyAI; 
+    //     if (enemyBehaviorDict.TryGetValue(aiType, out EnemyBehavior behavior)) {
+    //         yield return StartCoroutine(behavior(enemy)); // Start the coroutine
+    //     }
+    // }
     public IEnumerator AttackHero(BaseUnit enemy, Tile target) {
         target.AttackHighlightOn();
         AttackManager.Instance.Target = target;
