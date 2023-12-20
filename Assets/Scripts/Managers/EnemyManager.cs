@@ -7,6 +7,7 @@ using UnityEngine;
 public class EnemyManager : MonoBehaviour {
     public static EnemyManager Instance;
     public BaseEnemy ActiveEnemy;
+    public List<Tile> PathForEnemy; 
     private Dictionary<BaseEnemy, EnemyStateMachine> enemyStateMachines = new Dictionary<BaseEnemy, EnemyStateMachine>();
     Dictionary<EnemyAI, EnemyBehavior> enemyBehaviorDict = new Dictionary<EnemyAI, EnemyBehavior>();
     public delegate IEnumerator EnemyBehavior(BaseEnemy enemy);
@@ -22,7 +23,7 @@ public class EnemyManager : MonoBehaviour {
                 if (!enemyStateMachines.ContainsKey(enemy)) {
                     enemyStateMachines[enemy] = new EnemyStateMachine(enemy);
                 } else {
-                    enemyStateMachines[enemy].Reset();
+                    //enemyStateMachines[enemy].Reset();
                 }
             }
         }
@@ -38,14 +39,62 @@ public class EnemyManager : MonoBehaviour {
     }
     private IEnumerator ExecuteEnemyTurn(EnemyStateMachine enemyStateMachine) {
         ActiveEnemy = enemyStateMachine.Enemy;
-        while (enemyStateMachine.CurrentState != EnemyState.EndingTurn) {
-            enemyStateMachine.AdvanceState();
-
-            // Here, you might want to yield return null or a WaitForSeconds 
-            // depending on the state to allow for animations and effects.
-            yield return null; // Example placeholder
+        EnemyState state = enemyStateMachine.CurrentState;
+        int count = 0;
+        while (enemyStateMachine.CurrentState != EnemyState.EndingTurn && count < 10) {
+            switch (enemyStateMachine.CurrentState) {
+                case EnemyState.CheckingAP:
+                    state = HandleCheckingAP(ActiveEnemy);
+                    break;
+                case EnemyState.MovingToTarget:
+                    yield return StartCoroutine(MoveEnemyAlongPath(ActiveEnemy, PathForEnemy));
+                    state = EnemyState.Attacking;
+                    break;
+                case EnemyState.Attacking:
+                    yield return StartCoroutine(AttackHero(ActiveEnemy, AttackManager.Instance.Target));
+                    state = EnemyState.CheckingAP;
+                    break;
+                case EnemyState.FindingTargets:
+                    Debug.Log("Looking for targets");
+                    List<BaseUnit> PossibleTargets = FindPossibleTargets(ActiveEnemy, ActiveEnemy.CurrentMovement + ActiveEnemy.AvailableAttacks[0].PublicRange);
+                    if(PossibleTargets.Count > 0) {
+                        BaseUnit target = CompareAttackResults(PossibleTargets, ActiveEnemy, ActiveEnemy.AvailableAttacks[0]);
+                        PathForEnemy = Targetfinding.FindPath(ActiveEnemy.OccupiedTile, target.OccupiedTile);
+                        AttackManager.Instance.Target = target.OccupiedTile;
+                        state = EnemyState.MovingToTarget;
+                    } else {
+                        //make random move;
+                        Debug.Log("No targets found, making random move");
+                        state = EnemyState.EndingTurn;
+                    }
+                    yield return null;
+                    break;
+            }
+            enemyStateMachine.AdvanceState(state);
+            count++;
         }
     }
+    private EnemyState HandleCheckingAP(BaseEnemy enemy) {
+      switch(enemy.CurrentAP) {
+         case 0:
+            return EnemyState.EndingTurn;
+         case 1:
+            return EnemyState.CheckingAdjacentHeroes;
+         default: //if more than one AP
+            return EnemyState.FindingTargets;
+      }
+    }
+
+    // private IEnumerator ExecuteEnemyTurn(EnemyStateMachine enemyStateMachine) {
+    //     ActiveEnemy = enemyStateMachine.Enemy;
+    //     while (enemyStateMachine.CurrentState != EnemyState.EndingTurn) {
+    //         enemyStateMachine.AdvanceState();
+    //         yield return new WaitForSeconds(1);
+    //         // Here, you might want to yield return null or a WaitForSeconds 
+    //         // depending on the state to allow for animations and effects.
+    //         //yield return null; // Example placeholder
+    //     }
+    // }
     // private void InitializeEnemyBehaviors() {
     //     enemyBehaviorDict.Add(EnemyAI.AggresiveMelee, AggressiveMeleeBehavior);
     //     enemyBehaviorDict.Add(EnemyAI.AggresiveRange, AggressiveRangeBehavior);
@@ -143,6 +192,7 @@ public class EnemyManager : MonoBehaviour {
             MoveEnemy(enemy, tile); // Move enemy to next tile
             yield return new WaitForSeconds(0.3f); // Wait half a second before moving to the next tile
         }
+        yield return null;
     }
 }
 
