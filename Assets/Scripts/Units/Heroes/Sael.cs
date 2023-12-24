@@ -8,6 +8,6 @@ public class Sael : BaseHero {
         if (AvailableAttacks == null) {
             AvailableAttacks = new List<Attack>();
         }
-        AvailableAttacks.Add(new Spear());
+        AvailableAttacks.Add(new OneTwoPunch());
     }
 }

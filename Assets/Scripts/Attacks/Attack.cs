@@ -98,7 +98,7 @@ public class BasePhysicalAttack : Attack {
             damageDealt = attackManager.RollDamage(Damage, attacker.CurrentStrength, defender.CurrentGrit, CritChance, CritMultiplier);
             attackManager.Target.OccupiedUnit.ModifyHealth(-1 * damageDealt);
         } 
-        //UseAP(attackManager.Attacker); //this will be moved during the UnitManager re-work
+        
         UnitManager.Instance.UseAP(attacker, CostAP);
         // Raise the event with the results of the attack
         OnAttackExecuted(new AttackEventArgs {
@@ -161,6 +161,48 @@ public class AxeSwing : Spear {
     protected override int Damage => 21;
     protected override int CostAP => 3;
     public override string Name => "Axe Swing";
+}
+
+public class OneTwoPunch : BaseMelee {
+    protected override int Damage => 7;
+    protected override int HitChance => 70;
+    protected override int CritChance => 7;
+    protected override int CostAP => 2;
+    public override string Name => "One-Two Punch";
+
+    public override void Execute(BaseUnit attacker, BaseUnit defender, AttackManager attackManager) {
+        //first atack is jab, second is  a cross
+        //later add auto crit to cross if jab crits
+        int damageDealt = 0;
+        int crossDamage = 14;
+        int crossHitChance = 40;
+        
+        if(defender == null) {
+            attackManager.ClearAttack();
+            return;
+        }
+        bool jabIsHit = attackManager.RollAttack(HitChance, attacker.CurrentAccuracy, defender.CurrentEvasion);
+        if(jabIsHit) {
+            damageDealt = attackManager.RollDamage(Damage, attacker.CurrentStrength, defender.CurrentGrit, CritChance, CritMultiplier);
+            crossHitChance = 80; //cross hit chance doubles if jab hits
+        }
+        bool crossIsHit = attackManager.RollAttack(crossHitChance, attacker.CurrentAccuracy, defender.CurrentEvasion); 
+        if(crossIsHit) {
+            damageDealt += attackManager.RollDamage(crossDamage, attacker.CurrentStrength, defender.CurrentGrit, CritChance, CritMultiplier);
+        }
+
+        attackManager.Target.OccupiedUnit.ModifyHealth(-1 * damageDealt);
+        UnitManager.Instance.UseAP(attacker, CostAP);
+        // Raise the event with the results of the attack
+        OnAttackExecuted(new AttackEventArgs {
+            Attacker = attacker,
+            Defender = defender,
+            DamageDealt = damageDealt,
+            IsHit = (jabIsHit || crossIsHit),
+            Attack = this 
+        });
+        MenuManager.Instance.RemoveHeroAttackButtons();
+    }
 }
 
 // ... other attack classes

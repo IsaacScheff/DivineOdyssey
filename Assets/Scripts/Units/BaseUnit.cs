@@ -10,7 +10,7 @@ public class BaseUnit : MonoBehaviour {
     public List<Attack> AvailableAttacks;
 
     // Constants for stat caps
-    private const int MaxStatValue = 50;
+    private const int MaxStatValue = 500;
     private const int MinStatValue = 0;
 
     // Seed stats: unmodified stats at level 1, for playtesting for now will just be assigning base stats in editor 
