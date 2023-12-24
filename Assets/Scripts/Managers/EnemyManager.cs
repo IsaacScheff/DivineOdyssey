@@ -2,175 +2,210 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class EnemyManager : MonoBehaviour {
     public static EnemyManager Instance;
+    public BaseEnemy ActiveEnemy;
+    public List<Tile> PathForEnemy; 
+    private Dictionary<BaseEnemy, EnemyStateMachine> enemyStateMachines = new Dictionary<BaseEnemy, EnemyStateMachine>();
     Dictionary<EnemyAI, EnemyBehavior> enemyBehaviorDict = new Dictionary<EnemyAI, EnemyBehavior>();
-    public delegate IEnumerator EnemyBehavior(BaseEnemy enemy);
+    public delegate IEnumerator EnemyBehavior(EnemyStateMachine stateMachine, EnemyState state);
+
 
     void Awake() {
         Instance = this;
 
         InitializeEnemyBehaviors();
     }
-    public IEnumerator ExecuteEnemyTurns() {
-        var enemies = UnitManager.Instance.ActiveEnemies;
-
-        foreach (BaseEnemy enemy in enemies) {
+    public void StartEnemyTurns() {
+        foreach (BaseEnemy enemy in UnitManager.Instance.ActiveEnemies) {
             if (enemy != null) {
-                // Start the behavior coroutine for each enemy and wait for it to complete
-                yield return StartCoroutine(ExecuteBehavior(enemy));
-                
-                yield return new WaitForSeconds(1.0f); //small delay between enemies acting
+                if (!enemyStateMachines.ContainsKey(enemy)) {
+                    enemyStateMachines[enemy] = new EnemyStateMachine(enemy);
+                } else {
+                    enemyStateMachines[enemy].Reset();
+                }
             }
         }
-        // End enemy turn after all behaviors are completed
+        StartCoroutine(ExecuteEnemyTurns());
+    }
+    private IEnumerator ExecuteEnemyTurns() {
+        foreach (var enemyStateMachine in enemyStateMachines.Values) {
+            yield return StartCoroutine(ExecuteEnemyTurn(enemyStateMachine));
+            yield return new WaitForSeconds(1.0f); //small delay between enemies acting
+        }
         TurnManager.Instance.EndEnemyTurn();
     }
+    private IEnumerator ExecuteEnemyTurn(EnemyStateMachine enemyStateMachine) {
+        ActiveEnemy = enemyStateMachine.Enemy;
+        EnemyState state = enemyStateMachine.CurrentState;
+        while(state != EnemyState.EndingTurn) {
+            yield return StartCoroutine(ExecuteBehavior(enemyStateMachine, state));
+            state = enemyStateMachine.CurrentState;
+        }
+    }
+    private IEnumerator AggressiveMeleeBehavior(EnemyStateMachine stateMachine, EnemyState state) {
+        switch (state) {
+            case EnemyState.CheckingAP:
+                state = HandleCheckingAP(ActiveEnemy);
+                break;
+            case EnemyState.CheckingAdjacentHeroes:
+                bool isThereAdjacentTarget = ChooseTargetSingleAttack(false); //false for can't move
+                state = isThereAdjacentTarget ? EnemyState.MovingToTarget : EnemyState.EndingTurn;
+                break;
+            case EnemyState.MovingToTarget:
+                yield return StartCoroutine(MoveEnemyAlongPath(ActiveEnemy, PathForEnemy));
+                state = EnemyState.Attacking;
+                break;
+            case EnemyState.Attacking:
+                yield return StartCoroutine(AttackHero(ActiveEnemy, AttackManager.Instance.Target));
+                state = EnemyState.CheckingAP;
+                break;
+            case EnemyState.FindingTargets:
+                bool isThereTarget = ChooseTargetSingleAttack(true); //true for can move
+                state = isThereTarget ? EnemyState.MovingToTarget : EnemyState.EndingTurn;
+                if(state == EnemyState.EndingTurn) {
+                    ExecuteRandomMove();
+                }
+                break;
+        }
+        stateMachine.AdvanceState(state);
+        yield return null;
+    }
+    private IEnumerator DemonBossBehavior(EnemyStateMachine stateMachine, EnemyState state) {
+        switch (state) {
+            case EnemyState.CheckingAP:
+                state = HandleCheckingAP(ActiveEnemy);
+                break;
+            case EnemyState.CheckingAdjacentHeroes:
+                bool isThereAdjacentTarget = ChooseTargetSingleAttack(false); //false for can't move
+                state = isThereAdjacentTarget ? EnemyState.MovingToTarget : EnemyState.EndingTurn;
+                break;
+            case EnemyState.MovingToTarget:
+                yield return StartCoroutine(MoveEnemyAlongPath(ActiveEnemy, PathForEnemy));
+                state = EnemyState.Attacking;
+                break;
+            case EnemyState.Attacking:
+                //check that second attack is available or that first attack expected to kill the target
+                if(ActiveEnemy.CurrentAP > 1 && ExpectedHealthAfterAttack(AttackManager.Instance.Target.OccupiedUnit, ActiveEnemy, ActiveEnemy.AvailableAttacks[0]) >= 0) {
+                    AttackManager.Instance.CurrentAttack = ActiveEnemy.AvailableAttacks[1];
+                }
+                yield return StartCoroutine(AttackHero(ActiveEnemy, AttackManager.Instance.Target));
+                state = EnemyState.CheckingAP;
+                break;
+            case EnemyState.FindingTargets:
+                bool isThereTarget = ChooseTargetSingleAttack(true); //true for can move
+                state = isThereTarget ? EnemyState.MovingToTarget : EnemyState.EndingTurn;
+                if(state == EnemyState.EndingTurn) {
+                    ExecuteRandomMove();
+                }
+                break;
+        }
+        stateMachine.AdvanceState(state);
+        yield return null;
+    }
+    private IEnumerator AggressiveRangeBehavior(EnemyStateMachine stateMachine, EnemyState state) {
+    //currently able to hit from some tiles that should be out of range
+        switch (state) {
+            case EnemyState.CheckingAP:
+                state = HandleCheckingAP(ActiveEnemy);
+                break;
+            case EnemyState.CheckingAdjacentHeroes:
+                bool isThereAdjacentTarget = ChooseTargetSingleAttack(false); //false for can't move
+                state = isThereAdjacentTarget ? EnemyState.MovingToTarget : EnemyState.EndingTurn;
+                break;
+            case EnemyState.MovingToTarget:
+                yield return StartCoroutine(MoveToRangedAttack(ActiveEnemy));
+                state = EnemyState.Attacking;
+                break;
+            case EnemyState.Attacking:
+                yield return StartCoroutine(AttackHero(ActiveEnemy, AttackManager.Instance.Target));
+                state = EnemyState.CheckingAP;
+                break;
+            case EnemyState.FindingTargets:
+                bool isThereTarget = ChooseTargetSingleAttack(true); //true for can move
+                state = isThereTarget ? EnemyState.MovingToTarget : EnemyState.EndingTurn;
+                if(state == EnemyState.EndingTurn) {
+                    ExecuteRandomMove();
+                }
+                break;
+        }
+        stateMachine.AdvanceState(state);
+        yield return null;
+    }
+    private IEnumerator MoveToRangedAttack(BaseEnemy enemy) {
+        BaseUnit targetHero = AttackManager.Instance.Target.OccupiedUnit;
 
+        var pathToTarget = Targetfinding.FindPath(enemy.OccupiedTile, targetHero.OccupiedTile);
+        pathToTarget.Reverse();
+
+        bool usedMove = false;
+        foreach (var tile in pathToTarget) {
+            var lineToTarget = Linefinder.GetLine(enemy.OccupiedTile, targetHero.OccupiedTile);
+            lineToTarget.RemoveAt(0);
+            bool hasObstacle = lineToTarget.Take(lineToTarget.Count - 1).Any(t => !t.Walkable || t.OccupiedUnit != null);
+            if (!hasObstacle && lineToTarget.Count <= enemy.AvailableAttacks[0].PublicRange) {
+                foreach(Tile pathTile in lineToTarget) {
+                    pathTile.AttackPathOn();
+                } 
+                break;
+            }
+            MoveEnemy(enemy, tile);
+            if(!usedMove) usedMove = true;
+            yield return new WaitForSeconds(0.3f); // Wait for a smidge after moving
+        }
+        yield return new WaitForSeconds(1.0f); //pause to show line of sight
+        if(usedMove) {
+            enemy.ModifyAP(-1);
+        }
+        foreach(Tile tile in GridManager.Instance.Tiles.Values) {
+            tile.AttackPathOff();
+        }
+        AttackManager.Instance.CurrentAttack = enemy.AvailableAttacks[0];
+    }
+    private bool ChooseTargetSingleAttack (bool canMove) { 
+        int movement = canMove ? ActiveEnemy.CurrentMovement : 0;
+        List<BaseUnit> PossibleTargets = FindPossibleTargets(ActiveEnemy, movement + ActiveEnemy.AvailableAttacks[0].PublicRange);
+        if(PossibleTargets.Count > 0) {
+            BaseUnit target = CompareAttackResults(PossibleTargets, ActiveEnemy, ActiveEnemy.AvailableAttacks[0]);
+            PathForEnemy = Targetfinding.FindPath(ActiveEnemy.OccupiedTile, target.OccupiedTile);
+            AttackManager.Instance.Target = target.OccupiedTile;
+            return true;
+        } else {
+            return false;
+        }
+    }
+    //private List<BaseUnit>CompareTargets;
+    private EnemyState HandleCheckingAP(BaseEnemy enemy) {
+      switch(enemy.CurrentAP) {
+         case 0:
+            return EnemyState.EndingTurn;
+         case 1:
+            return EnemyState.CheckingAdjacentHeroes;
+         default: //if more than one AP
+            return EnemyState.FindingTargets;
+      }
+    }
     private void InitializeEnemyBehaviors() {
-        enemyBehaviorDict.Add(EnemyAI.AggresiveMelee, AggressiveMeleeBehavior);
-        enemyBehaviorDict.Add(EnemyAI.AggresiveRange, AggressiveRangeBehavior);
+        enemyBehaviorDict.Add(EnemyAI.AggroMelee, AggressiveMeleeBehavior);
+        enemyBehaviorDict.Add(EnemyAI.AggroRange, AggressiveRangeBehavior);
         enemyBehaviorDict.Add(EnemyAI.DemonBoss, DemonBossBehavior);
     }
-    IEnumerator ExecuteBehavior(BaseEnemy enemy) {
-        EnemyAI aiType = enemy.EnemyAI; 
+    IEnumerator ExecuteBehavior(EnemyStateMachine stateMachine, EnemyState state) {
+        EnemyAI aiType = stateMachine.Enemy.EnemyAI; 
         if (enemyBehaviorDict.TryGetValue(aiType, out EnemyBehavior behavior)) {
-            yield return StartCoroutine(behavior(enemy)); // Start the coroutine
+            yield return StartCoroutine(behavior(stateMachine, state)); // Start the coroutine
         }
     }
-    public IEnumerator AggressiveMeleeBehavior(BaseEnemy enemy) {
-        while(enemy.CurrentAP > 0) {
-            if(enemy.CurrentAP > 1) {
-                List<BaseUnit> possibleTargets = FindPossibleTargets(enemy, enemy.CurrentMovement + 1);
-            
-                if(possibleTargets.Count != 0) {
-                    BaseUnit targetHero = CompareAttackResults(possibleTargets, enemy, enemy.AvailableAttacks[0]); //assumes one attack 
-
-                    var pathToTarget = Targetfinding.FindPath(enemy.OccupiedTile, targetHero.OccupiedTile);
-
-                    if(pathToTarget.Count > 1){
-                        yield return StartCoroutine(MoveEnemyAlongPath(enemy, pathToTarget));
-                        enemy.ModifyAP(-1);
-                        yield return new WaitForSeconds(1); // Wait for a second after moving
-                    }
-                    AttackManager.Instance.CurrentAttack = enemy.AvailableAttacks[0];
-                    yield return StartCoroutine(AttackHero(enemy, targetHero));
-                    yield return new WaitForSeconds(1); // Wait for a second after attacking
-                } else {
-                    var randomPath = MoveToRandom(enemy); 
-                    MoveEnemy(enemy, randomPath[0]); //this just teleports for time being
-                    enemy.ModifyAP(-1);
-                    break;
-                }
-            } else {
-                List<BaseUnit> adjacentTargets = FindPossibleTargets(enemy, 1);
-                if(adjacentTargets.Count != 0) {
-                    BaseUnit targetHero = CompareAttackResults(adjacentTargets, enemy, enemy.AvailableAttacks[0]); 
-                    AttackManager.Instance.CurrentAttack = enemy.AvailableAttacks[0];
-                    yield return StartCoroutine(AttackHero(enemy, targetHero));
-                    yield return new WaitForSeconds(1); // Wait for a second after attacking
-                } else {
-                    break;
-                }
-            }
-        }
-    }
-    public IEnumerator DemonBossBehavior(BaseEnemy enemy) {
-        while(enemy.CurrentAP > 0) {
-            if(enemy.CurrentAP > 1) {
-                List<BaseUnit> possibleTargets = FindPossibleTargets(enemy, enemy.CurrentMovement + 1);
-            
-                if(possibleTargets.Count != 0) {
-                    BaseUnit targetHero = CompareAttackResults(possibleTargets, enemy, enemy.AvailableAttacks[0]); 
-
-                    var pathToTarget = Targetfinding.FindPath(enemy.OccupiedTile, targetHero.OccupiedTile);
-
-                    if(pathToTarget.Count > 1){
-                        yield return StartCoroutine(MoveEnemyAlongPath(enemy, pathToTarget));
-                        enemy.ModifyAP(-1);
-                        yield return new WaitForSeconds(1); // Wait for a second after moving
-                    }
-                    if(enemy.CurrentAP > 2 && ExpectedDamage(targetHero, enemy, enemy.AvailableAttacks[0]) >= targetHero.CurrentHealth) {
-                        //checks for having 3 or more AP and if the first attack will not kill the target
-                        AttackManager.Instance.CurrentAttack = enemy.AvailableAttacks[1]; //uses second attack when AP available and first attack won't kill
-                        yield return StartCoroutine(AttackHero(enemy, targetHero));
-                        yield return new WaitForSeconds(1); // Wait for a second after attacking
-                    } else {
-                        AttackManager.Instance.CurrentAttack = enemy.AvailableAttacks[0]; 
-                        yield return StartCoroutine(AttackHero(enemy, targetHero));
-                        yield return new WaitForSeconds(1); // Wait for a second after attacking
-                    }
-                } else {
-                    var randomPath = MoveToRandom(enemy); 
-                    MoveEnemy(enemy, randomPath[0]); //this just teleports for time being
-                    enemy.ModifyAP(-1);
-                    break;
-                }
-            } else {
-                List<BaseUnit> adjacentTargets = FindPossibleTargets(enemy, 1);
-                if(adjacentTargets.Count != 0) {
-                    BaseUnit targetHero = CompareAttackResults(adjacentTargets, enemy, enemy.AvailableAttacks[0]); 
-                    AttackManager.Instance.CurrentAttack = enemy.AvailableAttacks[0];
-                    yield return StartCoroutine(AttackHero(enemy, targetHero));
-                    yield return new WaitForSeconds(1); // Wait for a second after attacking
-                } else {
-                    break;
-                }
-            }
-        }
-    }
-    IEnumerator AttackHero(BaseUnit enemy, BaseUnit target) {
-        target.OccupiedTile.AttackHighlightOn();
-        AttackManager.Instance.Target = target.OccupiedTile;
-        AttackManager.Instance.CurrentAttack.Execute(enemy, target, AttackManager.Instance);
+    public IEnumerator AttackHero(BaseUnit enemy, Tile target) {
+        target.AttackHighlightOn();
+        AttackManager.Instance.Target = target;
+        AttackManager.Instance.CurrentAttack.Execute(enemy, target.OccupiedUnit, AttackManager.Instance);
         AttackManager.Instance.ClearAttack();
         yield return new WaitForSeconds(1); // Wait for a second to simulate attack animation
-        target.OccupiedTile.AttackHighlightOff();
-    }
-    IEnumerator AggressiveRangeBehavior(BaseEnemy enemy) {
-        while(enemy.CurrentAP > 0) {
-            if(enemy.CurrentAP > 1) {
-                List<BaseUnit> possibleTargets = FindPossibleTargets(enemy, enemy.CurrentMovement + enemy.AvailableAttacks[0].PublicRange);
-            
-                if(possibleTargets.Count != 0) {
-                    BaseUnit targetHero = CompareAttackResults(possibleTargets, enemy, enemy.AvailableAttacks[0]); //assumes one attack
-
-                    var pathToTarget = Targetfinding.FindPath(enemy.OccupiedTile, targetHero.OccupiedTile);
-                    pathToTarget.Reverse();
-
-                    foreach (var tile in pathToTarget) {
-                        var lineToTarget = Linefinder.GetLine(enemy.OccupiedTile, targetHero.OccupiedTile);
-                        lineToTarget.RemoveAt(0);
-                        bool hasObstacle = lineToTarget.Take(lineToTarget.Count - 1).Any(t => !t.Walkable || t.OccupiedUnit != null);
-                        if (!hasObstacle && lineToTarget.Count <= enemy.AvailableAttacks[0].PublicRange) {
-                            break;
-                        }
-
-                        MoveEnemy(enemy, tile);
-                        enemy.ModifyAP(-1);
-                        yield return new WaitForSeconds(0.3f); // Wait for a smidge after moving
-                    }
-                    AttackManager.Instance.CurrentAttack = enemy.AvailableAttacks[0];
-                    yield return StartCoroutine(AttackHero(enemy, targetHero));
-                    yield return new WaitForSeconds(1); // Wait for a second after attacking
-                } else {
-                    var randomPath = MoveToRandom(enemy); 
-                    MoveEnemy(enemy, randomPath[0]); //this just teleports for time being
-                    enemy.ModifyAP(-1);
-                    break;
-                }
-            } else {
-                //not technically adjacent, but reachable without movement
-                List<BaseUnit> adjacentTargets = FindPossibleTargets(enemy, enemy.AvailableAttacks[0].PublicRange);
-                if(adjacentTargets.Count != 0) {
-                    BaseUnit targetHero = CompareAttackResults(adjacentTargets, enemy, enemy.AvailableAttacks[0]);
-                    AttackManager.Instance.CurrentAttack = enemy.AvailableAttacks[0]; 
-                    yield return StartCoroutine(AttackHero(enemy, targetHero));
-                }
-            }
-        }
+        target.AttackHighlightOff();
     }
     public List<BaseUnit> FindPossibleTargets(BaseEnemy activeEnemy, int range) {
         List<BaseUnit> targets = new List<BaseUnit>();
@@ -183,17 +218,14 @@ public class EnemyManager : MonoBehaviour {
         }
         return targets;
     }
-
-    public List<Tile> MoveToRandom(BaseEnemy activeEnemy) {
+    public List<Tile> MoveToRandom(BaseEnemy activeEnemy) { //will change from just target tile to navigating whole path
         List<List<Tile>> possiblePaths = new List<List<Tile>>();
-
         foreach (Tile tile in GridManager.Instance.Tiles.Values) {
             var path = Pathfinding.FindPath(activeEnemy.OccupiedTile, tile);
             if (path != null && path.Count <= activeEnemy.CurrentMovement) {
                 possiblePaths.Add(path);
             }
         }
-
         // Check if possiblePaths has any paths before trying to access an element
         if (possiblePaths.Count > 0) {
             var random = new System.Random();
@@ -203,17 +235,19 @@ public class EnemyManager : MonoBehaviour {
             return null; // Return null or an empty list if no path is found
         }
     }
-
+    private void ExecuteRandomMove(){    
+        Debug.Log("No targets found, making random move");
+        var randomPath = MoveToRandom(ActiveEnemy); 
+        MoveEnemy(ActiveEnemy, randomPath[0]); //this just teleports for time being
+        ActiveEnemy.ModifyAP(-1);
+    }
     public BaseUnit CompareAttackResults(List<BaseUnit> targets, BaseEnemy attacker, Attack attack) {
         BaseUnit selectedTarget = null;
         float selectedTargetExpectedHealth = float.MaxValue;
         float expectedHealth;
 
-        //Attack attack = attacker.AvailableAttacks[0]; //Assuming one attack for simplicity
-
         foreach(BaseUnit target in targets) {
-            expectedHealth = ExpectedDamage(target, attacker, attack);
-
+            expectedHealth = ExpectedHealthAfterAttack(target, attacker, attack);
             if(expectedHealth < selectedTargetExpectedHealth) {
                 selectedTarget = target;
                 selectedTargetExpectedHealth = expectedHealth;
@@ -222,10 +256,10 @@ public class EnemyManager : MonoBehaviour {
         AttackManager.Instance.CurrentAttack = attack;
         return selectedTarget;
     }
-    public float ExpectedDamage(BaseUnit defender, BaseUnit attacker, Attack attack) {
-        //returns the expected health remaining after an attack, not the expected damage value
-        //should consider changing name of function
-
+    public IEnumerator ApproachToShoot() {
+        yield return null;
+    }
+    public float ExpectedHealthAfterAttack(BaseUnit defender, BaseUnit attacker, Attack attack) {
         // Convert percentages to decimals for calculation
         float hitChance = attack.PublicHitChance / 100f;
         float critChance = attack.PublicCritChance / 100f;
@@ -251,6 +285,7 @@ public class EnemyManager : MonoBehaviour {
             MoveEnemy(enemy, tile); // Move enemy to next tile
             yield return new WaitForSeconds(0.3f); // Wait half a second before moving to the next tile
         }
+        enemy.ModifyAP(-1);
+        yield return null;
     }
 }
-
