@@ -55,7 +55,8 @@ public class UnitManager : MonoBehaviour {
     }
     public void SpawnEnemies() { //same note as function above
         //UnitType[] enemies = {UnitType.DemonFighter, UnitType.DemonMage, UnitType.DemonBoss};
-        UnitType[] enemies = {UnitType.DemonFighter/*, UnitType.DemonFighter*/};
+        //UnitType[] enemies = {UnitType.DemonFighter/*, UnitType.DemonFighter*/};
+        UnitType[] enemies = {UnitType.DemonMage/*, UnitType.DemonFighter*/};
 
         foreach(UnitType enemy in enemies) {
             var enemyPrefab = GetUnitPrefab(enemy) as BaseEnemy;
