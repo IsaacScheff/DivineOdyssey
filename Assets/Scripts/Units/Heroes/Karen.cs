@@ -8,6 +8,6 @@ public class Karen : BaseHero {
         if (AvailableAttacks == null) {
             AvailableAttacks = new List<Attack>();
         }
-        AvailableAttacks.Add(new Spear());
+        AvailableAttacks.Add(new Jab());
     }
 }

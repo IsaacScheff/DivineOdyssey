@@ -64,7 +64,7 @@ public class BasePhysicalAttack : Attack {
     protected override int HitChance => 0;
     protected override int CritChance => 0;
     protected override int Damage => 0;
-    protected override int CritMultiplier => 0;
+    protected override int CritMultiplier => 2;
     protected override int CostAP => 0;
     public override string Name => "BasePhysicalAttack";
     
@@ -123,7 +123,6 @@ public class Spear : BaseMelee {
     protected override int HitChance => 80;
     protected override int CritChance => 7;
     protected override int Damage => 10;
-    protected override int CritMultiplier => 2;
     protected override int CostAP => 1;
     public override string Name => "Spear";
 }
@@ -133,7 +132,6 @@ public class Bite : BaseMelee {
     protected override int HitChance => 80;
     protected override int CritChance => 7;
     protected override int Damage => 13;
-    protected override int CritMultiplier => 2;
     protected override int CostAP => 1;
     public override string Name => "Bite";
 }
@@ -147,7 +145,6 @@ public class ConjureFire : BasePhysicalRange {
     protected override int HitChance => 80;
     protected override int CritChance => 7;
     protected override int Damage => 10;
-    protected override int CritMultiplier => 2;
     protected override int CostAP => 1;
     public override string Name => "Conjure Fire";
 }
@@ -199,6 +196,39 @@ public class OneTwoPunch : BaseMelee {
             Defender = defender,
             DamageDealt = damageDealt,
             IsHit = (jabIsHit || crossIsHit),
+            Attack = this 
+        });
+        MenuManager.Instance.RemoveHeroAttackButtons();
+    }
+}
+
+public class Jab : BaseMelee {
+    protected override int Damage => 7;
+    protected override int HitChance => 75;
+    protected override int CritChance => 10;
+    protected override int CostAP => 2;
+    public override string Name => "Jab";
+    public override void Execute(BaseUnit attacker, BaseUnit defender, AttackManager attackManager) {
+        if(defender == null) {
+            attackManager.ClearAttack();
+            return;
+        }
+        bool isHit = attackManager.RollAttack(HitChance, attacker.CurrentAccuracy, defender.CurrentEvasion);
+        int damageDealt = 0;
+
+        if(isHit) {
+            damageDealt = attackManager.RollDamage(Damage, attacker.CurrentStrength, defender.CurrentGrit, CritChance, CritMultiplier);
+            attackManager.Target.OccupiedUnit.ModifyHealth(-1 * damageDealt);
+            attacker.ModifyHealth(damageDealt/2); //attacker heals for half damage dealt
+        } 
+        
+        UnitManager.Instance.UseAP(attacker, CostAP);
+        // Raise the event with the results of the attack
+        OnAttackExecuted(new AttackEventArgs {
+            Attacker = attacker,
+            Defender = defender,
+            DamageDealt = damageDealt,
+            IsHit = isHit,
             Attack = this 
         });
         MenuManager.Instance.RemoveHeroAttackButtons();
