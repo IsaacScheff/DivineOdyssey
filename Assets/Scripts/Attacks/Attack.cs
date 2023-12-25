@@ -221,7 +221,7 @@ public class Jab : BaseMelee {
             attackManager.Target.OccupiedUnit.ModifyHealth(-1 * damageDealt);
             attacker.ModifyHealth(damageDealt/2); //attacker heals for half damage dealt
         } 
-        
+  
         UnitManager.Instance.UseAP(attacker, CostAP);
         // Raise the event with the results of the attack
         OnAttackExecuted(new AttackEventArgs {

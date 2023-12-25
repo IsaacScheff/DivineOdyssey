@@ -31,10 +31,21 @@ public class UnitManager : MonoBehaviour {
     }
     private void SubscribeToUnitEvents(BaseUnit unit) {
         unit.OnHealthChanged += () => CheckUnitHealth(unit);
+        unit.OnStatusChanged += () => CheckUnitStatus(unit);
+    }
+    private void SubscribeToStatusChange(BaseUnit unit) {
+        unit.OnStatusChanged += () => CheckUnitStatus(unit);
     }
     private void CheckUnitHealth(BaseUnit unit) {
         if (unit.CurrentHealth <= 0) {
             KillUnit(unit);
+        }
+    }
+    private void CheckUnitStatus(BaseUnit unit) {
+        if(unit.IsLayedOut) {
+            SetUnitDown(unit);
+        } else {
+            StandUnitUp(unit);
         }
     }
     public void SpawnHeroes() { //these random placements will be replaced with set ones for each encounter
@@ -96,6 +107,18 @@ public class UnitManager : MonoBehaviour {
         tile.OccupiedUnit = null; 
         Destroy(unit.gameObject);
     }
+    private void SetUnitDown(BaseUnit unit) {
+        Debug.Log("Setting unit down");
+
+        GameObject unitGameObject = unit.gameObject; // Get the unit's GameObject
+        unitGameObject.transform.rotation = Quaternion.Euler(0, 0, 270);
+    }
+    private void StandUnitUp(BaseUnit unit) {
+        Debug.Log("Standing unit up");
+
+        GameObject unitGameObject = unit.gameObject; // Get the unit's GameObject
+        unitGameObject.transform.rotation = Quaternion.Euler(0, 0, 0);
+    }
     public IEnumerator MoveHeroAlongPath(BaseHero hero, List<Tile> path) {
         GameManager.Instance.ChangeState(GameState.HeroMoving);
         path.Reverse();
@@ -108,6 +131,7 @@ public class UnitManager : MonoBehaviour {
     public void MoveHero(BaseHero hero, Tile tile) {
         tile.SetUnit(hero);
     }
+
 }
 
 

@@ -36,31 +36,36 @@ public class BaseUnit : MonoBehaviour {
     [SerializeField] private int _baseAccuracy;
     [SerializeField] private int _baseEvasion;
     [SerializeField] private int _baseAP;
+    [SerializeField] private bool _isLayedOut = false;
 
     // Events for stat changes
     public event Action OnHealthChanged;
     public event Action OnAPChanged;
     public event Action OnStatsChanged;
+    public event Action OnStatusChanged;
     public void SubscribeToHealthChange(Action listener) {
         OnAPChanged += listener;
     }
-
     public void UnsubscribeFromHealthChange(Action listener) {
         OnAPChanged -= listener;
     }
     public void SubscribeToAPChange(Action listener) {
         OnAPChanged += listener;
     }
-
     public void UnsubscribeFromAPChange(Action listener) {
         OnAPChanged -= listener;
     }
     public void SubscribeToStatsChange(Action listener) {
         OnAPChanged += listener;
     }
-
     public void UnsubscribeFromStatsChange(Action listener) {
         OnAPChanged -= listener;
+    }
+    public void SubscribeToStatusChange(Action listener) {
+        OnStatusChanged += listener;
+    }
+    public void UnsubscribeFromStatusChange(Action listener) {
+        OnStatusChanged -= listener;
     }
 
     // Public access properties for base stats
@@ -158,6 +163,13 @@ public class BaseUnit : MonoBehaviour {
             OnAPChanged?.Invoke();
         }
     }
+    public bool IsLayedOut {
+        get => _isLayedOut;
+        private set {
+            _isLayedOut = value;
+            OnStatusChanged?.Invoke();
+        }
+    }
     // Reset current stats to base values
     public void ResetCurrentStats() {
         CurrentMovement = _baseMovement;
@@ -206,6 +218,9 @@ public class BaseUnit : MonoBehaviour {
     }
     public void ModifyAP(int amount) {
         CurrentAP += amount;
+    }
+    public void ChangeLayedOutStatus(bool status) {
+        IsLayedOut = status;
     }
     // Helper method to set up the unit
     private void InitializeBaseStats(int movement, int health, int psyche, int strength, int ego, int grit, int resilience, int accuracy, int evasion, int ap) {
