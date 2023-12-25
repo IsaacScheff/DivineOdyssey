@@ -59,6 +59,11 @@ public class EnemyManager : MonoBehaviour {
                 yield return StartCoroutine(MoveEnemyAlongPath(ActiveEnemy, PathForEnemy));
                 state = EnemyState.Attacking;
                 break;
+            case EnemyState.StandingUp:
+                StandUp(ActiveEnemy);
+                yield return new WaitForSeconds(1.0f); //wait for animation
+                state = EnemyState.CheckingAP;
+                break;
             case EnemyState.Attacking:
                 yield return StartCoroutine(AttackHero(ActiveEnemy, AttackManager.Instance.Target));
                 state = EnemyState.CheckingAP;
@@ -86,6 +91,11 @@ public class EnemyManager : MonoBehaviour {
             case EnemyState.MovingToTarget:
                 yield return StartCoroutine(MoveEnemyAlongPath(ActiveEnemy, PathForEnemy));
                 state = EnemyState.Attacking;
+                break;
+            case EnemyState.StandingUp:
+                StandUp(ActiveEnemy);
+                yield return new WaitForSeconds(1.0f); //wait for animation
+                state = EnemyState.CheckingAP;
                 break;
             case EnemyState.Attacking:
                 //check that second attack is available or that first attack expected to kill the target
@@ -119,6 +129,11 @@ public class EnemyManager : MonoBehaviour {
             case EnemyState.MovingToTarget:
                 yield return StartCoroutine(MoveToRangedAttack(ActiveEnemy));
                 state = EnemyState.Attacking;
+                break;
+            case EnemyState.StandingUp:
+                StandUp(ActiveEnemy);
+                yield return new WaitForSeconds(1.0f); //wait for animation
+                state = EnemyState.CheckingAP;
                 break;
             case EnemyState.Attacking:
                 yield return StartCoroutine(AttackHero(ActiveEnemy, AttackManager.Instance.Target));
@@ -177,16 +192,18 @@ public class EnemyManager : MonoBehaviour {
             return false;
         }
     }
-    //private List<BaseUnit>CompareTargets;
     private EnemyState HandleCheckingAP(BaseEnemy enemy) {
-      switch(enemy.CurrentAP) {
-         case 0:
-            return EnemyState.EndingTurn;
-         case 1:
-            return EnemyState.CheckingAdjacentHeroes;
-         default: //if more than one AP
-            return EnemyState.FindingTargets;
-      }
+        if(enemy.CurrentAP > 0 && enemy.IsLayedOut) {
+            return EnemyState.StandingUp;
+        }
+        switch(enemy.CurrentAP) {
+            case 0:
+                return EnemyState.EndingTurn;
+            case 1:
+                return EnemyState.CheckingAdjacentHeroes;
+            default: //if more than one AP
+                return EnemyState.FindingTargets;
+        }
     }
     private void InitializeEnemyBehaviors() {
         enemyBehaviorDict.Add(EnemyAI.AggroMelee, AggressiveMeleeBehavior);
@@ -256,9 +273,6 @@ public class EnemyManager : MonoBehaviour {
         AttackManager.Instance.CurrentAttack = attack;
         return selectedTarget;
     }
-    public IEnumerator ApproachToShoot() {
-        yield return null;
-    }
     public float ExpectedHealthAfterAttack(BaseUnit defender, BaseUnit attacker, Attack attack) {
         // Convert percentages to decimals for calculation
         float hitChance = attack.PublicHitChance / 100f;
@@ -287,5 +301,9 @@ public class EnemyManager : MonoBehaviour {
         }
         enemy.ModifyAP(-1);
         yield return null;
+    }
+    public void StandUp(BaseUnit unit){ //stands up for cost of 1 AP
+        unit.ChangeLayedOutStatus(false);
+        unit.ModifyAP(-1);
     }
 }

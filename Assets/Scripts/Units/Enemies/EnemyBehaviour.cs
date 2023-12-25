@@ -16,7 +16,8 @@ public enum EnemyState {
     MovingToTarget,
     Attacking,
     EndingTurn,
-    CheckingAdjacentHeroes
+    CheckingAdjacentHeroes,
+    StandingUp
 }
 
 public class EnemyStateMachine {

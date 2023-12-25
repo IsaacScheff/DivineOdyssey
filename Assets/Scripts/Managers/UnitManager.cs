@@ -111,7 +111,7 @@ public class UnitManager : MonoBehaviour {
         Debug.Log("Setting unit down");
 
         GameObject unitGameObject = unit.gameObject; // Get the unit's GameObject
-        unitGameObject.transform.rotation = Quaternion.Euler(0, 0, 270);
+        unitGameObject.transform.rotation = Quaternion.Euler(0, 0, 270); //eventually will have seperate sprite/animation for this
     }
     private void StandUnitUp(BaseUnit unit) {
         Debug.Log("Standing unit up");
