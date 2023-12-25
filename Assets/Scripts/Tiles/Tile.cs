@@ -48,9 +48,9 @@ public abstract class Tile : MonoBehaviour {
     [SerializeField] private GameObject _potentialAttack;
     [SerializeField] private GameObject _movePath;
     [SerializeField] private GameObject _attackPath;
+    [SerializeField] private GameObject _tileSelect;
     public bool IsPotentialMoveNotNull => _potentialMove.activeSelf;
     public bool IsPotentialAttackNotNull => _potentialAttack.activeSelf;
-
     [SerializeField] private bool _isWalkable; 
     [SerializeField] private bool _isCover;
 
@@ -58,7 +58,7 @@ public abstract class Tile : MonoBehaviour {
     public bool Walkable => _isWalkable && OccupiedUnit == null;
     public bool Cover => _isCover;
 
-    public virtual void Init(int x, int y) {
+    public virtual void Init(int x, int y) { //purpose? 
         
     }
     void OnMouseEnter() {
@@ -169,6 +169,12 @@ public abstract class Tile : MonoBehaviour {
     }
     public void AttackPathOff() {
         _attackPath.SetActive(false);
+    }
+    public void TileSelectOn() {
+        _tileSelect.SetActive(true);
+    }
+    public void TileSelectOff() {
+        _tileSelect.SetActive(false);
     }
 }
 
