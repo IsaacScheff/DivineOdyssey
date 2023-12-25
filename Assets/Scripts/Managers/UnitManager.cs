@@ -50,7 +50,7 @@ public class UnitManager : MonoBehaviour {
     }
     public void SpawnHeroes() { //these random placements will be replaced with set ones for each encounter
         //UnitType[] heroes = {UnitType.Alistar, UnitType.Verrier, UnitType.Karen, UnitType.Sael, UnitType.Mephistopheles};
-        UnitType[] heroes = {UnitType.Karen};
+        UnitType[] heroes = {UnitType.Mephistopheles};
 
         foreach(UnitType hero in heroes) {
             var heroPrefab = GetUnitPrefab(hero) as BaseHero;

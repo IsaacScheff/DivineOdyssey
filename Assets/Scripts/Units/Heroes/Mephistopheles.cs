@@ -8,6 +8,6 @@ public class Mephistopheles : BaseHero {
         if (AvailableAttacks == null) {
             AvailableAttacks = new List<Attack>();
         }
-        AvailableAttacks.Add(new Spear());
+        AvailableAttacks.Add(new WhipIt());
     }
 }

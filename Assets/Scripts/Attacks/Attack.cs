@@ -235,4 +235,42 @@ public class Jab : BaseMelee {
     }
 }
 
+public class WhipIt : BaseMelee {
+    protected override int Damage => 8;
+    protected override int HitChance => 80;
+    protected override int CritChance => 7;
+    protected override int CostAP => 2;
+    public override string Name => "Whip-It!";
+    public override void Execute(BaseUnit attacker, BaseUnit defender, AttackManager attackManager) {
+        if(defender == null) {
+            attackManager.ClearAttack();
+            return;
+        }
+        bool isHit = attackManager.RollAttack(HitChance, attacker.CurrentAccuracy, defender.CurrentEvasion);
+        int damageDealt = 0;
+
+        if(isHit) {
+            damageDealt = attackManager.RollDamage(Damage, attacker.CurrentStrength, defender.CurrentGrit, CritChance, CritMultiplier);
+            attackManager.Target.OccupiedUnit.ModifyHealth(-1 * damageDealt);
+
+            // Random chance to Lay-Out
+            System.Random rng = new System.Random();
+            if (rng.Next(101) < 30) { // 30% chance
+                defender.ChangeLayedOutStatus(true);
+            }
+        } 
+        
+        UnitManager.Instance.UseAP(attacker, CostAP);
+        // Raise the event with the results of the attack
+        OnAttackExecuted(new AttackEventArgs {
+            Attacker = attacker,
+            Defender = defender,
+            DamageDealt = damageDealt,
+            IsHit = isHit,
+            Attack = this 
+        });
+        MenuManager.Instance.RemoveHeroAttackButtons();
+    }
+}
+
 // ... other attack classes

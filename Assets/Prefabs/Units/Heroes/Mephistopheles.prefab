@@ -111,3 +111,4 @@ MonoBehaviour:
   _baseAccuracy: 12
   _baseEvasion: 12
   _baseAP: 2
+  _isLayedOut: 0
