@@ -8,19 +8,18 @@ using Random = UnityEngine.Random;
 public class GridManager : MonoBehaviour {
     public static GridManager Instance;
     [SerializeField] private int _width, _height;
-
     [SerializeField] private Tile _grassTile, _mountainTile; 
-
     [SerializeField] private Transform _cam;
-
     public Tile StartTile, EndTile;
     public Dictionary<Vector2, Tile> Tiles; 
-
+    public static Tile SelectedTile { get; private set; }
+    public void SelectTileClicked(Tile tile) {
+        SelectedTile = tile;
+    }
     private Dictionary<Vector2, Tile> _tiles;
     void Awake() {
         Instance = this;
     }
-
     public Dictionary<Vector2, Tile> GenerateGrid() {
         _tiles = new Dictionary<Vector2, Tile>();
         for (int x = 0; x < _width; x++) {
@@ -43,15 +42,12 @@ public class GridManager : MonoBehaviour {
         GameManager.Instance.ChangeState(GameState.SpawnHeroes);
         return _tiles;
     }
-
     public Tile GetHeroSpawnTile() {
         return _tiles.Where(t => t.Key.x < _width/2 && t.Value.Walkable).OrderBy(t => Random.value).First().Value;
     }
-
     public Tile GetEnemySpawnTile() {
         return _tiles.Where(t => t.Key.x > _width/2 && t.Value.Walkable).OrderBy(t => Random.value).First().Value;
     }
-
     public Tile GetTileAtPosition(Vector2 pos) {
         if(_tiles.TryGetValue(pos, out var tile))
             return tile;

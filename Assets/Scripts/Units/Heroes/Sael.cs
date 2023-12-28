@@ -9,5 +9,6 @@ public class Sael : BaseHero {
             AvailableAttacks = new List<Attack>();
         }
         AvailableAttacks.Add(new OneTwoPunch());
+        AvailableAttacks.Add(new ViolentThrow());
     }
 }

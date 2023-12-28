@@ -90,6 +90,11 @@ public abstract class Tile : MonoBehaviour {
     void OnMouseDown() {
         if (GameManager.Instance.GameState != GameState.HeroesTurn) return;
 
+        if (this._tileSelect.activeSelf) {
+            GridManager.Instance.SelectTileClicked(this);
+            return;
+        }
+
         // When an attack is selected and a target tile is clicked
         if (AttackManager.Instance.CurrentAttack != null && this._potentialAttack.activeSelf) {
             // Set the target and execute the attack

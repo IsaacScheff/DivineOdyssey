@@ -239,7 +239,7 @@ public class WhipIt : BaseMelee {
     protected override int Damage => 8;
     protected override int HitChance => 80;
     protected override int CritChance => 7;
-    protected override int CostAP => 2;
+    protected override int CostAP => 1;
     public override string Name => "Whip-It!";
     public override void Execute(BaseUnit attacker, BaseUnit defender, AttackManager attackManager) {
         if(defender == null) {
@@ -273,4 +273,58 @@ public class WhipIt : BaseMelee {
     }
 }
 
-// ... other attack classes
+public class ViolentThrow : BaseMelee {
+    protected override int Damage => 10;
+    protected override int HitChance => 80;
+    protected override int CritChance => 7;
+    protected override int CostAP => 2;
+    public override string Name => "Violent Throw";
+    public override void Execute(BaseUnit attacker, BaseUnit defender, AttackManager attackManager) {
+        if(defender == null) {
+            attackManager.ClearAttack();
+            return;
+        }
+
+        bool isHit = attackManager.RollAttack(HitChance, attacker.CurrentAccuracy, defender.CurrentEvasion);
+        int damageDealt = 0;
+
+        if(isHit) {
+            damageDealt = attackManager.RollDamage(Damage, attacker.CurrentStrength, defender.CurrentGrit, CritChance, CritMultiplier);
+            attackManager.Target.OccupiedUnit.ModifyHealth(-1 * damageDealt);
+            
+            // Start coroutine for moving defender
+            attacker.StartCoroutine(HandleDefenderMovement(defender));
+        } 
+        
+        UnitManager.Instance.UseAP(attacker, CostAP);
+        // Raise the event with the results of the attack
+        OnAttackExecuted(new AttackEventArgs {
+            Attacker = attacker,
+            Defender = defender,
+            DamageDealt = damageDealt,
+            IsHit = isHit,
+            Attack = this 
+        });
+        MenuManager.Instance.RemoveHeroAttackButtons();
+    }
+    private System.Collections.IEnumerator HandleDefenderMovement(BaseUnit defender) {
+        HighlightTilesForMovement(defender); // Highlight tiles
+        yield return new WaitUntil(() => GridManager.SelectedTile != null); // Wait for player input
+        EnemyManager.Instance.MoveEnemy(defender, GridManager.SelectedTile); // Move the defender to the selected tile
+        defender.ChangeLayedOutStatus(true); // Lay out the defender
+        ClearTileHighlights();
+    }
+    private void HighlightTilesForMovement(BaseUnit defender) {
+        var targetableTiles = GridManager.Instance.FindTargetableSquares(defender.OccupiedTile, 2);
+        targetableTiles
+            .Where(t => t.Walkable || t == defender.OccupiedTile)
+            .ToList()
+            .ForEach(t => t.TileSelectOn());
+    }
+    private void ClearTileHighlights() {
+        GridManager.Instance.SelectTileClicked(null);
+        foreach(Tile tile in GridManager.Instance.Tiles.Values) {
+            tile.TileSelectOff();
+        }
+    }
+}
