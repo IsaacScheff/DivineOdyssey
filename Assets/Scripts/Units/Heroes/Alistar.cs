@@ -8,7 +8,7 @@ public class Alistar : BaseHero {
         if (AvailableAttacks == null) {
             AvailableAttacks = new List<Attack>();
         }
-        AvailableAttacks.Add(new Spear());
         AvailableAttacks.Add(new ConjureFire());
+        AvailableAttacks.Add(new ElevatorThrow());
     }
 }

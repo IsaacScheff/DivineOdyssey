@@ -307,24 +307,41 @@ public class ViolentThrow : BaseMelee {
         });
         MenuManager.Instance.RemoveHeroAttackButtons();
     }
-    private System.Collections.IEnumerator HandleDefenderMovement(BaseUnit defender) {
+    public virtual System.Collections.IEnumerator HandleDefenderMovement(BaseUnit defender) {
         HighlightTilesForMovement(defender); // Highlight tiles
         yield return new WaitUntil(() => GridManager.SelectedTile != null); // Wait for player input
         EnemyManager.Instance.MoveEnemy(defender, GridManager.SelectedTile); // Move the defender to the selected tile
         defender.ChangeLayedOutStatus(true); // Lay out the defender
         ClearTileHighlights();
     }
-    private void HighlightTilesForMovement(BaseUnit defender) {
+    public void HighlightTilesForMovement(BaseUnit defender) {
         var targetableTiles = GridManager.Instance.FindTargetableSquares(defender.OccupiedTile, 2);
         targetableTiles
             .Where(t => t.Walkable || t == defender.OccupiedTile)
             .ToList()
             .ForEach(t => t.TileSelectOn());
     }
-    private void ClearTileHighlights() {
+    public void ClearTileHighlights() {
         GridManager.Instance.SelectTileClicked(null);
         foreach(Tile tile in GridManager.Instance.Tiles.Values) {
             tile.TileSelectOff();
         }
+    }
+}
+
+public class ElevatorThrow : ViolentThrow {
+    protected override int Damage => 8;
+    public override string Name => "Elevator Throw";
+    public override System.Collections.IEnumerator HandleDefenderMovement(BaseUnit defender) {
+        HighlightTilesForMovement(defender); // Highlight tiles
+        yield return new WaitUntil(() => GridManager.SelectedTile != null); // Wait for player input
+        EnemyManager.Instance.MoveEnemy(defender, GridManager.SelectedTile); // Move the defender to the selected tile
+        
+        // 50% chance to lay out the defender
+        if (UnityEngine.Random.Range(0, 100) < 50) {
+            defender.ChangeLayedOutStatus(true); // Lay out the defender
+        }
+
+        ClearTileHighlights();
     }
 }

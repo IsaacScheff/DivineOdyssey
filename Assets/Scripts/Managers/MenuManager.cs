@@ -39,7 +39,6 @@ public class MenuManager : MonoBehaviour {
         Button EndTurnButton = _endTurnButton.GetComponent<Button>();
         EndTurnButton.onClick.AddListener(() => EndTurn());
     }
-
     void OnDestroy() {
         // Unsubscribe to prevent memory leaks
         if (UnitManager.Instance != null) {
@@ -49,7 +48,6 @@ public class MenuManager : MonoBehaviour {
             _previousSelectedHero.UnsubscribeFromAPChange(RefreshAP);
         }
     }
-
     public void ShowTileInfo(Tile tile) {
         if(tile == null){ 
             _tileObject.SetActive(false);
@@ -88,7 +86,6 @@ public class MenuManager : MonoBehaviour {
             }
         }
     }
-
     public void ShowSelectedHero(BaseHero hero) {
         if (_previousSelectedHero != null) {
             _previousSelectedHero.UnsubscribeFromAPChange(RefreshAP);
@@ -109,7 +106,6 @@ public class MenuManager : MonoBehaviour {
         hero.SubscribeToAPChange(RefreshAP);
         _previousSelectedHero = hero;
     }
-
     public void ShowHeroActions(BaseHero hero) {
         if (GameManager.Instance.GameState != GameState.HeroesTurn) return;
         if (_isMenuOpen) {
@@ -135,13 +131,11 @@ public class MenuManager : MonoBehaviour {
         Button CancelButton = _cancelButton.GetComponent<Button>();
         CancelButton.onClick.AddListener(() => CancelClicked());
     }
-
     private void OnHeroAPChanged() {
         if (UnitManager.Instance.SelectedHero != null) {
             _moveButton.GetComponent<Button>().interactable = UnitManager.Instance.SelectedHero.CurrentAP >= 1;
         }
     }
-
     public void ShowHeroAttacks(BaseHero hero) {
         if (GameManager.Instance.GameState != GameState.HeroesTurn) return;
         if(UnitManager.Instance.HeroMoving == true) {
@@ -183,7 +177,6 @@ public class MenuManager : MonoBehaviour {
 
         _cancelButton.SetActive(true);
     }
-
     private void OnAttackExecuted(object sender, AttackEventArgs e) {
         string resultText = $"Attack: {e.Attack.Name}\n" +
                             $"Success: {e.IsHit}\n" +
@@ -197,7 +190,6 @@ public class MenuManager : MonoBehaviour {
         }
         _attackButtonList.Clear();
     }
-
     public void HideHeroActions() {
         _moveButton.SetActive(false);
         _attackButton.SetActive(false);
@@ -208,7 +200,6 @@ public class MenuManager : MonoBehaviour {
         UnitManager.Instance.HeroMoving = true;
         _cancelButton.SetActive(true);
     }
-
     public void CancelClicked() {
         AttackManager.Instance.ClearAttack();
         GridManager.Instance.ClearPotentialAttacks();
@@ -219,7 +210,6 @@ public class MenuManager : MonoBehaviour {
         _attackButton.SetActive(true);
         _moveButton.SetActive(true);
     }
-
     public void ShowAttackPreview(Attack attack, BaseUnit target) {
         _attackResult.SetActive(false);
         string preview = $"{attack.Name}\nAP Cost: {attack.PublicCostAP}\n\n";
@@ -234,7 +224,6 @@ public class MenuManager : MonoBehaviour {
         _attackPreview.GetComponentInChildren<TextMeshProUGUI>().text = preview;
         _attackPreview.SetActive(true);
     }
-
     public void RefreshAP() {
         if (UnitManager.Instance.SelectedHero != null) {
             TextMeshProUGUI remainingAP = _actionMenuAP.GetComponent<TextMeshProUGUI>();
@@ -265,7 +254,6 @@ public class MenuManager : MonoBehaviour {
         CloseMenu();
         TurnManager.Instance.EndHeroTurn();
     }
-
     public void ShowAttackResult(object sender, AttackEventArgs e) {
         _attackPreview.SetActive(false);
         string result = "";

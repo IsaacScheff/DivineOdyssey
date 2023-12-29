@@ -12,8 +12,6 @@ public class EnemyManager : MonoBehaviour {
     private Dictionary<BaseEnemy, EnemyStateMachine> enemyStateMachines = new Dictionary<BaseEnemy, EnemyStateMachine>();
     Dictionary<EnemyAI, EnemyBehavior> enemyBehaviorDict = new Dictionary<EnemyAI, EnemyBehavior>();
     public delegate IEnumerator EnemyBehavior(EnemyStateMachine stateMachine, EnemyState state);
-
-
     void Awake() {
         Instance = this;
 

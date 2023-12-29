@@ -1,10 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-// public class AttackButton : MonoBehaviour {
-//     public Attack Attack;
-// }
-
 public class AttackButton : MonoBehaviour {
     public Attack Attack;
     private Attack _attack;
