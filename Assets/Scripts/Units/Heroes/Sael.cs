@@ -10,5 +10,6 @@ public class Sael : BaseHero {
         }
         AvailableAttacks.Add(new OneTwoPunch());
         AvailableAttacks.Add(new ViolentThrow());
+        AvailableAttacks.Add(new GroundAndPound());
     }
 }
