@@ -28,6 +28,7 @@ public abstract class Attack {
         AttackExecuted?.Invoke(this, e);
     }
     public abstract void Execute(BaseUnit attacker, BaseUnit defender, AttackManager attackManager);
+    //have to adjust Attack.Execute to allow for different parameters
 }
 
 public class AttackEventArgs : EventArgs {
@@ -370,5 +371,25 @@ public class GroundAndPound : BaseMelee {
             Attack = this 
         });
         MenuManager.Instance.RemoveHeroAttackButtons();
+    }
+}
+
+public class SacrificialHeal : Attack {
+    protected override int Range => 2;
+    protected override int HitChance => 100;
+    protected override int CritChance => 0;
+    protected override int CritMultiplier => 1;
+    protected override int Damage => 5;
+    protected override int CostAP => 2;
+    public override string Name => "Sacrificial Heal";
+
+    public override void Target(BaseUnit attacker, GridManager gridManager) {
+        // Find all heroes within range of 2 and highlgight their squares
+        //reveal confirm button (have to create confirm button)
+    }
+
+    public override void Execute(BaseUnit attacker, BaseUnit defender, AttackManager attackManager) {
+    //have to adjust Attack.Execute to allow for different parameters
+        // Heal all highlighted heroes
     }
 }

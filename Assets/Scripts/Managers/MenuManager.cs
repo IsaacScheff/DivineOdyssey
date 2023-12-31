@@ -21,6 +21,7 @@ public class MenuManager : MonoBehaviour {
     [SerializeField] private GameObject _endTurnButton;
     [SerializeField] private GameObject _menuButton;
     [SerializeField] private GameObject _attackResult;
+    [SerializeField] private GameObject _confirmButton;
     private bool _isMenuOpen = false;
     private List<GameObject> _attackButtonList = new List<GameObject>();
     private BaseHero _previousSelectedHero;
