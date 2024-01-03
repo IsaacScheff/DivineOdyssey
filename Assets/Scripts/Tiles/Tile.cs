@@ -51,6 +51,7 @@ public abstract class Tile : MonoBehaviour {
     [SerializeField] private GameObject _tileSelect;
     public bool IsPotentialMoveNotNull => _potentialMove.activeSelf;
     public bool IsPotentialAttackNotNull => _potentialAttack.activeSelf;
+    public bool IsTileSelectOn => _tileSelect.activeSelf;
     [SerializeField] private bool _isWalkable; 
     [SerializeField] private bool _isCover;
 

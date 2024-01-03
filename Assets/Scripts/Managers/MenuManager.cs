@@ -214,6 +214,9 @@ public class MenuManager : MonoBehaviour {
         _attackButton.SetActive(true);
         _moveButton.SetActive(true);
         _confirmButton.SetActive(false);
+        foreach(Tile tile in GridManager.Instance.Tiles.Values) {
+            tile.TileSelectOff();
+        }
     }
     public void ShowAttackPreview(Attack attack, BaseUnit target) {
         _attackResult.SetActive(false);

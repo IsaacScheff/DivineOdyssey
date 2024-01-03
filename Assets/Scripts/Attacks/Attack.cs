@@ -23,7 +23,6 @@ public abstract class Attack {
     public int PublicCritMultiplier => CritMultiplier;
     public int PublicCostAP => CostAP;
     public event EventHandler<AttackEventArgs> AttackExecuted;
-    //public abstract void Target(BaseUnit attacker, GridManager gridManager);
     public virtual void Target(BaseUnit attacker, GridManager gridManager){
 
     }
@@ -37,7 +36,6 @@ public abstract class Attack {
 
     }
 }
-
 public class AttackEventArgs : EventArgs {
     public BaseUnit Attacker { get; set; }
     public BaseUnit Defender { get; set; }
@@ -67,7 +65,6 @@ public class AttackEventArgs : EventArgs {
 // }
 
 public class BasePhysicalAttack : Attack {
-    // Properties for encapsulation
     protected override int Range => 0;
     protected override int HitChance => 0;
     protected override int CritChance => 0;
@@ -77,7 +74,6 @@ public class BasePhysicalAttack : Attack {
     public override string Name => "BasePhysicalAttack";
     
     public override void Target(BaseUnit attacker, GridManager gridManager) {
-    //public virtual void Target(BaseUnit attacker, GridManager gridManager) {
         List<Tile> tileList = gridManager.FindTargetableSquares(attacker.OccupiedTile, Range);
         foreach(Tile tile in tileList) {
             var line = Linefinder.GetLine(attacker.OccupiedTile, tile);
@@ -94,8 +90,6 @@ public class BasePhysicalAttack : Attack {
         AttackManager.Instance.CurrentAttack = this;
         AttackManager.Instance.Attacker = attacker;
     }
-
-    // public override void Execute(BaseUnit attacker, BaseUnit defender, AttackManager attackManager) {
     public override void ExecuteSingleTarget(BaseUnit attacker, BaseUnit defender, AttackManager attackManager) {  
         if(defender == null) {
             attackManager.ClearAttack();
@@ -121,12 +115,10 @@ public class BasePhysicalAttack : Attack {
         MenuManager.Instance.RemoveHeroAttackButtons();
     }
 }
-
 public class BaseMelee : BasePhysicalAttack {
     protected override int Range => 1;
     public override string Name => "BaseMelee";
 }
-
 public class Spear : BaseMelee {
     protected override int HitChance => 80;
     protected override int CritChance => 7;
@@ -134,7 +126,6 @@ public class Spear : BaseMelee {
     protected override int CostAP => 1;
     public override string Name => "Spear";
 }
-
 public class Bite : BaseMelee {
     protected override int HitChance => 80;
     protected override int CritChance => 7;
@@ -153,18 +144,15 @@ public class ConjureFire : BasePhysicalRange {
     protected override int CostAP => 1;
     public override string Name => "Conjure Fire";
 }
-
 public class PommelStrike : Spear {
     protected override int Damage => 7;
     public override string Name => "Pommel Strike"; 
 }
-
 public class AxeSwing : Spear {
     protected override int Damage => 21;
     protected override int CostAP => 3;
     public override string Name => "Axe Swing";
 }
-
 public class OneTwoPunch : BaseMelee {
     protected override int Damage => 7;
     protected override int HitChance => 70;
@@ -206,7 +194,6 @@ public class OneTwoPunch : BaseMelee {
         MenuManager.Instance.RemoveHeroAttackButtons();
     }
 }
-
 public class Jab : BaseMelee {
     protected override int Damage => 7;
     protected override int HitChance => 75;
@@ -239,7 +226,6 @@ public class Jab : BaseMelee {
         MenuManager.Instance.RemoveHeroAttackButtons();
     }
 }
-
 public class WhipIt : BaseMelee {
     protected override int Damage => 8;
     protected override int HitChance => 80;
@@ -277,7 +263,6 @@ public class WhipIt : BaseMelee {
         MenuManager.Instance.RemoveHeroAttackButtons();
     }
 }
-
 public class ViolentThrow : BaseMelee {
     protected override int Damage => 10;
     protected override int HitChance => 80;
@@ -333,7 +318,6 @@ public class ViolentThrow : BaseMelee {
         }
     }
 }
-
 public class ElevatorThrow : ViolentThrow {
     protected override int Damage => 8;
     public override string Name => "Elevator Throw";
@@ -383,21 +367,41 @@ public class GroundAndPound : BaseMelee {
     }
 }
 public class SacrificialHeal : Attack {
-    protected override int Range => 2;
+    protected override int Range => 3;
     protected override int HitChance => 100;
     protected override int CritChance => 0;
     protected override int CritMultiplier => 1;
     protected override int Damage => 5;
     protected override int CostAP => 2;
     public override string Name => "Sacrificial Heal";
-
     public override void Target(BaseUnit attacker, GridManager gridManager) {
+        HighlightAllyTiles(attacker);
         // Find all heroes within range of 2 and highlgight their squares
+        AttackManager.Instance.Attacker = attacker;
         AttackManager.Instance.CurrentAttack = this;
         MenuManager.Instance.ShowConfirmButton();
     }
-
     public override void Execute() {
-        UnityEngine.Debug.Log("Sacrificial Heal executed");
+        foreach(Tile tile in GridManager.Instance.Tiles.Values) {
+            if(tile.IsTileSelectOn && tile.OccupiedUnit != null && tile.OccupiedUnit is BaseHero) {     
+                tile.OccupiedUnit.ModifyHealth(Damage * 2);
+            }
+        }
+        AttackManager.Instance.Attacker.ModifyHealth(-1 * Damage);
+        UnitManager.Instance.UseAP(AttackManager.Instance.Attacker, CostAP);
+        ClearTileHighlights();
+        AttackManager.Instance.Attacker = null;
+    }
+    public void HighlightAllyTiles(BaseUnit caster) { //caster is the hero using the attack
+        var targetableTiles = GridManager.Instance.FindTargetableSquares(caster.OccupiedTile, 3);
+        targetableTiles
+            .Where(t => t.OccupiedUnit != null && t.OccupiedUnit is BaseHero)
+            .ToList()
+            .ForEach(t => t.TileSelectOn());
+    }
+    public void ClearTileHighlights() {
+        foreach(Tile tile in GridManager.Instance.Tiles.Values) {
+            tile.TileSelectOff();
+        }
     }
 }
