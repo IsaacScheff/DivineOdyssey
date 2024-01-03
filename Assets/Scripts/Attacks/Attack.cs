@@ -30,11 +30,12 @@ public abstract class Attack {
     protected virtual void OnAttackExecuted(AttackEventArgs e) {
         AttackExecuted?.Invoke(this, e);
     }
-    //public abstract void Execute(BaseUnit attacker, BaseUnit defender, AttackManager attackManager);
-    public virtual void Execute(BaseUnit attacker, BaseUnit defender, AttackManager attackManager){
+    public virtual void ExecuteSingleTarget(BaseUnit attacker, BaseUnit defender, AttackManager attackManager){
 
     }
-    //have to adjust Attack.Execute to allow for different parameters
+    public virtual void Execute() {
+
+    }
 }
 
 public class AttackEventArgs : EventArgs {
@@ -94,7 +95,8 @@ public class BasePhysicalAttack : Attack {
         AttackManager.Instance.Attacker = attacker;
     }
 
-    public override void Execute(BaseUnit attacker, BaseUnit defender, AttackManager attackManager) {
+    // public override void Execute(BaseUnit attacker, BaseUnit defender, AttackManager attackManager) {
+    public override void ExecuteSingleTarget(BaseUnit attacker, BaseUnit defender, AttackManager attackManager) {  
         if(defender == null) {
             attackManager.ClearAttack();
             return;
@@ -170,7 +172,7 @@ public class OneTwoPunch : BaseMelee {
     protected override int CostAP => 2;
     public override string Name => "One-Two Punch";
 
-    public override void Execute(BaseUnit attacker, BaseUnit defender, AttackManager attackManager) {
+    public override void ExecuteSingleTarget(BaseUnit attacker, BaseUnit defender, AttackManager attackManager) {
         //first atack is jab, second is  a cross
         //later add auto crit to cross if jab crits
         int damageDealt = 0;
@@ -211,7 +213,7 @@ public class Jab : BaseMelee {
     protected override int CritChance => 10;
     protected override int CostAP => 2;
     public override string Name => "Jab";
-    public override void Execute(BaseUnit attacker, BaseUnit defender, AttackManager attackManager) {
+    public override void ExecuteSingleTarget(BaseUnit attacker, BaseUnit defender, AttackManager attackManager) {
         if(defender == null) {
             attackManager.ClearAttack();
             return;
@@ -244,7 +246,7 @@ public class WhipIt : BaseMelee {
     protected override int CritChance => 7;
     protected override int CostAP => 1;
     public override string Name => "Whip-It!";
-    public override void Execute(BaseUnit attacker, BaseUnit defender, AttackManager attackManager) {
+    public override void ExecuteSingleTarget(BaseUnit attacker, BaseUnit defender, AttackManager attackManager) {
         if(defender == null) {
             attackManager.ClearAttack();
             return;
@@ -282,7 +284,7 @@ public class ViolentThrow : BaseMelee {
     protected override int CritChance => 7;
     protected override int CostAP => 2;
     public override string Name => "Violent Throw";
-    public override void Execute(BaseUnit attacker, BaseUnit defender, AttackManager attackManager) {
+    public override void ExecuteSingleTarget(BaseUnit attacker, BaseUnit defender, AttackManager attackManager) {
         if(defender == null) {
             attackManager.ClearAttack();
             return;
@@ -355,7 +357,7 @@ public class GroundAndPound : BaseMelee {
     protected override int Damage => 20;
     protected override int CostAP => 3;
     public override string Name => "Ground&Pound";
-    public override void Execute(BaseUnit attacker, BaseUnit defender, AttackManager attackManager) {
+    public override void ExecuteSingleTarget(BaseUnit attacker, BaseUnit defender, AttackManager attackManager) {
         if(defender == null || !defender.IsLayedOut) {
             attackManager.ClearAttack();
             return;
@@ -391,12 +393,11 @@ public class SacrificialHeal : Attack {
 
     public override void Target(BaseUnit attacker, GridManager gridManager) {
         // Find all heroes within range of 2 and highlgight their squares
-        //reveal confirm button (have to create confirm button)
+        AttackManager.Instance.CurrentAttack = this;
         MenuManager.Instance.ShowConfirmButton();
     }
 
-    public void Execute(/* Not sure what parameters yet*/) {
-    //have to adjust Attack.Execute to allow for different parameters
-        // Heal all highlighted heroes
+    public override void Execute() {
+        UnityEngine.Debug.Log("Sacrificial Heal executed");
     }
 }

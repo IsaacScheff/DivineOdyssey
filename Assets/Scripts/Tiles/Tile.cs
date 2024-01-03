@@ -99,7 +99,7 @@ public abstract class Tile : MonoBehaviour {
         if (AttackManager.Instance.CurrentAttack != null && this._potentialAttack.activeSelf) {
             // Set the target and execute the attack
             AttackManager.Instance.Target = this;
-            AttackManager.Instance.CurrentAttack.Execute(
+            AttackManager.Instance.CurrentAttack.ExecuteSingleTarget(
                 AttackManager.Instance.Attacker,
                 this.OccupiedUnit,
                 AttackManager.Instance

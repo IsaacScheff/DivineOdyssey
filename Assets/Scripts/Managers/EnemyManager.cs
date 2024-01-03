@@ -217,7 +217,7 @@ public class EnemyManager : MonoBehaviour {
     public IEnumerator AttackHero(BaseUnit enemy, Tile target) {
         target.AttackHighlightOn();
         AttackManager.Instance.Target = target;
-        AttackManager.Instance.CurrentAttack.Execute(enemy, target.OccupiedUnit, AttackManager.Instance);
+        AttackManager.Instance.CurrentAttack.ExecuteSingleTarget(enemy, target.OccupiedUnit, AttackManager.Instance);
         AttackManager.Instance.ClearAttack();
         yield return new WaitForSeconds(1); // Wait for a second to simulate attack animation
         target.AttackHighlightOff();

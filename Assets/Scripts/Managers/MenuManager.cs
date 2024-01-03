@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -25,7 +26,6 @@ public class MenuManager : MonoBehaviour {
     private bool _isMenuOpen = false;
     private List<GameObject> _attackButtonList = new List<GameObject>();
     private BaseHero _previousSelectedHero;
-
     void Awake() {
         Instance = this;
     }
@@ -282,5 +282,6 @@ public class MenuManager : MonoBehaviour {
     }
     public void ConfirmButtonCLicked(){
         _confirmButton.SetActive(false);
+        AttackManager.Instance.CurrentAttack.Execute();
     }
 }
