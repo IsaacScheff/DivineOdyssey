@@ -39,6 +39,9 @@ public class MenuManager : MonoBehaviour {
 
         Button EndTurnButton = _endTurnButton.GetComponent<Button>();
         EndTurnButton.onClick.AddListener(() => EndTurn());
+
+        Button ConfirmButton = _confirmButton.GetComponent<Button>();
+        ConfirmButton.onClick.AddListener(() => ConfirmButtonCLicked());
     }
     void OnDestroy() {
         // Unsubscribe to prevent memory leaks
@@ -210,6 +213,7 @@ public class MenuManager : MonoBehaviour {
         _cancelButton.SetActive(false);
         _attackButton.SetActive(true);
         _moveButton.SetActive(true);
+        _confirmButton.SetActive(false);
     }
     public void ShowAttackPreview(Attack attack, BaseUnit target) {
         _attackResult.SetActive(false);
@@ -272,5 +276,11 @@ public class MenuManager : MonoBehaviour {
         //Debug.Log(result);
         _attackResult.GetComponentInChildren<TextMeshProUGUI>().text = result;
         _attackResult.SetActive(true);
+    }
+    public void ShowConfirmButton() {
+        _confirmButton.SetActive(true);
+    }
+    public void ConfirmButtonCLicked(){
+        _confirmButton.SetActive(false);
     }
 }

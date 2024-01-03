@@ -9,5 +9,6 @@ public class Karen : BaseHero {
             AvailableAttacks = new List<Attack>();
         }
         AvailableAttacks.Add(new Jab());
+        AvailableAttacks.Add(new SacrificialHeal());
     }
 }

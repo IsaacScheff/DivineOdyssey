@@ -23,11 +23,17 @@ public abstract class Attack {
     public int PublicCritMultiplier => CritMultiplier;
     public int PublicCostAP => CostAP;
     public event EventHandler<AttackEventArgs> AttackExecuted;
-    public abstract void Target(BaseUnit attacker, GridManager gridManager);
+    //public abstract void Target(BaseUnit attacker, GridManager gridManager);
+    public virtual void Target(BaseUnit attacker, GridManager gridManager){
+
+    }
     protected virtual void OnAttackExecuted(AttackEventArgs e) {
         AttackExecuted?.Invoke(this, e);
     }
-    public abstract void Execute(BaseUnit attacker, BaseUnit defender, AttackManager attackManager);
+    //public abstract void Execute(BaseUnit attacker, BaseUnit defender, AttackManager attackManager);
+    public virtual void Execute(BaseUnit attacker, BaseUnit defender, AttackManager attackManager){
+
+    }
     //have to adjust Attack.Execute to allow for different parameters
 }
 
@@ -70,6 +76,7 @@ public class BasePhysicalAttack : Attack {
     public override string Name => "BasePhysicalAttack";
     
     public override void Target(BaseUnit attacker, GridManager gridManager) {
+    //public virtual void Target(BaseUnit attacker, GridManager gridManager) {
         List<Tile> tileList = gridManager.FindTargetableSquares(attacker.OccupiedTile, Range);
         foreach(Tile tile in tileList) {
             var line = Linefinder.GetLine(attacker.OccupiedTile, tile);
@@ -373,7 +380,6 @@ public class GroundAndPound : BaseMelee {
         MenuManager.Instance.RemoveHeroAttackButtons();
     }
 }
-
 public class SacrificialHeal : Attack {
     protected override int Range => 2;
     protected override int HitChance => 100;
@@ -386,9 +392,10 @@ public class SacrificialHeal : Attack {
     public override void Target(BaseUnit attacker, GridManager gridManager) {
         // Find all heroes within range of 2 and highlgight their squares
         //reveal confirm button (have to create confirm button)
+        MenuManager.Instance.ShowConfirmButton();
     }
 
-    public override void Execute(BaseUnit attacker, BaseUnit defender, AttackManager attackManager) {
+    public void Execute(/* Not sure what parameters yet*/) {
     //have to adjust Attack.Execute to allow for different parameters
         // Heal all highlighted heroes
     }
