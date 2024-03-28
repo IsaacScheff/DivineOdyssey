@@ -66,7 +66,7 @@ public class UnitManager : MonoBehaviour {
         GameManager.Instance.ChangeState(GameState.SpawnEnemies);
     }
     public void SpawnEnemies() { //same note as function above
-        UnitType[] enemies = {UnitType.DemonFighter, UnitType.DemonMage, UnitType.DemonFighter, UnitType.DemonMage, UnitType.DemonBoss};
+        UnitType[] enemies = {UnitType.DemonFighter, UnitType. DemonFighter, UnitType.DemonMage, UnitType.DemonFighter, UnitType.DemonMage, UnitType.DemonBoss};
         //UnitType[] enemies = {UnitType.DemonFighter/*, UnitType.DemonFighter*/};
         //UnitType[] enemies = {UnitType.DemonBoss/*, UnitType.DemonFighter*/};
 

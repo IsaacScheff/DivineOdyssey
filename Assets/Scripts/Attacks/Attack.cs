@@ -376,7 +376,6 @@ public class SacrificialHeal : Attack {
     public override string Name => "Sacrificial Heal";
     public override void Target(BaseUnit attacker, GridManager gridManager) {
         HighlightAllyTiles(attacker);
-        // Find all heroes within range of 2 and highlgight their squares
         AttackManager.Instance.Attacker = attacker;
         AttackManager.Instance.CurrentAttack = this;
         MenuManager.Instance.ShowConfirmButton();

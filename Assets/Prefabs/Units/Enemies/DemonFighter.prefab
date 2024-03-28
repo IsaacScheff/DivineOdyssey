@@ -110,6 +110,6 @@ MonoBehaviour:
   _baseResilience: 10
   _baseAccuracy: 12
   _baseEvasion: 9
-  _baseAP: 2
+  _baseAP: 3
   _isLayedOut: 0
   EnemyAI: 0
