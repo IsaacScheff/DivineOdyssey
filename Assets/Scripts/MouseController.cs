@@ -4,13 +4,17 @@ using System.Linq;
 using UnityEngine;
 
 public class MouseController : MonoBehaviour {
-    void Update() {
+    void LateUpdate() {
         var focusedTileHit = GetFocusedOnTile();
 
         if(focusedTileHit.HasValue) {
             GameObject highlightedTile = focusedTileHit.Value.collider.gameObject;
             transform.position = highlightedTile.transform.position;
             gameObject.GetComponent<SpriteRenderer>().sortingOrder = highlightedTile.GetComponent<SpriteRenderer>().sortingOrder;
+
+            if(Input.GetMouseButtonDown(0)){ //consider event/listener approach instead
+                highlightedTile.GetComponent<HighlightedTile>().ShowTile();
+            }
         }
     }
     public RaycastHit2D? GetFocusedOnTile() {
