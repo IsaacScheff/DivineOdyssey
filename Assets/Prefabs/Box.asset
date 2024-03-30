@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 13312, guid: 0000000000000000e000000000000000, type: 0}
-  m_Name: BasementAndBox_0
+  m_Name: Box
   m_EditorClassIdentifier: 
-  m_Sprite: {fileID: 1206355693, guid: ade48b59ff1af46d7bba9d901c3918c9, type: 3}
+  m_Sprite: {fileID: -813248469, guid: b6b5032f2ac8343b6a23f9a296d0331f, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_Transform:
     e00: 1
