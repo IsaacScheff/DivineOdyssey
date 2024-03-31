@@ -38,7 +38,9 @@ public class MouseController : MonoBehaviour {
     }
 
     private void PositionCharacterOnTile(OverlayTile tile) {
-        character.transform.position = new Vector3(tile.transform.position.x, tile.transform.position.y, tile.transform.position.z + 0.3f);
+        //character.transform.position = new Vector3(tile.transform.position.x, tile.transform.position.y, tile.transform.position.z + 0.3f);
+        character.transform.position = new Vector3(tile.transform.position.x, tile.transform.position.y, tile.transform.position.z + 1.23f);
+        //added to Z value so cursor renders behind player
         character.GetComponent<SpriteRenderer>().sortingOrder = tile.GetComponent<SpriteRenderer>().sortingOrder;
         character.activeTile = tile;
     }
