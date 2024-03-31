@@ -153,6 +153,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 938cb1635fccd4b4e8774db662054b5a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  characterPrefab: {fileID: 3941837730992888570, guid: fbb0b91b7d5a64a838d68c53ee48cd2d, type: 3}
 --- !u!212 &340392671
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -256,7 +257,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 2
-  m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
+  m_BackGroundColor: {r: 0.19215687, g: 0.21960784, b: 0.4745098, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -8691,5 +8692,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cf2a8b7a957b8441cbaf9f51fb9c9391, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  highlightedTilePrefab: {fileID: 961884345751647120, guid: 7fbe25b56289444d493f89e716aaaf22, type: 3}
+  overlayTilePrefab: {fileID: 961884345751647120, guid: 7fbe25b56289444d493f89e716aaaf22, type: 3}
   overlayContainer: {fileID: 1570362159}

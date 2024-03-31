@@ -4,16 +4,24 @@ using System.Linq;
 using UnityEngine;
 
 public class MouseController : MonoBehaviour {
+
+    public GameObject characterPrefab;
+    private CharacterInfo character;
     void LateUpdate() {
         var focusedTileHit = GetFocusedOnTile();
 
         if(focusedTileHit.HasValue) {
-            GameObject highlightedTile = focusedTileHit.Value.collider.gameObject;
-            transform.position = highlightedTile.transform.position;
-            gameObject.GetComponent<SpriteRenderer>().sortingOrder = highlightedTile.GetComponent<SpriteRenderer>().sortingOrder;
+            GameObject overlayTile = focusedTileHit.Value.collider.gameObject;
+            transform.position = overlayTile.transform.position;
+            gameObject.GetComponent<SpriteRenderer>().sortingOrder = overlayTile.GetComponent<SpriteRenderer>().sortingOrder;
 
             if(Input.GetMouseButtonDown(0)){ //consider event/listener approach instead
-                highlightedTile.GetComponent<HighlightedTile>().ShowTile();
+                overlayTile.GetComponent<OverlayTile>().ShowTile();
+
+                if(character == null) {
+                    character = Instantiate(characterPrefab).GetComponent<CharacterInfo>();
+                    PositionCharacterOnTile(overlayTile.GetComponent<OverlayTile>());
+                }
             }
         }
     }
@@ -27,5 +35,11 @@ public class MouseController : MonoBehaviour {
             return hits.OrderByDescending(i => i.collider.transform.position.z).First();
         }
         return null;
+    }
+
+    private void PositionCharacterOnTile(OverlayTile tile) {
+        character.transform.position = new Vector3(tile.transform.position.x, tile.transform.position.y, tile.transform.position.z + 0.3f);
+        character.GetComponent<SpriteRenderer>().sortingOrder = tile.GetComponent<SpriteRenderer>().sortingOrder;
+        character.activeTile = tile;
     }
 }
