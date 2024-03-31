@@ -39,15 +39,15 @@ public class MapManager : MonoBehaviour {
                         overlayTile.transform.position = new Vector3(cellWorldPosition.x, cellWorldPosition.y, cellWorldPosition.z + 1);
                         //might need to play with this z value
                         overlayTile.GetComponent<SpriteRenderer>().sortingOrder = tileMap.GetComponent<TilemapRenderer>().sortingOrder;
-                        map.Add(tileKey, overlayTile); 
-                        overlayTile.mapLocation = tileKey;
+                        map.Add(tileKey, overlayTile);
+                        overlayTile.gridLocation = tileLocation; 
                         overlayTile.topZ = z;
                     }
                 }
             }
         }
     } 
-    public void RecolorTile(Vector2Int tileLocation, int zValue, Color newColor) {
+    public void RecolorTile(Vector3Int tileLocation, int zValue, Color newColor) {
         tileMap = gameObject.GetComponentInChildren<Tilemap>();
        
         Vector3Int tilePosition = new Vector3Int(tileLocation.x, tileLocation.y, zValue);

@@ -4,7 +4,13 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class OverlayTile : MonoBehaviour {
-     public Vector2Int mapLocation;
+
+     public int G; //variables for A* pathfinding algo
+     public int H;
+     public int F { get { return G + H; } }
+     public bool isBlocked;
+     public OverlayTile previous;
+     public Vector3Int gridLocation;
      public int topZ;
      void Update() {
           if(Input.GetMouseButtonDown(0)){ //consider event/listener approach instead
@@ -13,11 +19,10 @@ public class OverlayTile : MonoBehaviour {
      }
      public void ShowTile(){
           //gameObject.GetComponent<SpriteRenderer>().color = new Color (1, 1, 1, 1);
-          //Debug.Log(mapLocation);
-          MapManager.Instance.RecolorTile(mapLocation, topZ, Color.red);
+          MapManager.Instance.RecolorTile(gridLocation, topZ, Color.red);
      }
      public void HideTile(){
           //gameObject.GetComponent<SpriteRenderer>().color = new Color (1, 1, 1, 0);
-          MapManager.Instance.RecolorTile(mapLocation, topZ, Color.white);
+          MapManager.Instance.RecolorTile(gridLocation, topZ, Color.white);
      }
 }

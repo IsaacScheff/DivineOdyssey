@@ -7,22 +7,49 @@ public class MouseController : MonoBehaviour {
 
     public GameObject characterPrefab;
     private CharacterInfo character;
+    private Pathfinder pathfinder;
+    public float speed;
+    private List<OverlayTile> path = new List<OverlayTile>();
+
+    void Start() {
+        pathfinder = new Pathfinder();
+    }
     void LateUpdate() {
         var focusedTileHit = GetFocusedOnTile();
 
         if(focusedTileHit.HasValue) {
-            GameObject overlayTile = focusedTileHit.Value.collider.gameObject;
+            OverlayTile overlayTile = focusedTileHit.Value.collider.gameObject.GetComponent<OverlayTile>();
             transform.position = overlayTile.transform.position;
             gameObject.GetComponent<SpriteRenderer>().sortingOrder = overlayTile.GetComponent<SpriteRenderer>().sortingOrder;
 
             if(Input.GetMouseButtonDown(0)){ //consider event/listener approach instead
-                overlayTile.GetComponent<OverlayTile>().ShowTile();
+                //overlayTile.GetComponent<OverlayTile>().ShowTile();
+                overlayTile.ShowTile();
 
                 if(character == null) {
                     character = Instantiate(characterPrefab).GetComponent<CharacterInfo>();
                     PositionCharacterOnTile(overlayTile.GetComponent<OverlayTile>());
+                } else {
+                    /*var*/ path = pathfinder.FindPath(character.activeTile, overlayTile);
+                    Debug.Log(path.Count);
                 }
             }
+        }
+        Debug.Log(path.Count);
+        if(path.Count > 0) {
+            MoveAlongPath();
+        }
+    }
+    private void MoveAlongPath() {
+        Debug.Log("running?");
+        var step = speed * Time.deltaTime;
+        var zIndex = path[0].transform.position.z;
+        character.transform.position = Vector2.MoveTowards(character.transform.position, path[0].transform.position, step);
+        character.transform.position = new Vector3(character.transform.position.x, character.transform.position.y, zIndex);
+
+        if(Vector2.Distance(character.transform.position, path[0].transform.position) < 0.0001f) {
+            PositionCharacterOnTile(path[0]);
+            path.RemoveAt(0);
         }
     }
     public RaycastHit2D? GetFocusedOnTile() {
