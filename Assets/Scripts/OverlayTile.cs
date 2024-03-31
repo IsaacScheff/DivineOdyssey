@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Video;
 
 public class OverlayTile : MonoBehaviour {
 
@@ -11,7 +12,11 @@ public class OverlayTile : MonoBehaviour {
      public bool isBlocked;
      public OverlayTile previous;
      public Vector3Int gridLocation;
+     public Vector2Int MapLocation;
      public int topZ;
+     void Start() {
+          //GetComponent<SpriteRenderer>().sortingOrder = MapManager.Instance.map[MapLocation].GetComponent<SpriteRenderer>().sortingOrder;
+     }
      void Update() {
           if(Input.GetMouseButtonDown(0)){ //consider event/listener approach instead
                HideTile();

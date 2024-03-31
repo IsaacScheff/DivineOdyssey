@@ -40,6 +40,7 @@ public class MapManager : MonoBehaviour {
                         //might need to play with this z value
                         overlayTile.GetComponent<SpriteRenderer>().sortingOrder = tileMap.GetComponent<TilemapRenderer>().sortingOrder;
                         map.Add(tileKey, overlayTile);
+                        overlayTile.MapLocation = tileKey;
                         overlayTile.gridLocation = tileLocation; 
                         overlayTile.topZ = z;
                     }

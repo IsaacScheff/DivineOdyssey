@@ -30,20 +30,18 @@ public class MouseController : MonoBehaviour {
                     character = Instantiate(characterPrefab).GetComponent<CharacterInfo>();
                     PositionCharacterOnTile(overlayTile.GetComponent<OverlayTile>());
                 } else {
-                    /*var*/ path = pathfinder.FindPath(character.activeTile, overlayTile);
-                    Debug.Log(path.Count);
+                    path = pathfinder.FindPath(character.activeTile, overlayTile);
                 }
             }
         }
-        Debug.Log(path.Count);
         if(path.Count > 0) {
             MoveAlongPath();
         }
     }
     private void MoveAlongPath() {
-        Debug.Log("running?");
         var step = speed * Time.deltaTime;
         var zIndex = path[0].transform.position.z;
+        //character.GetComponent<SpriteRenderer>().sortingOrder = path[0].GetComponent<SpriteRenderer>().sortingOrder;
         character.transform.position = Vector2.MoveTowards(character.transform.position, path[0].transform.position, step);
         character.transform.position = new Vector3(character.transform.position.x, character.transform.position.y, zIndex);
 
@@ -65,8 +63,9 @@ public class MouseController : MonoBehaviour {
     }
 
     private void PositionCharacterOnTile(OverlayTile tile) {
-        //character.transform.position = new Vector3(tile.transform.position.x, tile.transform.position.y, tile.transform.position.z + 0.3f);
-        character.transform.position = new Vector3(tile.transform.position.x, tile.transform.position.y, tile.transform.position.z + 1.23f);
+        //character.transform.position = new Vector3(tile.transform.position.x, tile.transform.position.y + 0.0001f, tile.transform.position.z + 1.23f);
+        //character.transform.position = new Vector3(tile.transform.position.x, tile.transform.position.y, tile.transform.position.z + 1.23f);
+        character.transform.position = new Vector3(tile.transform.position.x, tile.transform.position.y + 0.0001f, tile.transform.position.z);
         //added to Z value so cursor renders behind player
         character.GetComponent<SpriteRenderer>().sortingOrder = tile.GetComponent<SpriteRenderer>().sortingOrder;
         character.activeTile = tile;
