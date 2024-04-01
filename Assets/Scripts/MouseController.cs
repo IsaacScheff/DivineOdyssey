@@ -8,11 +8,14 @@ public class MouseController : MonoBehaviour {
     public GameObject characterPrefab;
     private CharacterInfo character;
     private Pathfinder pathfinder;
+    private RangeFinder rangeFinder;
     public float speed;
     private List<OverlayTile> path = new List<OverlayTile>();
+    private List<OverlayTile> inRangeTiles = new List<OverlayTile>();
 
     void Start() {
         pathfinder = new Pathfinder();
+        rangeFinder = new RangeFinder();
     }
     void LateUpdate() {
         var focusedTileHit = GetFocusedOnTile();
@@ -22,15 +25,13 @@ public class MouseController : MonoBehaviour {
             transform.position = overlayTile.transform.position;
             gameObject.GetComponent<SpriteRenderer>().sortingOrder = overlayTile.GetComponent<SpriteRenderer>().sortingOrder;
 
-            if(Input.GetMouseButtonDown(0)){ //consider event/listener approach instead
-                //overlayTile.GetComponent<OverlayTile>().ShowTile();
-                overlayTile.ShowTile();
-
+            if(Input.GetMouseButtonDown(0)){ 
                 if(character == null) {
                     character = Instantiate(characterPrefab).GetComponent<CharacterInfo>();
                     PositionCharacterOnTile(overlayTile.GetComponent<OverlayTile>());
+                    GetInRangeTiles();
                 } else {
-                    path = pathfinder.FindPath(character.activeTile, overlayTile);
+                    path = pathfinder.FindPath(character.activeTile, overlayTile, inRangeTiles);
                 }
             }
         }
@@ -38,16 +39,31 @@ public class MouseController : MonoBehaviour {
             MoveAlongPath();
         }
     }
+    private void GetInRangeTiles() {
+        foreach (OverlayTile tile in inRangeTiles) {
+            tile.HideTile();
+        }
+
+        inRangeTiles = rangeFinder.GetTilesInRange(character.activeTile, 4);
+
+        foreach (OverlayTile tile in inRangeTiles) {
+            tile.ShowTile();
+        }
+    }
     private void MoveAlongPath() {
         var step = speed * Time.deltaTime;
         var zIndex = path[0].transform.position.z;
-        //character.GetComponent<SpriteRenderer>().sortingOrder = path[0].GetComponent<SpriteRenderer>().sortingOrder;
+      
         character.transform.position = Vector2.MoveTowards(character.transform.position, path[0].transform.position, step);
         character.transform.position = new Vector3(character.transform.position.x, character.transform.position.y, zIndex);
 
         if(Vector2.Distance(character.transform.position, path[0].transform.position) < 0.0001f) {
             PositionCharacterOnTile(path[0]);
             path.RemoveAt(0);
+        }
+
+        if(path.Count == 0) {
+            GetInRangeTiles();
         }
     }
     public RaycastHit2D? GetFocusedOnTile() {

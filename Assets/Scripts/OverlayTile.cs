@@ -14,14 +14,6 @@ public class OverlayTile : MonoBehaviour {
      public Vector3Int gridLocation;
      public Vector2Int MapLocation;
      public int topZ;
-     void Start() {
-          //GetComponent<SpriteRenderer>().sortingOrder = MapManager.Instance.map[MapLocation].GetComponent<SpriteRenderer>().sortingOrder;
-     }
-     void Update() {
-          if(Input.GetMouseButtonDown(0)){ //consider event/listener approach instead
-               HideTile();
-          }
-     }
      public void ShowTile(){
           //gameObject.GetComponent<SpriteRenderer>().color = new Color (1, 1, 1, 1);
           MapManager.Instance.RecolorTile(gridLocation, topZ, Color.red);

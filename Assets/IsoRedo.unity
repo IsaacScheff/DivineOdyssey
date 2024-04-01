@@ -154,7 +154,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   characterPrefab: {fileID: 3941837730992888570, guid: fbb0b91b7d5a64a838d68c53ee48cd2d, type: 3}
-  speed: 1
+  speed: 3
 --- !u!212 &340392671
 SpriteRenderer:
   m_ObjectHideFlags: 0
